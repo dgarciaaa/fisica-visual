@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Termómetro Celsius de mercurio: dilatación aparente, respuesta al baño y calibración en una escena 3D con controles integrados.">
+  <title>Termómetro · Celsius</title>
+  <style>
+
+    :root {
+      color-scheme: only light;
+      --color-fondo: #F7F8FC; --color-tarjeta: #FFFFFF;
+      --color-primario: #A8C7FA; --color-secundario: #B8E0D2; --color-acento: #CDB4DB;
+      --color-texto: #273043; --color-texto-secundario: #667085; --color-borde: #E4E7EC;
+      --color-onda: #668EC6; --color-longitudinal: #67998A; --color-punto: #9471AE;
+      --sombra: 0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--color-texto); background: var(--color-fondo); }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .laboratorio { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 25% 28%, rgba(168,199,250,.16), transparent 65%), radial-gradient(ellipse at 90% 70%, rgba(205,180,219,.12), transparent 60%), var(--color-fondo); }
+    #lienzo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cristal { background: rgba(255,255,255,.91); border: 1px solid rgba(228,231,236,.9); box-shadow: var(--sombra); backdrop-filter: blur(14px); border-radius: 18px; }
+    .cabecera { position: absolute; z-index: 3; top: 22px; left: 28px; right: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .identidad h1 { margin: 0 0 9px; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -.035em; font-weight: 750; }
+    .selector { display: inline-flex; padding: 4px; border-radius: 12px; background: rgba(228,231,236,.65); gap: 3px; }
+    .selector button { border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: 9px; padding: 8px 13px; font-size: .86rem; font-weight: 650; min-height: 36px; }
+    .selector button[aria-pressed="true"] { color: var(--color-texto); background: var(--color-tarjeta); box-shadow: 0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .boton { border: 1px solid var(--color-borde); background: var(--color-tarjeta); color: var(--color-texto); padding: 9px 12px; border-radius: 11px; min-height: 40px; font-size: .83rem; font-weight: 650; }
+    .boton:hover { background: #F0F4FA; }
+    .boton[aria-pressed="true"] { background: #EAE2F0; border-color: var(--color-acento); }
+    .principal { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .principal:hover { background: #42516A; }
+    .principal[aria-pressed="true"] { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .ecuacion { position: absolute; z-index: 3; top: 122px; left: 28px; padding: 15px 19px 13px; width: max-content; max-width: calc(100% - 56px); }
+    .formula { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.4; white-space: nowrap; }
+    .formula button { font: inherit; border: 0; border-radius: 5px; background: transparent; padding: 0 3px; color: inherit; }
+    .formula button.activo { background: rgba(168,199,250,.25); color: #476B9D; }
+    .relaciones { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; font-size: .79rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); }
+    .relaciones strong { color: var(--color-texto); font-weight: 650; }
+    .rapidez { margin-top: 8px; font-size: .8rem; color: var(--color-texto-secundario); }
+    .rapidez strong { color: var(--color-texto); font-weight: 650; }
+    #area-escena { position: absolute; left: 32px; right: 32px; top: 264px; bottom: 190px; min-height: 80px; overflow: hidden; touch-action: none; cursor: grab; border-radius: 16px; }
+    #area-escena:active { cursor: grabbing; }
+    #alternativa, #anotaciones { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #anotaciones { z-index: 2; }
+    #anotaciones text, #alternativa text, .grafica text { font-family: Inter, system-ui, sans-serif; font-size: 12px; }
+    .dock { position: absolute; z-index: 4; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(1100px, calc(100% - 56px)); padding: 16px 20px 12px; }
+    .parametros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 27px; }
+    .parametro { min-width: 0; }
+    .parametro-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+    .parametro-cabecera button { font-size: .81rem; font-weight: 650; padding: 3px 5px; margin-left: -5px; color: var(--color-texto-secundario); border: 0; background: transparent; border-radius: 6px; text-align: left; }
+    .parametro-cabecera button.activo { color: var(--color-texto); background: rgba(168,199,250,.25); }
+    output { font-size: .82rem; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 650; }
+    input[type="range"] { width: 100%; display: block; appearance: none; height: 6px; border-radius: 99px; margin: 0; background: linear-gradient(to right, var(--color-primario) var(--progreso, 50%), #EBEEF3 var(--progreso, 50%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 21px; height: 21px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); box-shadow: 0 2px 7px rgba(39,48,67,.2); }
+    input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); }
+    .dock-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; border-top: 1px solid var(--color-borde); padding-top: 10px; font-size: .76rem; color: var(--color-texto-secundario); }
+    .dock-pie .herramientas { display: flex; gap: 12px; align-items: center; }
+    .enlace { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; min-height: 22px; text-decoration: underline; text-underline-offset: 3px; }
+    .detalle { position: absolute; z-index: 5; left: 28px; bottom: 177px; width: min(380px, calc(100% - 56px)); max-height: calc(100dvh - 210px); overflow: auto; padding: 17px; font-size: .84rem; line-height: 1.6; }
+    .detalle p { margin: 7px 0; }
+    .detalle .cerrar { position: absolute; top: 7px; right: 9px; background: transparent; border: 0; font-size: 1.3rem; color: var(--color-texto-secundario); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    :root { --color-coral: #E98D70; --color-coral-texto: #985743; --color-mercurio: #8998AB; --color-agua: #A8CEE5; }
+    .cabecera { align-items: flex-start; }
+    .acciones { max-width: 610px; }
+    .formula { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; }
+    .formula strong { font: 650 1.1rem Inter, system-ui, sans-serif; color: var(--color-coral-texto); margin-left: 5px; }
+    .relaciones { gap: 7px 15px; }
+    .relaciones button { border: 0; background: transparent; font: inherit; color: inherit; padding: 2px 3px; margin-left: -3px; border-radius: 5px; }
+    .relaciones button.activo { background: #EAE2F0; }
+    .rapidez { font-size: .75rem; }
+    .estado-escena { position: absolute; margin: 0; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: start; gap: 12px; font-size: .8rem; color: var(--color-texto-secundario); }
+    .estado-escena strong { color: #476B9D; font-weight: 650; }
+    .estado-escena output { font-size: .8rem; font-weight: 500; }
+    #area-escena { min-height: 0; outline-offset: -4px; }
+    .lecturas { position: absolute; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; gap: 28px; width: max-content; max-width: calc(100% - 40px); font-size: .78rem; color: var(--color-texto-secundario); }
+    .lecturas strong { color: var(--color-texto); font-weight: 650; font-variant-numeric: tabular-nums; }
+    .lecturas span { white-space: nowrap; }
+    .lecturas span:last-child strong { color: var(--color-coral-texto); }
+    .panel-graficas { position: absolute; z-index: 3; right: 28px; width: 340px; padding: 14px; }
+    .selector-graficas { display: inline-flex; margin-bottom: 5px; }
+    .selector-graficas button { min-height: 30px; font-size: .75rem; padding: 5px 10px; }
+    .grafica { display: block; width: 100%; height: auto; aspect-ratio: 340/190; }
+    #nota-grafica { margin: 6px 0 0; font-size: .73rem; line-height: 1.45; color: var(--color-texto-secundario); }
+    #concepto { max-width: 61%; }
+    .detalle { padding-top: 25px; }
+    .detalle h2 { margin: 0 0 5px; font-size: .9rem; }
+    .detalle a { color: #476B9D; }
+    .enlace:disabled { opacity: .6; cursor: default; }
+    @media (max-width:950px) {
+      .cabecera { left: 18px; right: 18px; top: 16px; gap: 14px; }
+      .selector button { padding: 7px 10px; font-size: .8rem; }
+      .acciones { max-width: 315px; }
+      .ecuacion { left: 18px; max-width: calc(100% - 36px); }
+      .estado-escena { left: 20px; right: 20px; }
+      .panel-graficas { right: 18px; width: 290px; }
+      .dock { width: calc(100% - 36px); }
+      .parametros { gap: 17px; }
+    }
+    @media (max-width:680px) {
+      .cabecera { top: 13px; left: 13px; right: 13px; display: grid; grid-template-columns: 1fr; gap: 7px; }
+      .identidad h1 { font-size: 1.04rem; margin-bottom: 8px; }
+      .selector { padding: 3px; gap: 2px; }
+      .selector button { padding: 5px 9px; min-height: 30px; font-size: .72rem; }
+      .acciones { max-width: none; justify-content: flex-start; gap: 4px; flex-wrap: nowrap; }
+      .acciones .boton { font-size: .68rem; min-height: 33px; padding: 6px; }
+      #pantalla-completa { display: none; }
+      .ecuacion { left: 13px; right: 13px; width: auto; max-width: none; padding: 10px 13px; }
+      .formula { font-size: 1.2rem; gap: 3px; }
+      .formula strong { font-size: .92rem; margin-left: 2px; }
+      .formula button { padding: 0 2px; }
+      .relaciones { font-size: .69rem; gap: 4px 12px; }
+      .rapidez { font-size: .7rem; margin-top: 6px; }
+      .estado-escena { left: 15px; right: 15px; font-size: .7rem; }
+      .estado-escena output { font-size: .7rem; }
+      .lecturas { font-size: .71rem; gap: 16px; }
+      .dock { bottom: 12px; width: calc(100% - 26px); padding: 13px 15px 9px; border-radius: 16px; }
+      .parametros { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px 18px; }
+      .parametro-cabecera { margin-bottom: 10px; }
+      .parametro-cabecera button, output { font-size: .72rem; }
+      .dock-pie { display: block; font-size: .69rem; margin-top: 14px; padding-top: 9px; }
+      #concepto { display: block; max-width: none; min-height: 28px; line-height: 1.4; }
+      .dock-pie .herramientas { margin-top: 4px; gap: 8px; justify-content: space-between; }
+      .panel-graficas { left: 13px; right: 13px; width: calc(100% - 26px); padding: 11px 13px; }
+      .laboratorio.con-graficas #area-escena { visibility: hidden; }
+      .laboratorio.con-graficas .ecuacion .relaciones,.laboratorio.con-graficas .ecuacion .rapidez { display: none; }
+      .detalle { left: 13px; width: calc(100% - 26px); font-size: .8rem; }
+    }
+    @media (max-width:370px) {
+      .identidad h1 { margin-bottom: 5px; }
+      .acciones { gap: 3px; }
+      .acciones .boton { padding: 5px 4px; font-size: .67rem; }
+      .parametro-cabecera button,output { font-size: .7rem; }
+    }
+    @media (max-height:660px) and (min-width:681px) {
+      .cabecera { top: 10px; }
+      .identidad h1 { font-size: 1.15rem; margin-bottom: 5px; }
+      .ecuacion { padding: 9px 15px; }
+      .dock { bottom: 10px; padding: 12px 17px 9px; }
+    }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1>Termómetro · Celsius</h1>
+        <div class="selector" aria-label="Temperatura del baño">
+          <button type="button" data-temperatura="0" aria-pressed="false" title="Agua y hielo a una atmósfera">0 °C</button>
+          <button type="button" data-temperatura="20" aria-pressed="false">20 °C</button>
+          <button type="button" data-temperatura="30" aria-pressed="true">30 °C</button>
+          <button type="button" data-temperatura="100" aria-pressed="false" title="Agua en ebullición a una atmósfera">100 °C</button>
+        </div>
+      </div>
+      <nav class="acciones" aria-label="Reproducción y exploración">
+        <button class="boton principal" id="pausa" type="button" aria-pressed="false">Pausa</button>
+        <button class="boton" id="paso" type="button" title="Avanzar un segundo y pausar">Paso</button>
+        <button class="boton" id="equilibrio" type="button" title="Avanzar hasta 10τ y pausar">Equilibrio</button>
+        <button class="boton" id="graficas" type="button" aria-pressed="false" aria-controls="panel-graficas">Gráfica</button>
+        <button class="boton" id="reiniciar" type="button">Reiniciar</button>
+        <button class="boton" id="pantalla-completa" type="button">Pantalla completa</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" aria-label="Dilatación aparente del líquido en el termómetro">
+      <p class="formula"><button type="button" data-parametro="subida" aria-label="Mostrar subida de la columna">Δh</button> = <button type="button" data-parametro="beta" aria-label="Mostrar líquido y coeficiente de dilatación aparente">β<sub>ap</sub></button><button type="button" data-parametro="volumen">V<sub>0</sub></button><button type="button" data-parametro="temperatura">ΔT</button> / <button type="button" data-parametro="diametro">A</button> = <strong id="resultado-formula">19,2 mm</strong></p>
+      <div class="relaciones">
+        <button type="button" data-parametro="temperatura">ΔT = T<sub>l</sub> − 0 °C = <strong id="valor-delta">20,0 °C</strong></button>
+        <button type="button" data-parametro="diametro">A = π(d/2)² = <strong id="valor-area">0,0531 mm²</strong></button>
+      </div>
+      <div class="rapidez">Mercurio · β<sub>ap</sub> ≈ 1,70 × 10<sup>−4</sup> K<sup>−1</sup></div>
+    </section>
+    <p class="estado-escena" id="estado-escena"><span><strong id="estado">Calentando el termómetro</strong><span id="relacion-termica"> · T<sub>l</sub> ≠ T<sub>b</sub></span></span><output id="tiempo">t = 0,0 s</output></p>
+    <div id="area-escena" tabindex="0" role="img" aria-label="Termómetro de mercurio en un baño de agua, con columna de líquido, bulbo y capilar" aria-describedby="descripcion-escena"><svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg></div>
+    <div class="lecturas" id="lecturas"><span>Baño T<sub>b</sub> <strong id="valor-bano">30 °C</strong></span><span>Lectura T<sub>l</sub> <strong id="valor-lectura">20,0 °C</strong></span></div>
+    <aside class="panel-graficas cristal" id="panel-graficas" hidden aria-label="Respuesta térmica y calibración">
+      <div class="selector selector-graficas" aria-label="Gráfica visible"><button type="button" data-grafica="respuesta" aria-pressed="true">Respuesta</button><button type="button" data-grafica="escala" aria-pressed="false">Escala °C</button></div>
+      <svg class="grafica" id="grafica" viewBox="0 0 340 190" role="img" aria-label="Temperatura del termómetro frente al tiempo"></svg>
+      <p id="nota-grafica">La lectura se acerca gradualmente al baño.</p>
+    </aside>
+    <section class="dock cristal" aria-label="Parámetros físicos del termómetro">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="temperatura" id="etiqueta-temperatura">Baño T<sub>b</sub></button><output id="salida-temperatura" for="temperatura">30 °C</output></div><input id="temperatura" type="range" min="0" max="100" step="1" value="30" aria-labelledby="etiqueta-temperatura"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="volumen" id="etiqueta-volumen">Bulbo V<sub>0</sub></button><output id="salida-volumen" for="volumen">0,30 mL</output></div><input id="volumen" type="range" min="0.20" max="0.40" step="0.01" value="0.30" aria-labelledby="etiqueta-volumen"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="diametro" id="etiqueta-diametro">Capilar d</button><output id="salida-diametro" for="diametro">0,26 mm</output></div><input id="diametro" type="range" min="0.22" max="0.32" step="0.01" value="0.26" aria-labelledby="etiqueta-diametro"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="tau" id="etiqueta-tau">Respuesta τ</button><output id="salida-tau" for="tau">3,0 s</output></div><input id="tau" type="range" min="1" max="8" step="0.5" value="3" aria-labelledby="etiqueta-tau"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">Δh · subida desde la marca de 0 °C.</span><div class="herramientas"><button class="enlace" id="vista-inicial" type="button">Restablecer vista</button><button class="enlace" id="alternar-vista" type="button" disabled>Ver 2D</button><button class="enlace" id="ayuda" type="button" aria-expanded="false" aria-controls="detalle">Modelo</button><span id="modo-render">Cargando 3D…</span></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden aria-labelledby="titulo-modelo">
+      <button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar modelo">×</button><h2 id="titulo-modelo">Mercurio, vidrio y escala Celsius</h2>
+      <p>El montaje representa un termómetro clásico de mercurio plateado en vidrio borosilicato 3.3, parcialmente sumergido en un baño de agua de temperatura controlada. El líquido del instrumento conserva su identidad; el agua del baño es otra sustancia. El coral identifica la lectura y el calor transferido, sin convertir el mercurio en un líquido rojo.</p>
+      <p>La columna se eleva porque el mercurio se dilata más que el vidrio. Se usan β<sub>Hg</sub> = 180 × 10<sup>−6</sup> K<sup>−1</sup> y α<sub>vidrio</sub> = 3,3 × 10<sup>−6</sup> K<sup>−1</sup>. A primer orden, β<sub>ap</sub> = β<sub>Hg</sub> − 3α<sub>vidrio</sub> = 170,1 × 10<sup>−6</sup> K<sup>−1</sup>. Los coeficientes se consideran constantes; la variación real con temperatura se omite.</p>
+      <p>V<sub>0</sub> es el volumen de referencia de la reserva de líquido a 0 °C, y A = π(d/2)² el área interna del capilar en ese estado. La reserva domina el volumen inicial; se desprecia el pequeño volumen de capilar ya lleno bajo la marca de cero. El exceso aparente de volumen ΔV<sub>ap</sub> = β<sub>ap</sub>V<sub>0</sub>ΔT llena el capilar: AΔh = ΔV<sub>ap</sub>. Se convierte 1 mL = 1000 mm³. No se pierde masa por subir o bajar la columna.</p>
+      <p>En la ecuación de dilatación, ΔT = T<sub>l</sub> − 0 °C, donde T<sub>l</sub> es la temperatura y lectura del termómetro. Esa ΔT no es la diferencia T<sub>b</sub> − T<sub>l</sub> que impulsa el intercambio de calor con el baño.</p>
+      <p>Respuesta térmica idealizada: dT<sub>l</sub>/dt = (T<sub>b</sub> − T<sub>l</sub>)/τ. Para un baño constante, T<sub>l</sub>(t) = T<sub>b</sub> + (T<sub>inicio</sub> − T<sub>b</sub>)e<sup>−t/τ</sup>. τ es un parámetro ilustrativo de respuesta, no una propiedad universal del mercurio. Resume capacidad térmica y transferencia de calor; aquí puede variarse independientemente de la geometría para comparar respuestas. El baño se mantiene a la temperatura elegida y se supone que el instrumento tiene temperatura uniforme.</p>
+      <p>Al cambiar el baño o τ se inicia un nuevo tramo de respuesta con t = 0 y la lectura actual como T<sub>inicio</sub>. En pausa, la lectura se conserva aunque cambie el baño. Cambiar V<sub>0</sub> o d no cambia la temperatura ni el tiempo: modifica la geometría y obliga a recalibrar las marcas Celsius del instrumento.</p>
+      <p>La marca de 0 °C permanece fija. La separación 0–100 °C es β<sub>ap</sub>V<sub>0</sub>·100/A; aumenta con V<sub>0</sub> y disminuye con d². La regla en mm usa una escala geométrica fija. La lectura Celsius permanece correcta al cambiar geometría porque sus marcas se recalculan para ese mismo instrumento.</p>
+      <p>El bulbo y el ancho del capilar están ampliados de manera distinta para verlos; no deben medirse sobre el dibujo. Las alturas Δh y la regla en mm comparten una misma escala vertical de dibujo, incluida la referencia de 0 °C. La forma del vaso, la cantidad de agua y el vidrio son esquemáticos. Se omiten capilaridad, presión interna, variación del área con temperatura y gradientes del tallo.</p>
+      <p>0 °C representa un baño de agua y hielo; 100 °C, agua en ebullición a 1 atm. El baño de 100 °C tiene burbujas; las marcas sobre él indican esquemáticamente salida de vapor invisible. Se mantiene su nivel mediante el baño controlado, sin resolver aquí su balance de fase. No hay cambio de fase del mercurio en el rango de 0 a 100 °C.</p>
+      <p>Reproducción: un segundo real equivale a un segundo del modelo. Paso añade 1 s y pausa. Equilibrio avanza hasta t = 10τ y pausa; la diferencia residual menor de 0,005 °C se redondea al baño. La reproducción se detiene con esa misma tolerancia. Repetir vuelve al inicio del último tramo. Reiniciar restaura baño 30 °C, lectura inicial 20 °C, V<sub>0</sub> = 0,30 mL, d = 0,26 mm y τ = 3 s. Pausar detiene columna, burbujas y tiempo; girar o cambiar vista solo modifica el dibujo.</p>
+      <p>La gráfica Respuesta calcula T<sub>l</sub>(t) para el tramo actual y señala τ. La gráfica Escala °C muestra la relación lineal Δh(T<sub>l</sub>) y su punto actual. Ambas usan el mismo modelo que la escena.</p>
+      <p id="estado-carga">La vista 2D funciona mientras carga Three.js. El 3D necesita conexión y WebGL 2.</p>
+      <p>Fuentes: <a href="https://openstax.org/books/university-physics-volume-2/pages/1-3-thermal-expansion" target="_blank" rel="noopener noreferrer">OpenStax · dilatación térmica y coeficiente del mercurio</a>, <a href="https://media.schott.com/api/public/content/5d5a211762454c27b390611d94c4a70a?v=1093d963" target="_blank" rel="noopener noreferrer">SCHOTT · borosilicato 3.3</a> y <a href="https://openstax.org/books/university-physics-volume-2/pages/1-5-phase-changes" target="_blank" rel="noopener noreferrer">OpenStax · baños a 0 y 100 °C</a>.</p>
+    </aside>
+    <p class="sr-only" id="descripcion-escena"></p><p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      const NS = 'http://www.w3.org/2000/svg';
+      const reducido = matchMedia('(prefers-reduced-motion: reduce)');
+      const inicial = { temperatura: 30, volumen: .30, diametro: .26, tau: 3 };
+      const controles = Object.fromEntries(Object.keys(inicial).map(k => [k, $(k)]));
+      // Mercurio y borosilicato 3.3: expansión respecto del recipiente, a primer orden.
+      const betaAparente = 180e-6 - 3 * 3.3e-6;
+      const geometria = { mm: .035, cero: 1.35, bulbo: .65, agua: 1.8, tallo: 8.25 };
+      const estado = { T: 20, inicio: 20, t: 0, pausado: reducido.matches, parametro: 'subida', graficas: false, grafica: 'respuesta', vista2d: false };
+      const tema = getComputedStyle(document.documentElement);
+      const color = k => tema.getPropertyValue('--color-' + k).trim();
+      const formatos = [0, 1, 2, 3, 4].map(n => new Intl.NumberFormat('es-CL', { minimumFractionDigits: n, maximumFractionDigits: n }));
+      const numero = (x, n = 1) => formatos[n].format(x);
+      let vista3D = null, fotograma = null, anterior = null, ancho = 1, alto = 1, anuncio = null;
+      function datos() {
+        const d = Object.fromEntries(Object.entries(controles).map(([k, v]) => [k, Number(v.value)]));
+        d.area = Math.PI * (d.diametro / 2) ** 2;
+        d.mmPorGrado = betaAparente * d.volumen * 1000 / d.area;
+        d.subida = d.mmPorGrado * estado.T;
+        d.cien = d.mmPorGrado * 100;
+        d.y = geometria.cero + geometria.mm * d.subida;
+        return d;
+      }
+      function temperaturaEn(t, d) { return d.temperatura + (estado.inicio - d.temperatura) * Math.exp(-t / d.tau); }
+      function enEquilibrio(d = datos()) { return Math.abs(d.temperatura - estado.T) < .005; }
+      function avanzar(segundos) {
+        const d = datos();
+        estado.t += segundos;
+        estado.T = temperaturaEn(estado.t, d);
+        if (enEquilibrio(d)) { estado.T = d.temperatura; estado.pausado = true; anunciar(); }
+      }
+      function nuevoTramo() { estado.inicio = estado.T; estado.t = 0; anterior = null; }
+      function nodo(tipo, attrs = {}, contenido) {
+        const el = document.createElementNS(NS, tipo);
+        for (const [k, v] of Object.entries(attrs)) { if (k === 'font-size') el.style.fontSize = `${v}px`; else el.setAttribute(k, String(v)); }
+        if (contenido !== undefined) el.textContent = contenido;
+        return el;
+      }
+      function linea(svg, puntos, tono = color('texto-secundario'), grosor = 1.2, guiones = '') {
+        svg.append(nodo('polyline', { points: puntos.map(p => p.join(',')).join(' '), stroke: tono, 'stroke-width': grosor, 'stroke-dasharray': guiones, fill: 'none', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
+      }
+      function texto(svg, x, y, contenido, tono = color('texto-secundario'), ancla = 'middle', attrs = {}) {
+        const el = nodo('text', { x, y, fill: tono, 'text-anchor': ancla, ...attrs }, contenido); svg.append(el); return el;
+      }
+      function etiqueta(svg, x, y, contenido, tono = color('texto-secundario'), ancla = 'middle', attrs = {}) {
+        const t = texto(svg, x, y, contenido, tono, ancla, { 'paint-order': 'stroke', stroke: color('fondo'), 'stroke-width': 5, 'stroke-linejoin': 'round', ...attrs });
+        return t;
+      }
+      function flecha(svg, desde, hasta, tono, doble = false) {
+        linea(svg, [desde, hasta], tono, 1.6);
+        const punta = (p, q) => {
+          const a = Math.atan2(p[1] - q[1], p[0] - q[0]);
+          linea(svg, [[p[0] - 6 * Math.cos(a - .5), p[1] - 6 * Math.sin(a - .5)], p, [p[0] - 6 * Math.cos(a + .5), p[1] - 6 * Math.sin(a + .5)]], tono, 1.6);
+        };
+        punta(hasta, desde); if (doble) punta(desde, hasta);
+      }
+      function escala2D() { return Math.min(alto / 9.3, ancho / 5.8); }
+      function proyectar(x, y, z = 0) {
+        if (vista3D && !estado.vista2d) return vista3D.proyectar(x, y, z);
+        const s = escala2D(); return [ancho / 2 + x * s, alto / 2 - (y - 4.1) * s];
+      }
+      function interfaz() {
+        const d = datos();
+        for (const [k, entrada] of Object.entries(controles)) {
+          entrada.style.setProperty('--progreso', `${100 * (d[k] - Number(entrada.min)) / (Number(entrada.max) - Number(entrada.min))}%`);
+          const unidades = { temperatura: '°C', volumen: 'mL', diametro: 'mm', tau: 's' };
+          $('salida-' + k).value = `${numero(d[k], k === 'temperatura' ? 0 : k === 'tau' ? 1 : 2)} ${unidades[k]}`;
+          entrada.setAttribute('aria-valuetext', $('salida-' + k).value);
+        }
+        $('valor-bano').textContent = numero(d.temperatura, 0) + ' °C';
+        $('valor-lectura').textContent = numero(estado.T) + ' °C';
+        $('valor-delta').textContent = numero(estado.T) + ' °C';
+        $('valor-area').textContent = numero(d.area, 4) + ' mm²';
+        $('resultado-formula').textContent = numero(d.subida) + ' mm';
+        $('tiempo').value = `t = ${numero(estado.t)} s`;
+        const equilibrado = enEquilibrio(d);
+        $('estado').textContent = equilibrado ? 'Equilibrio térmico' : estado.pausado ? `En pausa · ${d.temperatura > estado.T ? 'calentamiento' : 'enfriamiento'}` : d.temperatura > estado.T ? 'Calentando el termómetro' : 'Enfriando el termómetro';
+        $('relacion-termica').innerHTML = equilibrado ? ' · T<sub>l</sub> = T<sub>b</sub>' : ` · T<sub>l</sub> ${d.temperatura > estado.T ? '<' : '>'} T<sub>b</sub>`;
+        const puedeRepetir = equilibrado && Math.abs(estado.inicio - d.temperatura) >= .005;
+        $('pausa').textContent = estado.pausado ? (puedeRepetir ? 'Repetir' : 'Reproducir') : 'Pausa';
+        $('pausa').setAttribute('aria-pressed', String(estado.pausado));
+        document.querySelectorAll('[data-temperatura]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.temperatura) === d.temperatura)));
+        document.querySelectorAll('[data-parametro]').forEach(b => b.classList.toggle('activo', b.dataset.parametro === estado.parametro));
+        const conceptos = {
+          subida: 'Δh · subida desde la marca de 0 °C.', beta: 'βap · el mercurio se dilata más que el vidrio.',
+          volumen: 'V₀ · una reserva mayor eleva más la columna.', diametro: 'A · un capilar estrecho da una subida mayor.',
+          temperatura: 'ΔT usa la lectura Tₗ respecto de 0 °C.', tau: 'τ · en este tiempo se completa el 63 % del cambio.'
+        };
+        $('concepto').textContent = conceptos[estado.parametro];
+        $('descripcion-escena').textContent = `Termómetro de mercurio en agua. Baño ${numero(d.temperatura, 0)} grados Celsius; lectura ${numero(estado.T)} grados Celsius; subida ${numero(d.subida)} milímetros respecto de cero. Volumen ${numero(d.volumen, 2)} mililitros; diámetro ${numero(d.diametro, 2)} milímetros; tiempo ${numero(estado.t)} segundos. ${$('estado').textContent}. Arrastra para girar; flechas para girar y signos más y menos para acercar o alejar.`;
+      }
+      function anunciar() {
+        clearTimeout(anuncio);
+        anuncio = setTimeout(() => { $('resumen-accesible').textContent = $('descripcion-escena').textContent; }, 220);
+      }
+      function dibujar2D(d) {
+        const svg = $('alternativa'); svg.replaceChildren();
+        const s = escala2D(), p = (x, y) => proyectar(x, y);
+        const [cx, cima] = p(0, geometria.tallo), [, fondo] = p(0, 0), [, agua] = p(0, geometria.agua), [, boca] = p(0, 2.25);
+        const b = p(0, geometria.bulbo), r = .41 * Math.cbrt(d.volumen / .30) * s, cap = d.diametro * .3 * s;
+        const defs = nodo('defs');
+        const metal = nodo('linearGradient', { id: 'metal-2d', x1: '0%', x2: '100%' });
+        [['0%', '#697E96'], ['35%', '#D8E2EB'], ['62%', '#A7B5C3'], ['100%', '#7A8DA2']].forEach(([offset, tono]) => metal.append(nodo('stop', { offset, 'stop-color': tono })));
+        defs.append(metal); svg.append(defs);
+        svg.append(nodo('ellipse', { cx, cy: fondo + .12 * s, rx: 1.62 * s, ry: .16 * s, fill: color('acento'), opacity: .55 }));
+        svg.append(nodo('rect', { x: cx - 1.45 * s, y: boca, width: 2.9 * s, height: fondo - boca, rx: 8, fill: '#FFFFFF', opacity: .45, stroke: color('primario'), 'stroke-width': 1.5 }));
+        svg.append(nodo('rect', { x: cx - 1.42 * s, y: agua, width: 2.84 * s, height: fondo - agua, fill: color('agua'), opacity: .38 }));
+        svg.append(nodo('ellipse', { cx, cy: agua, rx: 1.42 * s, ry: .14 * s, fill: color('agua'), opacity: .4, stroke: '#86ABC6' }));
+        svg.append(nodo('rect', { x: cx - .19 * s, y: cima, width: .38 * s, height: b[1] - cima, rx: .18 * s, fill: '#FFFFFF', 'fill-opacity': .7, stroke: '#A6B7CD', 'stroke-width': 1.3 }));
+        svg.append(nodo('circle', { cx, cy: b[1], r: r * 1.2, fill: '#FFFFFF', 'fill-opacity': .65, stroke: '#A6B7CD', 'stroke-width': 1.3 }));
+        const lectura = p(0, d.y);
+        svg.append(nodo('rect', { id: 'columna-2d', x: cx - cap, y: lectura[1], width: 2 * cap, height: b[1] - lectura[1], fill: 'url(#metal-2d)' }));
+        svg.append(nodo('circle', { cx, cy: b[1], r, fill: 'url(#metal-2d)' }));
+        svg.append(nodo('ellipse', { id: 'menisco-2d', cx, cy: lectura[1], rx: cap, ry: Math.max(1, .022 * s), fill: '#D8E2EB' }));
+        if (d.temperatura === 0) {
+          for (const [x, y, giro] of [[-.85, 1.75, -13], [.8, 1.73, 17], [-.4, 1.83, 9]]) {
+            const q = p(x, y); svg.append(nodo('rect', { x: q[0] - .22 * s, y: q[1] - .16 * s, width: .44 * s, height: .32 * s, rx: 3, fill: '#E5F2FB', stroke: '#8CAFCA', transform: `rotate(${giro} ${q[0]} ${q[1]})` }));
+          }
+        }
+        if (d.temperatura === 100) {
+          const g = nodo('g', { id: 'ebullicion-2d' });
+          for (let i = 0; i < 6; i++) {
+            const q = p((i % 2 ? 1 : -1) * (.6 + i * .05), .25 + ((estado.t * .8 + i * .27) % 1.4));
+            g.append(nodo('circle', { cx: q[0], cy: q[1], r: (.065 + i * .004) * s, stroke: '#7DAAC7', 'stroke-width': 1, fill: '#FFFFFF', 'fill-opacity': .5 }));
+          }
+          svg.append(g);
+        }
+        linea(svg, [[cx - 1.45 * s, boca], [cx - 1.45 * s, fondo], [cx + 1.45 * s, fondo], [cx + 1.45 * s, boca]], '#91ACC8', 1.3);
+      }
+      function dibujarAnotaciones(d) {
+        const svg = $('anotaciones'); svg.replaceChildren();
+        const azul = '#668EC6', coral = color('coral-texto'), l = proyectar(0, d.y, .19), z = proyectar(.2, geometria.cero, .19), c = proyectar(.2, geometria.cero + geometria.mm * d.cien, .19);
+        for (let T = 0; T <= 100; T += 10) {
+          const y = geometria.cero + geometria.mm * d.mmPorGrado * T;
+          const a = proyectar(.22, y, .19), b = proyectar(T % 20 === 0 ? .52 : .38, y, .19);
+          if (T === 0 || T === 100 || Math.abs(c[1] - z[1]) > 95) linea(svg, [a, b], azul, T === 0 || T === 100 ? 1.6 : 1);
+          if (T === 0 || T === 100) etiqueta(svg, b[0] + 8, b[1] + 4, `${T} °C`, '#476B9D', 'start', { 'data-marca': T });
+        }
+        const izquierdo = proyectar(-.24, d.y, .19);
+        linea(svg, [[izquierdo[0] - 30, izquierdo[1]], izquierdo], coral, 1.8);
+        etiqueta(svg, izquierdo[0] - 37, izquierdo[1] + 4, `${numero(estado.T)} °C`, coral, 'end', { 'data-lectura': '', 'font-weight': 650 });
+        const cima = proyectar(0, geometria.tallo + .18);
+        etiqueta(svg, cima[0], Math.max(15, cima[1] - 3), 'Mercurio · vidrio', color('texto-secundario'), 'middle', { 'font-size': 11 });
+        if (estado.parametro === 'subida') {
+          const h = proyectar(1.15, d.y, .19), base = proyectar(1.15, geometria.cero, .19);
+          const xCorchete = Math.max(h[0], proyectar(.52, geometria.cero, .19)[0] + 58);
+          h[0] = xCorchete; base[0] = xCorchete;
+          linea(svg, [proyectar(.59, geometria.cero, .19), base], azul, 1, '3 4');
+          if (d.subida > 1) {
+            linea(svg, [proyectar(.59, d.y, .19), h], coral, 1, '3 4'); flecha(svg, base, h, coral, true);
+          }
+          const centro = (base[1] + h[1]) / 2;
+          etiqueta(svg, h[0] + 8, centro - 3, 'Δh', coral, 'start', { 'font-size': 11 });
+          etiqueta(svg, h[0] + 8, centro + 12, `${numero(d.subida)} mm`, coral, 'start', { 'data-magnitud': 'subida', 'font-size': 11 });
+          // Regla fija en mm: sus marcas nunca se recalibran con V₀ o d.
+          const x = -1.42, xRegla = Math.min(proyectar(x, geometria.cero)[0], izquierdo[0] - 37 - 66);
+          const regla = y => [xRegla, proyectar(x, y)[1]];
+          linea(svg, [regla(geometria.cero), regla(geometria.cero + 180 * geometria.mm)], '#BAC5D4', 1);
+          for (const mm of [0, 60, 120, 180]) {
+            const p = regla(geometria.cero + mm * geometria.mm);
+            linea(svg, [[p[0] - 4, p[1]], [p[0] + 3, p[1]]], '#99A8BD', 1);
+            etiqueta(svg, p[0] - 9, p[1] + 4, String(mm), color('texto-secundario'), 'end', { 'font-size': 10 });
+          }
+          const p = regla(geometria.cero + 180 * geometria.mm); etiqueta(svg, p[0] - 9, p[1] - 12, 'mm', color('texto-secundario'), 'end', { 'font-size': 10 });
+        }
+        if (estado.parametro === 'volumen' || estado.parametro === 'beta') {
+          const p = proyectar(0, geometria.bulbo, .1), q = proyectar(-1.5, 2.4);
+          const escala = vista3D && !estado.vista2d ? vista3D.escala() : escala2D();
+          const radio = Math.max(7, .54 * Math.cbrt(d.volumen / .3) * escala);
+          svg.append(nodo('circle', { cx: p[0], cy: p[1], r: radio, fill: 'none', stroke: '#9471AE', 'stroke-width': 1.5 }));
+          linea(svg, [p, [q[0], p[1]], q], '#9471AE', 1.1);
+          etiqueta(svg, q[0] + 35, q[1] - 7, estado.parametro === 'volumen' ? `V₀ ${numero(d.volumen, 2)} mL` : 'Mercurio plateado', '#80639B', 'end');
+          if (estado.parametro === 'beta') etiqueta(svg, q[0] + 35, q[1] - 24, 'βap = βHg − 3αvidrio', '#80639B', 'end', { 'font-size': 11 });
+        }
+        if (estado.parametro === 'diametro') {
+          const s = Math.min(escala2D(), alto / 9.3), ancla = proyectar(0, 5.5, .2);
+          const centro = [Math.min(ancho - 68, ancla[0] + Math.max(85, 2.6 * s)), Math.max(60, ancla[1])];
+          linea(svg, [ancla, [centro[0] - 33, centro[1]]], '#9471AE', 1.1, '3 4');
+          const radio = 27 * d.diametro / .26;
+          svg.append(nodo('circle', { cx: centro[0], cy: centro[1], r: radio + 6, fill: '#FFFFFF', stroke: '#A6B7CD', 'stroke-width': 1.5 }));
+          svg.append(nodo('circle', { cx: centro[0], cy: centro[1], r: radio, fill: '#B2BFCE', stroke: '#8496AB' }));
+          flecha(svg, [centro[0] - radio, centro[1]], [centro[0] + radio, centro[1]], '#80639B', true);
+          etiqueta(svg, centro[0], centro[1] - radio - 18, 'Sección · ampliada', color('texto-secundario'), 'middle', { 'font-size': 10 });
+          etiqueta(svg, centro[0], centro[1] + radio + 20, `d ${numero(d.diametro, 2)} mm`, '#80639B', 'middle', { 'data-magnitud': 'diametro' });
+          etiqueta(svg, centro[0], centro[1] + radio + 37, `A ${numero(d.area, 4)} mm²`, color('texto-secundario'), 'middle', { 'font-size': 10 });
+        }
+        if (estado.parametro === 'temperatura' && !enEquilibrio(d)) {
+          const a = proyectar(-1.15, geometria.bulbo + .05, .7), b = proyectar(-.58, geometria.bulbo + .05, .7);
+          flecha(svg, d.temperatura > estado.T ? a : b, d.temperatura > estado.T ? b : a, coral);
+          etiqueta(svg, a[0], a[1] - 15, 'calor', coral, 'end');
+        }
+        const baño = proyectar(0, -.49);
+        etiqueta(svg, baño[0], Math.min(alto - 6, baño[1]), d.temperatura === 0 ? 'Agua + hielo · 0 °C' : d.temperatura === 100 ? 'Agua en ebullición · 1 atm' : 'Baño de agua', color('texto-secundario'), 'middle', { 'font-size': 11 });
+        if (d.temperatura === 100) {
+          for (const x of [-1, 1]) {
+            const puntos = [];
+            for (let i = 0; i < 18; i++) puntos.push(proyectar(x + .07 * Math.sin(i * .6 + estado.t), 2.35 + i * .035));
+            linea(svg, puntos, '#8D9FB2', 1.3);
+          }
+        }
+      }
+      function dibujarGrafica(d) {
+        if (!estado.graficas) return;
+        const svg = $('grafica'); svg.replaceChildren();
+        const x0 = 42, x1 = 323, y0 = 158, y1 = 24, xr = t => x0 + t * (x1 - x0), yr = t => y0 - t * (y0 - y1);
+        linea(svg, [[x0, y1], [x0, y0], [x1, y0]], '#A3AFC0', 1);
+        if (estado.grafica === 'respuesta') {
+          const final = Math.max(5 * d.tau, estado.t);
+          let max = Math.min(100, Math.max(estado.inicio, d.temperatura) + 5), min = Math.max(0, Math.min(estado.inicio, d.temperatura) - 5);
+          if (max - min < 10) { min = Math.max(0, max - 10); max = Math.min(100, min + 10); }
+          const fy = T => yr((T - min) / (max - min)), fx = t => xr(t / final);
+          for (let i = 0; i <= 2; i++) { const T = min + i * (max - min) / 2; texto(svg, x0 - 8, fy(T) + 4, numero(T, 0), color('texto-secundario'), 'end'); }
+          for (let i = 0; i <= 2; i++) texto(svg, xr(i / 2), y0 + 17, numero(final * i / 2, 0));
+          linea(svg, [[x0, fy(d.temperatura)], [x1, fy(d.temperatura)]], '#9CBBAE', 1.1, '4 4');
+          texto(svg, x1, Math.max(14, fy(d.temperatura) - 6), 'Tᵦ', '#67998A', 'end');
+          const curva = Array.from({ length: 101 }, (_, i) => [fx(final * i / 100), fy(temperaturaEn(final * i / 100, d))]);
+          linea(svg, curva, color('onda'), 2.3);
+          linea(svg, [[fx(d.tau), y0], [fx(d.tau), fy(temperaturaEn(d.tau, d))]], '#9471AE', 1.1, '3 3');
+          texto(svg, fx(d.tau) + 6, Math.max(16, fy(temperaturaEn(d.tau, d)) - 8), 'τ', '#80639B', 'start');
+          const punto = [fx(estado.t), fy(estado.T)]; svg.append(nodo('circle', { cx: punto[0], cy: punto[1], r: 4, fill: color('coral'), stroke: '#FFFFFF', 'stroke-width': 1.5 }));
+          texto(svg, 7, 14, 'Tₗ (°C)', color('texto-secundario'), 'start', { 'font-size': 11 }); texto(svg, x1, 187, 't (s)', color('texto-secundario'), 'end', { 'font-size': 11 });
+          $('nota-grafica').textContent = `τ = ${numero(d.tau)} s · el 63 % del cambio. El baño permanece a ${numero(d.temperatura, 0)} °C.`;
+          svg.setAttribute('aria-label', `Temperatura Celsius frente a tiempo en segundos. Lectura inicial ${numero(estado.inicio)}; baño ${d.temperatura}; constante de respuesta ${d.tau} segundos. Punto actual en ${numero(estado.t)} segundos y ${numero(estado.T)} grados.`);
+        } else {
+          // Eje vertical fijo: permite comparar la sensibilidad sin autoajustar la gráfica.
+          for (const T of [0, 50, 100]) texto(svg, xr(T / 100), y0 + 17, String(T));
+          for (const mm of [0, 90, 180]) texto(svg, x0 - 8, yr(mm / 180) + 4, String(mm), color('texto-secundario'), 'end');
+          linea(svg, [[x0, y0], [x1, yr(d.cien / 180)]], color('onda'), 2.3);
+          svg.append(nodo('circle', { cx: xr(estado.T / 100), cy: yr(d.subida / 180), r: 4, fill: color('coral'), stroke: '#FFFFFF', 'stroke-width': 1.5 }));
+          texto(svg, 7, 14, 'Δh (mm)', color('texto-secundario'), 'start', { 'font-size': 11 }); texto(svg, x1, 187, 'Tₗ (°C)', color('texto-secundario'), 'end', { 'font-size': 11 });
+          $('nota-grafica').textContent = `Sensibilidad ${numero(d.mmPorGrado, 2)} mm/°C · la escala en mm permanece fija.`;
+          svg.setAttribute('aria-label', `Subida en milímetros frente a temperatura Celsius. Sensibilidad ${numero(d.mmPorGrado, 2)} milímetros por grado. Punto actual ${numero(estado.T)} grados y ${numero(d.subida)} milímetros.`);
+        }
+      }
+      function dibujar() {
+        interfaz(); const d = datos();
+        if (vista3D && !estado.vista2d) vista3D.dibujar(d); else dibujar2D(d);
+        dibujarAnotaciones(d); dibujarGrafica(d);
+      }
+      function animar(ahora) {
+        fotograma = null;
+        if (document.hidden) { anterior = null; return; }
+        if (!estado.pausado) {
+          if (anterior !== null) avanzar(Math.max(0, (ahora - anterior) / 1000));
+          anterior = ahora;
+        } else anterior = null;
+        dibujar();
+        if (!estado.pausado) solicitar();
+      }
+      function solicitar() { if (fotograma === null && !document.hidden) fotograma = requestAnimationFrame(animar); }
+      function encuadrar() {
+        const altoVentana = $('laboratorio').clientHeight, movil = innerWidth <= 680;
+        const ec = document.querySelector('.ecuacion'); ec.style.top = `${document.querySelector('.cabecera').getBoundingClientRect().bottom + (movil ? 10 : 14)}px`;
+        const arriba = ec.getBoundingClientRect().bottom + 38, fondo = document.querySelector('.dock').getBoundingClientRect().top - 38;
+        $('estado-escena').style.top = `${arriba - 25}px`;
+        const margen = movil ? 13 : innerWidth <= 950 ? 18 : 32;
+        const derecha = estado.graficas && !movil ? (innerWidth <= 950 ? 326 : 395) : margen;
+        Object.assign($('area-escena').style, { top: `${arriba}px`, bottom: `${Math.max(0, altoVentana - fondo)}px`, left: `${margen}px`, right: `${derecha}px` });
+        ancho = Math.max(1, $('area-escena').clientWidth); alto = Math.max(1, $('area-escena').clientHeight);
+        for (const id of ['anotaciones', 'alternativa']) $(id).setAttribute('viewBox', `0 0 ${ancho} ${alto}`);
+        $('lecturas').style.top = `${fondo + 10}px`; $('lecturas').style.left = `${margen + ancho / 2}px`;
+        $('panel-graficas').style.top = `${arriba}px`;
+        if (estado.graficas) {
+          dibujarGrafica(datos());
+          $('grafica').style.height = '';
+          const panel = $('panel-graficas').getBoundingClientRect(), grafica = $('grafica').getBoundingClientRect();
+          const resto = panel.height - grafica.height + 4;
+          $('grafica').style.height = `${Math.max(65, Math.min(grafica.height, alto - resto))}px`;
+        }
+        $('detalle').style.bottom = `${altoVentana - document.querySelector('.dock').getBoundingClientRect().top + 12}px`;
+        $('detalle').style.maxHeight = `${Math.max(100, document.querySelector('.dock').getBoundingClientRect().top - 40)}px`;
+        if (vista3D) vista3D.redimensionar(); solicitar();
+      }
+      function configurarGrafica() {
+        $('panel-graficas').hidden = !estado.graficas;
+        $('laboratorio').classList.toggle('con-graficas', estado.graficas);
+        $('graficas').setAttribute('aria-pressed', String(estado.graficas));
+        document.querySelectorAll('[data-grafica]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.grafica === estado.grafica)));
+        encuadrar();
+      }
+      function seleccionar(p) { estado.parametro = p; if (p === 'tau') { estado.graficas = true; estado.grafica = 'respuesta'; configurarGrafica(); } solicitar(); }
+      function vista() {
+        const tres = vista3D && !estado.vista2d;
+        $('alternativa').style.display = tres ? 'none' : 'block';
+        if (vista3D) vista3D.lienzo.style.display = tres ? 'block' : 'none';
+        $('modo-render').textContent = tres ? '3D' : '2D'; $('alternar-vista').textContent = tres ? 'Ver 2D' : 'Ver 3D';
+        $('alternar-vista').disabled = !vista3D; $('vista-inicial').disabled = !tres;
+        solicitar();
+      }
+      function cerrarModelo() { $('detalle').hidden = true; $('ayuda').setAttribute('aria-expanded', 'false'); $('ayuda').focus(); }
+      Object.entries(controles).forEach(([k, entrada]) => entrada.addEventListener('input', () => {
+        if (k === 'temperatura' || k === 'tau') nuevoTramo(); seleccionar(k); anunciar();
+      }));
+      document.querySelectorAll('[data-temperatura]').forEach(b => b.addEventListener('click', () => {
+        controles.temperatura.value = b.dataset.temperatura; nuevoTramo(); seleccionar('temperatura'); anunciar();
+      }));
+      document.querySelectorAll('[data-parametro]').forEach(b => b.addEventListener('click', () => seleccionar(b.dataset.parametro)));
+      document.querySelectorAll('[data-grafica]').forEach(b => b.addEventListener('click', () => { estado.grafica = b.dataset.grafica; configurarGrafica(); }));
+      $('pausa').addEventListener('click', () => {
+        if (estado.pausado && enEquilibrio() && Math.abs(estado.inicio - datos().temperatura) >= .005) { estado.t = 0; estado.T = estado.inicio; }
+        estado.pausado = !estado.pausado; anterior = null; solicitar(); anunciar();
+      });
+      $('paso').addEventListener('click', () => { estado.pausado = true; avanzar(1); anterior = null; solicitar(); anunciar(); });
+      $('equilibrio').addEventListener('click', () => { const d = datos(); estado.pausado = true; avanzar(Math.max(0, 10 * d.tau - estado.t)); anterior = null; solicitar(); anunciar(); });
+      $('graficas').addEventListener('click', () => { estado.graficas = !estado.graficas; configurarGrafica(); });
+      $('reiniciar').addEventListener('click', () => {
+        Object.entries(inicial).forEach(([k, v]) => { controles[k].value = v; });
+        Object.assign(estado, { T: 20, inicio: 20, t: 0, pausado: reducido.matches, parametro: 'subida', graficas: false, grafica: 'respuesta' });
+        anterior = null; if (vista3D) vista3D.reiniciar(); configurarGrafica(); anunciar();
+      });
+      $('ayuda').addEventListener('click', () => { const abierto = $('detalle').hidden; $('detalle').hidden = !abierto; $('ayuda').setAttribute('aria-expanded', String(abierto)); if (abierto) $('cerrar-detalle').focus(); });
+      $('cerrar-detalle').addEventListener('click', cerrarModelo);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('detalle').hidden) cerrarModelo(); });
+      $('pantalla-completa').addEventListener('click', async () => {
+        try { if (document.fullscreenElement) await document.exitFullscreen(); else await $('laboratorio').requestFullscreen(); } catch { $('pantalla-completa').textContent = 'Vista completa'; }
+      });
+      document.addEventListener('fullscreenchange', () => { $('pantalla-completa').textContent = document.fullscreenElement ? 'Salir de pantalla completa' : 'Pantalla completa'; encuadrar(); });
+      document.addEventListener('visibilitychange', () => { anterior = null; if (!document.hidden) solicitar(); else if (fotograma !== null) { cancelAnimationFrame(fotograma); fotograma = null; } });
+      reducido.addEventListener('change', e => { if (e.matches) { estado.pausado = true; anterior = null; solicitar(); } });
+      $('alternar-vista').addEventListener('click', () => { estado.vista2d = !estado.vista2d; vista(); encuadrar(); });
+      $('vista-inicial').addEventListener('click', () => { if (vista3D) vista3D.reiniciar(); solicitar(); });
+      $('area-escena').addEventListener('keydown', e => {
+        if (!vista3D || estado.vista2d || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-'].includes(e.key)) return;
+        e.preventDefault(); vista3D.teclado(e.key); solicitar();
+      });
+      window.addEventListener('resize', encuadrar);
+      new ResizeObserver(encuadrar).observe(document.querySelector('.dock'));
+      async function iniciar3D() {
+        let renderizador = null, orbita = null, ambiente = null;
+        try {
+          const [THREE, { OrbitControls }, { RoomEnvironment }] = await Promise.all([import('three'), import('three/addons/controls/OrbitControls.js'), import('three/addons/environments/RoomEnvironment.js')]);
+          const escena = new THREE.Scene(), camara = new THREE.OrthographicCamera(-5, 5, 4.65, -4.65, .1, 80);
+          camara.position.set(2.3, 5.7, 16); renderizador = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+          renderizador.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderizador.outputColorSpace = THREE.SRGBColorSpace;
+          const lienzo = renderizador.domElement; Object.assign(lienzo.style, { width: '100%', height: '100%', display: 'block' });
+          lienzo.setAttribute('aria-hidden', 'true'); lienzo.addEventListener('pointerdown', () => $('area-escena').focus({ preventScroll: true })); $('area-escena').append(lienzo);
+          orbita = new OrbitControls(camara, lienzo); orbita.target.set(0, 4.1, 0); orbita.enablePan = false; orbita.enableDamping = false;
+          orbita.minZoom = .75; orbita.maxZoom = 1.5; orbita.minPolarAngle = 1.1; orbita.maxPolarAngle = Math.PI / 2; orbita.minAzimuthAngle = -.6; orbita.maxAzimuthAngle = .6;
+          orbita.update(); orbita.saveState(); orbita.addEventListener('change', solicitar);
+          escena.add(new THREE.HemisphereLight('#FFFFFF', '#ADC1DB', 2));
+          const luz = new THREE.DirectionalLight('#FFFFFF', 2.2); luz.position.set(3, 8, 6); escena.add(luz);
+          const entorno = new RoomEnvironment(), generador = new THREE.PMREMGenerator(renderizador);
+          ambiente = generador.fromScene(entorno, .04); escena.environment = ambiente.texture; generador.dispose(); entorno.dispose();
+          const metal = new THREE.MeshStandardMaterial({ color: '#9CAAB9', metalness: .88, roughness: .22 });
+          const vidrio = new THREE.MeshBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: .2, side: THREE.DoubleSide, depthWrite: false });
+          const aguaMat = new THREE.MeshBasicMaterial({ color: color('agua'), transparent: true, opacity: .3, side: THREE.DoubleSide, depthWrite: false });
+          const azul = new THREE.MeshStandardMaterial({ color: '#A0B8D7', roughness: .6 });
+          function malla(g, m, posicion = [0, 0, 0], orden = 0) { const obj = new THREE.Mesh(g, m); obj.position.set(...posicion); obj.renderOrder = orden; escena.add(obj); return obj; }
+          malla(new THREE.CylinderGeometry(1.62, 1.68, .12, 64), new THREE.MeshStandardMaterial({ color: color('acento'), roughness: .8 }), [0, -.12, 0]);
+          malla(new THREE.CylinderGeometry(1.45, 1.45, 2.25, 64, 1, true), vidrio, [0, 1.125, 0], 5);
+          for (const y of [0, 2.25]) { const aro = malla(new THREE.TorusGeometry(1.45, .018, 8, 64), azul, [0, y, 0]); aro.rotation.x = Math.PI / 2; }
+          malla(new THREE.CylinderGeometry(1.42, 1.42, geometria.agua, 64, 1, true), aguaMat, [0, geometria.agua / 2, 0], 3);
+          const superficie = malla(new THREE.CircleGeometry(1.42, 64), aguaMat, [0, geometria.agua, 0], 4); superficie.rotation.x = -Math.PI / 2;
+          const bulboVidrio = malla(new THREE.SphereGeometry(.5, 32, 24), vidrio, [0, geometria.bulbo, 0], 2);
+          const bulbo = malla(new THREE.SphereGeometry(.41, 32, 24), metal, [0, geometria.bulbo, 0]);
+          const alturaTubo = geometria.tallo - geometria.bulbo;
+          malla(new THREE.CylinderGeometry(.19, .19, alturaTubo, 32), vidrio, [0, geometria.bulbo + alturaTubo / 2, 0], 2);
+          const columna = malla(new THREE.CylinderGeometry(1, 1, 1, 24), metal), menisco = malla(new THREE.SphereGeometry(1, 24, 12), metal);
+          const bordeMat = new THREE.LineBasicMaterial({ color: '#A0B8D7', transparent: true, opacity: .8 });
+          for (const x of [-.19, .19]) { escena.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x, geometria.bulbo, 0), new THREE.Vector3(x, geometria.tallo, 0)]), bordeMat)); }
+          const tapa = malla(new THREE.SphereGeometry(.19, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), vidrio, [0, geometria.tallo, 0], 2);
+          const hielo = new THREE.Group(); escena.add(hielo);
+          const hieloMat = new THREE.MeshStandardMaterial({ color: '#DCECF8', roughness: .28, transparent: true, opacity: .85 });
+          for (const [x, z, giro] of [[-.8, .5, -.2], [.8, -.1, .3], [-.3, -.8, .1]]) { const cubo = new THREE.Mesh(new THREE.BoxGeometry(.45, .34, .42), hieloMat); cubo.position.set(x, 1.78, z); cubo.rotation.set(giro, giro, giro); hielo.add(cubo); }
+          const burbujas = new THREE.Group(); escena.add(burbujas);
+          for (let i = 0; i < 6; i++) { const burbuja = new THREE.Mesh(new THREE.SphereGeometry(.075, 12, 8), new THREE.MeshBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: .6, wireframe: true })); burbuja.position.set((i % 2 ? 1 : -1) * (.6 + i * .05), .4, i % 3 * .3 - .2); burbujas.add(burbuja); }
+          const vector = new THREE.Vector3();
+          vista3D = {
+            lienzo,
+            escala() { return alto * camara.zoom / (camara.top - camara.bottom); },
+            proyectar(x, y, z) { vector.set(x, y, z).project(camara); return [(vector.x + 1) * ancho / 2, (1 - vector.y) * alto / 2]; },
+            redimensionar() { const span = Math.max(9.3, 5.8 * alto / ancho), horizontal = span * ancho / alto; camara.left = -horizontal / 2; camara.right = horizontal / 2; camara.top = span / 2; camara.bottom = -span / 2; camara.updateProjectionMatrix(); renderizador.setSize(ancho, alto, false); },
+            dibujar(d) {
+              const e = Math.cbrt(d.volumen / .3), radio = d.diametro * .3;
+              bulbo.scale.setScalar(e); bulboVidrio.scale.setScalar(e);
+              columna.position.y = (d.y + geometria.bulbo) / 2; columna.scale.set(radio, d.y - geometria.bulbo, radio);
+              menisco.position.y = d.y; menisco.scale.set(radio, .022, radio);
+              hielo.visible = d.temperatura === 0; burbujas.visible = d.temperatura === 100;
+              burbujas.children.forEach((obj, i) => { obj.position.y = .25 + ((estado.t * .8 + i * .27) % 1.4); });
+              renderizador.render(escena, camara);
+            },
+            reiniciar() { orbita.reset(); },
+            teclado(tecla) {
+              const esfera = new THREE.Spherical().setFromVector3(camara.position.clone().sub(orbita.target));
+              if (tecla === 'ArrowLeft') esfera.theta = Math.max(orbita.minAzimuthAngle, esfera.theta - .1);
+              if (tecla === 'ArrowRight') esfera.theta = Math.min(orbita.maxAzimuthAngle, esfera.theta + .1);
+              if (tecla === 'ArrowUp') esfera.phi = Math.max(orbita.minPolarAngle, esfera.phi - .08);
+              if (tecla === 'ArrowDown') esfera.phi = Math.min(orbita.maxPolarAngle, esfera.phi + .08);
+              if (tecla === '+' || tecla === '=') camara.zoom = Math.min(orbita.maxZoom, camara.zoom * 1.1);
+              if (tecla === '-') camara.zoom = Math.max(orbita.minZoom, camara.zoom / 1.1);
+              camara.position.copy(new THREE.Vector3().setFromSpherical(esfera).add(orbita.target)); camara.updateProjectionMatrix(); orbita.update();
+            }
+          };
+          lienzo.addEventListener('webglcontextlost', e => {
+            e.preventDefault(); vista3D = null; orbita.dispose(); lienzo.remove(); if (ambiente) ambiente.dispose();
+            $('estado-carga').textContent = 'Se perdió el contexto gráfico. El modelo, las gráficas y los controles continúan en 2D. Recarga para reintentar el 3D.';
+            vista(); encuadrar();
+          });
+          $('estado-carga').textContent = 'Arrastra para girar el montaje. Con foco en la escena, usa flechas para girar y + o − para acercar o alejar. Restablecer vista recupera el encuadre. Ver 2D conserva el mismo modelo; el 3D usa Three.js y WebGL 2.';
+          vista(); encuadrar();
+        } catch {
+          vista3D = null;
+          if (orbita) orbita.dispose(); if (ambiente) ambiente.dispose();
+          if (renderizador) { renderizador.domElement.remove(); renderizador.dispose(); }
+          $('estado-carga').textContent = 'No se pudo cargar el 3D. La vista 2D conserva todos los cálculos, marcas y controles. El 3D requiere conexión y WebGL 2.';
+          vista(); encuadrar();
+        }
+      }
+      interfaz(); encuadrar(); anunciar(); iniciar3D();
+    })();
+  </script>
+</body>
+</html>

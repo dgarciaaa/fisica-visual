@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ultrasonido interactivo: longitud de onda, pulso longitudinal y profundidad a partir del tiempo de ida y vuelta del eco.">
+<title>Ultrasonido · Longitud de onda y eco</title>
+<style>
+
+    :root {
+      color-scheme: only light;
+      --color-fondo: #F7F8FC; --color-tarjeta: #FFFFFF;
+      --color-primario: #A8C7FA; --color-secundario: #B8E0D2; --color-acento: #CDB4DB;
+      --color-texto: #273043; --color-texto-secundario: #667085; --color-borde: #E4E7EC;
+      --color-onda: #668EC6; --color-longitudinal: #67998A; --color-punto: #9471AE;
+      --color-onda-texto: #476B9D; --color-punto-texto: #7A598F;
+      --color-piel: #F4C2C2; --color-grasa: #F7E7A9;
+      --color-musculo: #CDB4DB; --color-profundo: #DDE6EA;
+      --sombra: 0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--color-texto); background: var(--color-fondo); }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .laboratorio { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 25% 28%, rgba(168,199,250,.16), transparent 65%), radial-gradient(ellipse at 90% 70%, rgba(205,180,219,.12), transparent 60%), var(--color-fondo); }
+    #lienzo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cristal { background: rgba(255,255,255,.91); border: 1px solid rgba(228,231,236,.9); box-shadow: var(--sombra); backdrop-filter: blur(14px); border-radius: 18px; }
+    .cabecera { position: absolute; z-index: 3; top: 22px; left: 28px; right: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .identidad h1 { margin: 0 0 9px; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -.035em; font-weight: 750; }
+    .selector { display: inline-flex; padding: 4px; border-radius: 12px; background: rgba(228,231,236,.65); gap: 3px; }
+    .selector button { border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: 9px; padding: 8px 13px; font-size: .86rem; font-weight: 650; min-height: 36px; }
+    .selector button[aria-pressed="true"] { color: var(--color-texto); background: var(--color-tarjeta); box-shadow: 0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .boton { border: 1px solid var(--color-borde); background: var(--color-tarjeta); color: var(--color-texto); padding: 9px 12px; border-radius: 11px; min-height: 40px; font-size: .83rem; font-weight: 650; }
+    .boton:hover { background: #F0F4FA; }
+    .boton[aria-pressed="true"] { background: #EAE2F0; border-color: var(--color-acento); }
+    .principal { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .principal:hover { background: #42516A; }
+    .principal[aria-pressed="true"] { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .ecuacion { position: absolute; z-index: 3; top: 122px; left: 28px; padding: 15px 19px 13px; width: max-content; max-width: calc(100% - 56px); }
+    .formula { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.4; white-space: nowrap; }
+    .formula button { font: inherit; border: 0; border-radius: 5px; background: transparent; padding: 0 3px; color: inherit; }
+    .formula button.activo { background: rgba(168,199,250,.25); color: #476B9D; }
+    .relaciones { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; font-size: .79rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); }
+    .relaciones strong { color: var(--color-texto); font-weight: 650; }
+    .rapidez { margin-top: 8px; font-size: .8rem; color: var(--color-texto-secundario); }
+    .rapidez strong { color: var(--color-texto); font-weight: 650; }
+    #area-escena { position: absolute; left: 32px; right: 32px; top: 264px; bottom: 190px; min-height: 80px; overflow: hidden; touch-action: none; cursor: grab; border-radius: 16px; }
+    #area-escena:active { cursor: grabbing; }
+    #alternativa, #anotaciones { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #anotaciones { z-index: 2; }
+    #anotaciones text, #alternativa text, .grafica text { font-family: Inter, system-ui, sans-serif; font-size: 12px; }
+    .escena-etiqueta { position: absolute; left: 50%; top: 238px; transform: translateX(-50%); white-space: nowrap; font-size: .84rem; color: var(--color-texto-secundario); }
+    .escena-etiqueta strong { color: var(--color-texto); font-weight: 650; }
+    .seguimiento { position: absolute; left: 50%; bottom: 166px; transform: translateX(-50%); text-align: center; font-size: .8rem; color: var(--color-texto-secundario); white-space: nowrap; }
+    .seguimiento strong { color: var(--color-punto); }
+    .tiempo { position: absolute; top: 246px; right: 36px; color: var(--color-texto-secundario); font-size: .8rem; font-variant-numeric: tabular-nums; }
+    .panel-graficas { position: absolute; z-index: 3; right: 28px; top: 270px; width: 340px; padding: 14px 14px 10px; }
+    .panel-graficas h2 { margin: 0 0 3px; font-size: .81rem; font-weight: 650; }
+    .selector-graficas { display: none; }
+    .grafica { display: block; width: 100%; height: 145px; overflow: visible; }
+    .punto-control { display: flex; align-items: center; gap: 12px; font-size: .78rem; color: var(--color-texto-secundario); margin: 6px 0 2px; }
+    .punto-control label { white-space: nowrap; }
+    .punto-control input { min-width: 0; }
+    .dock { position: absolute; z-index: 4; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(1100px, calc(100% - 56px)); padding: 16px 20px 12px; }
+    .parametros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 27px; }
+    .parametro { min-width: 0; }
+    .parametro-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+    .parametro-cabecera button { font-size: .81rem; font-weight: 650; padding: 3px 5px; margin-left: -5px; color: var(--color-texto-secundario); border: 0; background: transparent; border-radius: 6px; text-align: left; }
+    .parametro-cabecera button.activo { color: var(--color-texto); background: rgba(168,199,250,.25); }
+    output { font-size: .82rem; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 650; }
+    input[type="range"] { width: 100%; display: block; appearance: none; height: 6px; border-radius: 99px; margin: 0; background: linear-gradient(to right, var(--color-primario) var(--progreso, 50%), #EBEEF3 var(--progreso, 50%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 21px; height: 21px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); box-shadow: 0 2px 7px rgba(39,48,67,.2); }
+    input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); }
+    .dock-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; border-top: 1px solid var(--color-borde); padding-top: 10px; font-size: .76rem; color: var(--color-texto-secundario); }
+    .dock-pie .herramientas { display: flex; gap: 12px; align-items: center; }
+    .enlace { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; min-height: 22px; text-decoration: underline; text-underline-offset: 3px; }
+    .detalle { position: absolute; z-index: 5; left: 28px; bottom: 177px; width: min(380px, calc(100% - 56px)); max-height: calc(100dvh - 210px); overflow: auto; padding: 17px; font-size: .84rem; line-height: 1.6; }
+    .detalle p { margin: 7px 0; }
+    .detalle .cerrar { position: absolute; top: 7px; right: 9px; background: transparent; border: 0; font-size: 1.3rem; color: var(--color-texto-secundario); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .laboratorio.con-graficas #area-escena { right: 395px; }
+    .laboratorio.con-graficas .escena-etiqueta, .laboratorio.con-graficas .seguimiento { left: calc((100% - 360px) / 2); }
+    .laboratorio.con-graficas .tiempo { right: 395px; }
+
+    .cabecera { align-items: flex-start; }
+    .ecuacion { top: 110px; }
+    .fila-formulas { display: flex; align-items: center; gap: 30px; }
+    .formula { display: flex; align-items: center; gap: 5px; }
+    .formula .resultado { font: 650 1.1rem Inter, system-ui, sans-serif; margin-left: 5px; color: var(--color-onda-texto); }
+    .formula.eco .resultado { color: var(--color-punto-texto); }
+    .fraccion { display: inline-flex; flex-direction: column; text-align: center; vertical-align: middle; line-height: 1.15; font-size: .83em; }
+    .fraccion > span:first-child { border-bottom: 1px solid currentColor; padding: 0 3px 2px; }
+    .fraccion > span:last-child { padding-top: 2px; }
+    .relaciones { gap: 8px 20px; margin-top: 11px; }
+    #area-escena { top: 254px; bottom: 204px; min-height: 0; outline-offset: -4px; }
+    .estado-escena { position: absolute; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0; font-size: .8rem; color: var(--color-texto-secundario); }
+    .estado-escena strong { font-weight: 650; color: var(--color-onda-texto); }
+    .estado-escena.eco strong { color: var(--color-punto-texto); }
+    .estado-escena output { font-weight: 500; font-size: .8rem; }
+    .recorrido { position: absolute; left: 50%; transform: translateX(-50%); width: min(410px, calc(100% - 50px)); font-size: .7rem; color: var(--color-texto-secundario); }
+    .recorrido-rotulos { display: flex; justify-content: space-between; margin-bottom: 7px; }
+    .recorrido-linea { height: 4px; border-radius: 4px; background: var(--color-borde); position: relative; }
+    .recorrido-progreso { width: 0; height: 100%; background: var(--color-onda); border-radius: inherit; }
+    .recorrido-linea::after { content: ''; position: absolute; left: 50%; top: -3px; height: 10px; width: 1px; background: var(--color-texto-secundario); opacity: .5; }
+    .recorrido-tiempos { display: flex; justify-content: space-between; margin-top: 6px; font-variant-numeric: tabular-nums; }
+    .recorrido-tiempos span { width: 33.33%; }
+    .recorrido-tiempos span:nth-child(2) { text-align: center; }
+    .recorrido-tiempos span:last-child { text-align: right; }
+    .seguimiento { width: max-content; max-width: calc(100% - 30px); margin: 0; font-size: .76rem; }
+    .panel-graficas { top: 248px; }
+    .panel-graficas h2 { margin-bottom: 5px; }
+    .grafica { height: auto; aspect-ratio: 340/190; }
+    .nota-grafica { margin: 8px 0 0; font-size: .73rem; color: var(--color-texto-secundario); line-height: 1.45; }
+    .dock-pie { align-items: center; }
+    #concepto { max-width: 64%; }
+    .detalle { padding-top: 25px; }
+    .detalle h2 { font-size: .9rem; margin: 0 0 5px; }
+    .detalle a { color: #476B9D; }
+    .etiqueta-dos { font-size: .8em; vertical-align: sub; }
+    .imagen-panel { position: absolute; z-index: 3; right: 28px; width: 340px; padding: 15px; }
+    .imagen-panel h2 { font-size: .85rem; margin: 0 0 10px; }
+    .ecografia { display: block; width: 100%; max-width: 100%; height: auto; aspect-ratio: 4/3; margin-inline: auto; background: #202733; border-radius: 10px; }
+    .imagen-pie { display: flex; justify-content: space-between; gap: 12px; margin-top: 9px; color: var(--color-texto-secundario); font-size: .72rem; }
+    .imagen-pie output { font-size: inherit; }
+    .imagen-panel .nota-grafica { margin-top: 10px; }
+    @media (max-width: 950px) {
+      .cabecera { left: 18px; right: 18px; top: 16px; gap: 12px; }
+      .acciones { max-width: 370px; }
+      .ecuacion { left: 18px; max-width: calc(100% - 36px); }
+      .fila-formulas { gap: 22px; }
+      .formula { font-size: 1.35rem; }
+      .formula .resultado { font-size: .95rem; }
+      .estado-escena { left: 20px; right: 20px; }
+      .dock { width: calc(100% - 36px); }
+      .parametros { gap: 18px; }
+      .panel-graficas { right: 18px; width: 290px; }
+      .imagen-panel { right: 18px; width: 290px; }
+    }
+    @media (max-width: 680px) {
+      .cabecera { top: 13px; left: 13px; right: 13px; gap: 7px; display: grid; grid-template-columns: 1fr; }
+      .identidad h1 { font-size: 1.05rem; margin-bottom: 8px; }
+      .selector button { font-size: .73rem; padding: 6px 8px; min-height: 32px; }
+      .acciones { width: 100%; flex-shrink: 0; gap: 5px; justify-content: flex-start; flex-wrap: nowrap; }
+      .acciones .boton { padding: 7px 8px; min-height: 34px; font-size: .72rem; }
+      #pantalla-completa { display: none; }
+      .ecuacion { left: 13px; right: 13px; max-width: none; width: auto; padding: 11px 13px; }
+      .fila-formulas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+      .formula { font-size: 1.3rem; flex-wrap: wrap; gap: 2px; }
+      .formula .resultado { flex-basis: 100%; font-size: .95rem; margin: 4px 0 0; padding-left: 4px; text-align: left; }
+      .formula .igual-resultado { display: none; }
+      .relaciones { font-size: .69rem; gap: 7px 12px; margin-top: 9px; }
+      .estado-escena { left: 15px; right: 15px; font-size: .73rem; }
+      .estado-escena output { font-size: .72rem; }
+      .dock { bottom: 12px; width: calc(100% - 26px); padding: 13px 15px 10px; border-radius: 16px; }
+      .parametros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 23px 20px; }
+      .parametro-cabecera { margin-bottom: 10px; }
+      .parametro-cabecera button, output { font-size: .74rem; }
+      .dock-pie { display: block; margin-top: 14px; padding-top: 9px; font-size: .7rem; }
+      #concepto { display: block; max-width: none; min-height: 26px; line-height: 1.4; }
+      .dock-pie .herramientas { justify-content: space-between; gap: 8px; margin-top: 5px; }
+      .recorrido { font-size: .65rem; width: calc(100% - 45px); }
+      .seguimiento { font-size: .7rem; }
+      .panel-graficas { width: calc(100% - 26px); left: 13px; right: 13px; padding: 12px 15px; }
+      .panel-graficas .grafica { max-height: 210px; }
+      .laboratorio.con-graficas #area-escena, .laboratorio.con-graficas #recorrido, .laboratorio.con-graficas #seguimiento { visibility: hidden; }
+      .detalle { left: 13px; width: calc(100% - 26px); font-size: .79rem; }
+      .imagen-panel { width: calc(100% - 26px); left: 13px; right: 13px; padding: 12px 15px; }
+      .imagen-panel h2 { font-size: .77rem; }
+      .laboratorio.con-imagen #area-escena, .laboratorio.con-imagen #seguimiento { visibility: hidden; }
+    }
+    @media (max-width: 370px) {
+      .cabecera { display: grid; grid-template-columns: 1fr; gap: 7px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .acciones { width: 100%; justify-content: flex-start; flex-wrap: nowrap; }
+      .acciones .boton { padding: 5px 9px; min-height: 31px; }
+      .parametro-cabecera button, output { font-size: .7rem; }
+      .parametro-cabecera button { white-space: nowrap; }
+      .parametros { gap: 22px 13px; }
+    }
+    @media (max-width: 370px) and (max-height: 750px) {
+      .ecuacion .relaciones { display: none; }
+      .imagen-panel .nota-grafica { display: none; }
+      .acciones .boton { padding-inline: 6px; }
+    }
+    @media (max-height: 660px) and (min-width: 681px) {
+      .cabecera { top: 10px; }
+      .identidad h1 { font-size: 1.15rem; margin-bottom: 5px; }
+      .ecuacion { padding: 9px 15px; }
+      .dock { bottom: 10px; padding: 12px 17px 9px; }
+      .recorrido { width: 340px; }
+    }
+    :fullscreen::backdrop{background:var(--color-fondo)}
+  </style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1>Ultrasonido y eco</h1>
+        <div class="selector" aria-label="Vista del fenómeno">
+          <button type="button" data-modo="eco" aria-pressed="true">Eco</button>
+          <button type="button" data-modo="onda" aria-pressed="false">Longitud λ</button>
+          <button type="button" data-modo="imagen" aria-pressed="false">Imagen</button>
+        </div>
+      </div>
+      <nav class="acciones" aria-label="Reproducción y exploración">
+        <button class="boton principal" id="pausa" type="button" aria-pressed="false">Pausa</button>
+        <button class="boton" id="paso" type="button">Paso</button>
+        <button class="boton" id="graficas" type="button" aria-pressed="false" aria-controls="panel-graficas">Gráfica</button>
+        <button class="boton" id="reiniciar" type="button">Reiniciar</button>
+        <button class="boton" id="pantalla-completa" type="button">Pantalla completa</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" aria-label="Longitud de onda y profundidad por eco">
+      <div class="fila-formulas">
+        <p class="formula"><button type="button" data-parametro="frecuencia" aria-label="Ver longitud de onda lambda">λ</button> = <span class="fraccion"><span><button type="button" data-parametro="velocidad" aria-label="Rapidez del sonido">c<span class="etiqueta-dos">s</span></button></span><span><button type="button" data-parametro="frecuencia" aria-label="Frecuencia de la onda">f<span class="etiqueta-dos">0</span></button></span></span><span class="igual-resultado">=</span><button type="button" class="resultado" data-parametro="frecuencia" id="valor-lambda" aria-label="Mostrar la longitud de onda">0,308 mm</button></p>
+        <p class="formula eco"><button type="button" data-parametro="retardo" aria-label="Mostrar profundidad del reflector">d</button> = <span class="fraccion"><span><button type="button" data-parametro="velocidad" aria-label="Rapidez del sonido">c<span class="etiqueta-dos">s</span></button><button type="button" data-parametro="retardo" aria-label="Tiempo de ida y vuelta del eco">Δt</button></span><span>2</span></span><span class="igual-resultado">=</span><button type="button" class="resultado" data-parametro="retardo" id="valor-d" aria-label="Mostrar la profundidad">6,16 cm</button></p>
+      </div>
+      <div class="relaciones"><span>T = 1/f₀ = <strong id="valor-periodo">0,200 µs</strong></span><span>τ = N/f₀ = <strong id="valor-duracion">0,600 µs</strong></span><span>2d = <strong id="valor-recorrido">12,32 cm</strong></span></div>
+    </section>
+    <p class="estado-escena" id="estado-escena"><span><strong id="etapa">Pulso emitido ↓</strong><span id="unidad-vista"> · vista en cm</span></span><output id="tiempo">t = 0,0 µs</output></p>
+    <div id="area-escena" tabindex="0" role="img" aria-label="Pulso que viaja al reflector y vuelve al transductor" aria-describedby="descripcion-escena">
+      <svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg>
+    </div>
+    <div class="recorrido" id="recorrido" aria-hidden="true">
+      <div class="recorrido-rotulos"><span>Emisión</span><span>Reflexión</span><span>Eco recibido</span></div>
+      <div class="recorrido-linea"><div class="recorrido-progreso" id="progreso"></div></div>
+      <div class="recorrido-tiempos"><span>0 µs</span><span id="mitad-tiempo">40 µs</span><span id="fin-tiempo">80 µs</span></div>
+    </div>
+    <p class="seguimiento" id="seguimiento" hidden><strong>Punto del medio ↔</strong> · la perturbación avanza →</p>
+    <aside class="imagen-panel cristal" id="imagen-panel" hidden aria-label="Construcción de una imagen por líneas de ecos">
+      <h2>Imagen formada por ecos</h2>
+      <canvas class="ecografia" id="ecografia" width="320" height="240" role="img" aria-label="Imagen esquemática en escala de grises construida línea por línea"></canvas>
+      <div class="imagen-pie"><span>0–16 cm · profundidad ↓</span><output id="lineas-imagen">Línea 1 / 32</output></div>
+      <p class="nota-grafica">Tiempo → profundidad · amplitud del eco → brillo.</p>
+    </aside>
+    <aside class="panel-graficas cristal" id="panel-graficas" hidden aria-label="Gráfica sincronizada con la escena">
+      <h2 id="titulo-grafica">Posición del pulso · ida y vuelta</h2>
+      <svg class="grafica" id="grafica" viewBox="0 0 340 190" role="img" aria-label="Profundidad del pulso en función del tiempo"></svg>
+      <p class="nota-grafica" id="nota-grafica">El pulso llega al reflector en Δt/2 y vuelve en Δt.</p>
+    </aside>
+    <section class="dock cristal" aria-label="Parámetros físicos del ultrasonido">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="frecuencia" id="etiqueta-frecuencia">Frecuencia f₀</button><output id="salida-frecuencia" for="frecuencia">5,0 MHz</output></div><input id="frecuencia" aria-labelledby="etiqueta-frecuencia" type="range" min="2" max="10" step="0.1" value="5"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="velocidad" id="etiqueta-velocidad">Rapidez cₛ</button><output id="salida-velocidad" for="velocidad">1540 m/s</output></div><input id="velocidad" aria-labelledby="etiqueta-velocidad" type="range" min="1400" max="1700" step="10" value="1540"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="retardo" id="etiqueta-retardo">Tiempo Δt</button><output id="salida-retardo" for="retardo">80 µs</output></div><input id="retardo" aria-labelledby="etiqueta-retardo" type="range" min="20" max="180" step="1" value="80"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="ciclos" id="etiqueta-ciclos">Ciclos N</button><output id="salida-ciclos" for="ciclos">3 ciclos</output></div><input id="ciclos" aria-labelledby="etiqueta-ciclos" type="range" min="2" max="6" step="1" value="3"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">Δt · ida y vuelta: el reflector está a la mitad del recorrido.</span><div class="herramientas"><button class="enlace" id="vista-inicial" type="button">Restablecer vista</button><button class="enlace" id="ayuda" type="button" aria-expanded="false" aria-controls="detalle">Modelo</button><span id="modo-render" title="Motor de dibujo">Cargando 3D…</span></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden aria-labelledby="titulo-modelo">
+      <button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar información del modelo">×</button>
+      <h2 id="titulo-modelo">Qué representa la escena</h2>
+      <p>La sonda se apoya sobre gel y piel. El gel evita una capa de aire que reflejaría gran parte del sonido antes de entrar al cuerpo. El pulso atraviesa piel, grasa y músculo; parte vuelve como eco en cada cambio de propiedades acústicas y parte continúa.</p>
+      <p>Las capas son un prototipo esquemático, con espesores escogidos para distinguirlas, no medidas anatómicas de una persona. Se usa una rapidez media cₛ uniforme y trayectorias verticales: λ = cₛ/f₀ y d = cₛΔt/2. La frontera profunda corresponde al Δt de los controles.</p>
+      <p>Δt se mide entre la emisión y recepción del centro del pulso. Cada tramo tarda Δt/2. Δt es una medición de entrada; d se infiere y sitúa el reflector en la escena. El ejemplo del apunte, 5 MHz, 1540 m/s y 80 µs, da λ = 0,308 mm y d = 6,16 cm.</p>
+      <p><strong>Dos escalas:</strong> Eco muestra centímetros; Longitud λ amplía milímetros. Las secciones del medio oscilan en la dirección de propagación; el punto lavanda conserva su posición de equilibrio. No son espiras de un resorte ni una cuerda transversal.</p>
+      <p>En el detalle, u(q,t) = 0,06λ h(q−qᶜ) cos[k(q−qᶜ)], donde qᶜ = qᵢ + cₛt y k = 2π/λ. La envolvente suave h tiene longitud L = Nλ. El desplazamiento es ilustrativo y ampliado. La compresión corresponde a −∂u/∂q; la gráfica muestra presión relativa p/p₀, no desplazamiento transversal. El encuadre en mm se amplía cuando el pulso no cabe; sus ejes siempre muestran la escala actual.</p>
+      <p>En Eco, la pastilla coloreada señala el centro del pulso. Su tamaño es simbólico y no representa λ ni τ a escala de centímetros.</p>
+      <p><strong>Formar una imagen:</strong> una línea reúne ecos de diferentes profundidades. Imagen recorre 32 posiciones laterales y coloca cada eco según z = cₛt/2. Las señales más intensas se dibujan más brillantes. Los ecos de una columna aparecen cuando han vuelto a la sonda. El barrido lateral representa distintas líneas del haz; una ecografía real también puede dirigirlas electrónicamente.</p>
+      <p>Las amplitudes de los tres ecos son relativas e ilustrativas; no se calculan a partir de impedancias medidas. Las franjas grises muestran interfaces idealizadas. Se omiten dispersión, speckle, atenuación, refracción y formación real del haz. La vista ilustra la formación de imagen, sin generar una ecografía clínica.</p>
+      <p>N cuenta ciclos de la portadora dentro de la longitud del pulso: L = Nλ y τ = N/f₀. Una longitud de onda menor puede favorecer la resolución; esta escena no calcula resolución clínica ni coeficientes físicos de reflexión o transmisión. El grosor de las franjas grises es ilustrativo.</p>
+      <p><strong>Tiempo ampliado:</strong> Eco avanza 20 µs por segundo de reproducción; el detalle avanza 0,12 µs por segundo. Paso avanza Δt/24 en Eco y T/16 en Longitud λ. Imagen usa intervalos de 1,15Δt por línea y ocho Δt por segundo de reproducción; Línea completa un intervalo de barrido. La reproducción se detiene al recibir el eco profundo, salir el pulso del encuadre o completar la imagen.</p>
+      <p>Modificar parámetros reinicia el experimento en pausa. Cambiar de vista conserva el tiempo de cada vista. Reiniciar restaura valores y cámara, manteniendo la vista elegida. Arrastra o usa flechas para girar; rueda, gestos o +/− para acercar.</p>
+      <p id="estado-carga">La vista 2D y los controles funcionan mientras se carga Three.js. La vista 3D necesita internet y WebGL 2.</p>
+      <p>Referencias: <a href="https://ucb-bioe.github.io/textbook/chapters/01_measuring/04_sound_ultrasound.html" target="_blank" rel="noopener noreferrer">Ultrasound · Introduction to Bioengineering</a> y <a href="https://www.nibib.nih.gov/science-education/science-topics/ultrasound" target="_blank" rel="noopener noreferrer">Ultrasound · NIH</a>.</p>
+    </aside>
+    <p class="sr-only" id="descripcion-escena"></p><p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script type="module">
+    (() => {
+      'use strict';
+      const $ = id => document.getElementById(id);
+      // Valores iniciales, unidades y rangos editables en los controles HTML.
+      const inicial = { frecuencia: 5, velocidad: 1540, retardo: 80, ciclos: 3 };
+      const controles = Object.fromEntries(Object.keys(inicial).map(nombre => [nombre, $(nombre)]));
+      const reducido = matchMedia('(prefers-reduced-motion: reduce)');
+      const estado = { modo: 'eco', parametro: 'retardo', tiempo: 0, tiempoOnda: 0, tiempoImagen: 0, pausado: reducido.matches, graficas: false };
+      const estilos=getComputedStyle(document.documentElement);
+      const paleta=Object.fromEntries(['fondo','tarjeta','primario','secundario','acento','texto','texto-secundario','borde','onda','longitudinal','punto','onda-texto','punto-texto','piel','grasa','musculo','profundo'].map(nombre=>[nombre,estilos.getPropertyValue('--color-'+nombre).trim()]));
+      const tono = nombre => paleta[nombre];
+      const numero = (valor, decimales=2) => valor.toLocaleString('es-CL', {minimumFractionDigits:decimales, maximumFractionDigits:decimales});
+      let vista3D = null, ancho = 1, alto = 1, fotograma = null, anterior = null, anuncio, revisionTamanio = false, radioMedio = .34;
+      const espacioSVG = 'http://www.w3.org/2000/svg';
+      function datos() {
+        const d = Object.fromEntries(Object.entries(controles).map(([nombre, input]) => [nombre, Number(input.value)]));
+        // MHz, µs, mm y cm se convierten aquí; el dibujo usa estos mismos resultados.
+        d.lambda = d.velocidad / (d.frecuencia * 1000);
+        d.profundidad = d.velocidad * d.retardo / 20000;
+        d.periodo = 1 / d.frecuencia;
+        d.duracion = d.ciclos / d.frecuencia;
+        d.largo = d.ciclos * d.lambda;
+        d.campo = Math.max(2.4, (d.ciclos + 2) * d.lambda);
+        d.centroInicial = .42 * d.campo;
+        d.limiteOnda = (d.campo + d.largo/2 - d.centroInicial) / (d.velocidad/1000);
+        d.lineas = 32; d.tiempoLinea = 1.15*d.retardo; d.limiteImagen = d.lineas*d.tiempoLinea;
+        return d;
+      }
+      function tiempoActual() { return estado.modo === 'onda' ? estado.tiempoOnda : estado.modo === 'imagen' ? estado.tiempoImagen : estado.tiempo; }
+      function limite(d) { return estado.modo === 'onda' ? d.limiteOnda : estado.modo === 'imagen' ? d.limiteImagen : d.retardo; }
+      function posicionEco(t, d) { return d.velocidad * Math.max(0, Math.min(t, d.retardo-t)) / 10000; }
+      function curvaPiel(x) { return -.025*x*x; }
+      function fronteras(d,x=0) {
+        const curva=Math.sin(x*1.5)**2;
+        return [{profundidad:.08*d.profundidad*(1+.2*curva),amplitud:.35,nombre:'Piel / grasa'},
+          {profundidad:.32*d.profundidad*(1+.12*curva),amplitud:.55,nombre:'Grasa / músculo'},
+          {profundidad:d.profundidad,amplitud:.8,nombre:'Interfaz profunda'}].map(f=>({...f,retardo:20000*f.profundidad/d.velocidad}));
+      }
+      function contextoEco(d) {
+        const imagen=estado.modo==='imagen',indice=imagen?Math.min(d.lineas-1,Math.floor(estado.tiempoImagen/d.tiempoLinea)):15.5;
+        const x=imagen?-1.4+2.8*indice/(d.lineas-1):0;
+        const tiempo=imagen?Math.min(d.tiempoLinea,Math.max(0,estado.tiempoImagen-indice*d.tiempoLinea)):estado.tiempo;
+        const capas=fronteras(d,x);
+        const ecos=capas.slice(0,2).filter(f=>tiempo>=f.retardo/2&&tiempo<=f.retardo).map(f=>({...f,z:2*f.profundidad-d.velocidad*tiempo/10000}));
+        return {x,tiempo,indice,capas,ecos,incidente:Math.min(16,d.velocidad*tiempo/10000),z:posicionEco(tiempo,d),regreso:tiempo>d.retardo/2};
+      }
+      function centroPulso(d) { return d.centroInicial + d.velocidad/1000 * estado.tiempoOnda; }
+      function envolvente(z, d) {
+        const distancia = Math.abs(z), borde = d.largo/2, suavizado = d.lambda/4;
+        if(distancia >= borde) return 0;
+        if(distancia <= borde-suavizado) return 1;
+        return .5*(1+Math.cos(Math.PI*(distancia-borde+suavizado)/suavizado));
+      }
+      function desplazamiento(q, d) {
+        const z = q-centroPulso(d);
+        return .06*d.lambda*envolvente(z,d)*Math.cos(2*Math.PI*z/d.lambda);
+      }
+      function presion(q, d) {
+        const paso = d.lambda*1e-4;
+        return -(desplazamiento(q+paso,d)-desplazamiento(q-paso,d))/(2*paso)/(2*Math.PI*.06);
+      }
+      function xOnda(q,d) { return 12*q/d.campo-6; }
+      function yEco(z) { return 2-.27*z; }
+      function crearSVG(tipo, atributos={}, contenido) {
+        const nodo=document.createElementNS(espacioSVG,tipo);
+        for(const [nombre,valor] of Object.entries(atributos)) nodo.setAttribute(nombre,valor);
+        if(contenido!==undefined)nodo.textContent=contenido;
+        return nodo;
+      }
+      function linea(svg, puntos, color, grosor=1.2, guiones='') {
+        svg.appendChild(crearSVG('polyline',{points:puntos.map(p=>p.join(',')).join(' '),fill:'none',stroke:color,'stroke-width':grosor,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':guiones}));
+      }
+      function texto(svg,x,y,contenido,color=tono('texto-secundario'),ancla='middle') {
+        if(color===tono('onda'))color=tono('onda-texto');
+        if(color===tono('punto'))color=tono('punto-texto');
+        svg.appendChild(crearSVG('text',{x,y,fill:color,'text-anchor':ancla},contenido));
+      }
+      function flecha(svg,a,b,color,grosor=1.4) {
+        linea(svg,[a,b],color,grosor);
+        const angulo=Math.atan2(b[1]-a[1],b[0]-a[0]),largo=7;
+        linea(svg,[[b[0]-largo*Math.cos(angulo-.5),b[1]-largo*Math.sin(angulo-.5)],b,[b[0]-largo*Math.cos(angulo+.5),b[1]-largo*Math.sin(angulo+.5)]],color,grosor);
+      }
+      function proyectar(x,y,z=0) {
+        if(vista3D) return vista3D.proyectar(x,y,z);
+        const escala=estado.modo==='onda'?Math.min(ancho/14,alto/3):Math.min(ancho/9.4,alto/6.2);
+        return [ancho/2+x*escala,alto/2-y*escala];
+      }
+      function marca(svg,a,b,rotulo,color=tono('texto'),vertical=false) {
+        linea(svg,[a,b],color);
+        for(const p of [a,b])linea(svg,vertical?[[p[0]-4,p[1]],[p[0]+4,p[1]]]:[[p[0],p[1]-4],[p[0],p[1]+4]],color);
+        texto(svg,vertical?Math.max(a[0],b[0])+10:(a[0]+b[0])/2,vertical?(a[1]+b[1])/2:(a[1]+b[1])/2-10,rotulo,color,vertical?'start':'middle');
+      }
+      function actualizarInterfaz() {
+        const d=datos();
+        const unidades={frecuencia:'MHz',velocidad:'m/s',retardo:'µs',ciclos:'ciclos'};
+        for(const [nombre,entrada] of Object.entries(controles)) {
+          entrada.style.setProperty('--progreso',`${(Number(entrada.value)-Number(entrada.min))/(Number(entrada.max)-Number(entrada.min))*100}%`);
+          $('salida-'+nombre).value=`${numero(d[nombre],nombre==='frecuencia'?1:0)} ${unidades[nombre]}`;
+        }
+        $('valor-lambda').textContent=`${numero(d.lambda,3)} mm`;
+        $('valor-d').textContent=`${numero(d.profundidad)} cm`;
+        $('valor-periodo').textContent=`${numero(d.periodo,3)} µs`;
+        $('valor-duracion').textContent=`${numero(d.duracion,3)} µs`;
+        $('valor-recorrido').textContent=`${numero(2*d.profundidad)} cm`;
+        $('mitad-tiempo').textContent=`${numero(d.retardo/2,1)} µs`;
+        $('fin-tiempo').textContent=`${numero(d.retardo,0)} µs`;
+        $('pausa').textContent=estado.pausado?(tiempoActual()>=limite(d)-1e-8?(estado.modo==='imagen'?'Repetir barrido':'Emitir pulso'):'Reproducir'):'Pausa';
+        $('paso').textContent=estado.modo==='imagen'?'Línea':'Paso';
+        $('pausa').setAttribute('aria-pressed',String(estado.pausado));
+        $('panel-graficas').hidden=!estado.graficas;
+        $('graficas').setAttribute('aria-pressed',String(estado.graficas));
+        $('laboratorio').classList.toggle('con-graficas',estado.graficas);
+        $('laboratorio').classList.toggle('con-imagen',estado.modo==='imagen');
+        $('imagen-panel').hidden=estado.modo!=='imagen'||estado.graficas;
+        $('graficas').textContent=estado.modo==='imagen'?'Señal':'Gráfica';
+        $('seguimiento').hidden=estado.modo==='eco';
+        $('seguimiento').innerHTML=estado.modo==='imagen'?'<strong>Ecos de distintas profundidades</strong> · una línea de imagen':'<strong>Punto del medio ↔</strong> · la perturbación avanza →';
+        $('recorrido').hidden=estado.modo!=='eco';
+        document.querySelectorAll('[data-modo]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.modo===estado.modo)));
+        document.querySelectorAll('[data-parametro]').forEach(b=>{b.classList.toggle('activo',b.dataset.parametro===estado.parametro);b.setAttribute('aria-pressed',String(b.dataset.parametro===estado.parametro));});
+        $('concepto').textContent=({frecuencia:'λ · separación espacial de la portadora; mayor f₀, menor λ.',velocidad:'cₛ · rapidez del pulso en el medio; cambia λ y la profundidad inferida.',retardo:'Δt · eco de la frontera profunda: d = cₛΔt/2.',ciclos:'N · ciclos dentro del pulso; su longitud es L = Nλ.'})[estado.parametro];
+        $('titulo-grafica').textContent=estado.modo==='onda'?'Presión relativa · perfil espacial':estado.modo==='imagen'?'Ecos recibidos · línea actual':'Posición del pulso · ida y vuelta';
+        $('nota-grafica').textContent=estado.modo==='onda'?'La curva representa presión, no una cuerda. La compresión viaja; el medio oscila.':estado.modo==='imagen'?'Cada pico recibido se coloca a una profundidad z = cₛt/2.':'Parte se refleja en cada frontera; el pulso transmitido continúa.';
+        $('grafica').setAttribute('aria-label',estado.modo==='onda'?'Presión relativa de la onda longitudinal frente a posición en milímetros':estado.modo==='imagen'?'Amplitud relativa de los ecos recibidos en función del tiempo':'Profundidad del eco principal en centímetros frente al tiempo en microsegundos');
+        $('unidad-vista').textContent=estado.modo==='onda'?' · detalle en mm':estado.modo==='imagen'?' · ecos → brillo':' · piel y tejidos';
+        $('area-escena').setAttribute('aria-label',estado.modo==='onda'?'Pulso longitudinal: las secciones del medio oscilan mientras avanza la compresión':'Sonda sobre gel y piel; el pulso atraviesa grasa y músculo y genera ecos en sus fronteras');
+        $('descripcion-escena').textContent=`Ultrasonido de ${numero(d.frecuencia,1)} MHz, rapidez ${numero(d.velocidad,0)} m/s, longitud de onda ${numero(d.lambda,3)} mm. El eco tarda ${numero(d.retardo,0)} microsegundos y sitúa el reflector a ${numero(d.profundidad)} cm. Pulso de ${d.ciclos} ciclos.`;
+        clearTimeout(anuncio);anuncio=setTimeout(()=>{$('resumen-accesible').textContent=$('descripcion-escena').textContent;},200);
+        encuadrar();
+      }
+      function encuadrar() {
+        if(revisionTamanio)return;revisionTamanio=true;
+        const movil=innerWidth<=680,margen=movil?13:innerWidth<=950?18:28;
+        radioMedio=movil?.55:.34;
+        const cabecera=$('laboratorio').querySelector('.cabecera').getBoundingClientRect();
+        const ecuacion=$('laboratorio').querySelector('.ecuacion');
+        ecuacion.style.top=`${cabecera.bottom+12}px`;
+        const eq=ecuacion.getBoundingClientRect(),dock=$('laboratorio').querySelector('.dock').getBoundingClientRect();
+        const arriba=eq.bottom+44, abajo=dock.top-(movil?63:70);
+        $('estado-escena').style.top=`${eq.bottom+15}px`;
+        const area=$('area-escena');
+        area.style.top=`${arriba}px`;area.style.bottom=`${Math.max(0,innerHeight-abajo)}px`;area.style.left=`${margen}px`;
+        area.style.right=`${(estado.graficas||estado.modo==='imagen')&&!movil?(innerWidth<=950?326:395):margen}px`;
+        const rect=area.getBoundingClientRect();ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height);
+        for(const id of ['alternativa','anotaciones'])$(id).setAttribute('viewBox',`0 0 ${ancho} ${alto}`);
+        const centro=rect.left+rect.width/2;
+        $('recorrido').style.left=`${centro}px`;$('recorrido').style.top=`${abajo+8}px`;
+        $('seguimiento').style.left=`${centro}px`;$('seguimiento').style.top=`${abajo+17}px`;$('seguimiento').style.bottom='auto';
+        $('panel-graficas').style.top=`${arriba+5}px`;
+        $('imagen-panel').style.top=`${arriba+5}px`;
+        if(movil){$('panel-graficas').style.maxHeight=`${Math.max(40,dock.top-arriba-16)}px`;$('panel-graficas').style.overflow='auto';}
+        else{$('panel-graficas').style.maxHeight='';$('panel-graficas').style.overflow='';}
+        const panelImagen=$('imagen-panel'),canvasImagen=$('ecografia');
+        panelImagen.style.maxHeight=`${Math.max(40,dock.top-arriba-16)}px`;panelImagen.style.overflow='auto';
+        if(!panelImagen.hidden) {
+          canvasImagen.style.width='100%';
+          const margenPanel=movil?32:32,interno=panelImagen.clientWidth-margenPanel;
+          const resto=panelImagen.scrollHeight-canvasImagen.offsetHeight;
+          canvasImagen.style.width=`${Math.max(40,Math.min(interno,(dock.top-arriba-24-resto)*4/3))}px`;
+        }
+        $('detalle').style.bottom=`${innerHeight-dock.top+12}px`;$('detalle').style.maxHeight=`${Math.max(90,dock.top-36)}px`;
+        if(vista3D)vista3D.redimensionar();
+        revisionTamanio=false;pedirFotograma();
+      }
+      function dibujar2D(d) {
+        const svg=$('alternativa');svg.replaceChildren();
+        if(estado.modo!=='onda') {
+          const c=contextoEco(d),colores=['piel','grasa','musculo','profundo'];
+          const borde=(x,i)=>i===0?0:i===4?16:fronteras(d,x)[i-1].profundidad;
+          for(let capa=0;capa<4;capa++) {
+            const puntos=[];
+            for(let i=0;i<=24;i++){const x=-2.1+4.2*i/24;puntos.push(proyectar(x,yEco(borde(x,capa))+curvaPiel(x)));}
+            for(let i=24;i>=0;i--){const x=-2.1+4.2*i/24;puntos.push(proyectar(x,yEco(borde(x,capa+1))+curvaPiel(x)));}
+            svg.appendChild(crearSVG('polygon',{points:puntos.map(p=>p.join(',')).join(' '),fill:tono(colores[capa]),'fill-opacity':capa===0?.8:.5,stroke:tono('borde'),'data-capa':colores[capa]}));
+          }
+          linea(svg,Array.from({length:25},(_,i)=>{const x=-2.1+4.2*i/24;return proyectar(x,yEco(d.profundidad)+curvaPiel(x));}),tono('punto'),2);
+          const ajuste=curvaPiel(c.x),transductor=proyectar(c.x-.6,2.8+ajuste),inferior=proyectar(c.x+.6,2.065+ajuste);
+          svg.appendChild(crearSVG('rect',{x:transductor[0],y:transductor[1],width:inferior[0]-transductor[0],height:inferior[1]-transductor[1],rx:8,fill:tono('primario'),stroke:tono('onda'),'data-sonda':'true'}));
+          linea(svg,[proyectar(c.x-.65,2.035+ajuste),proyectar(c.x+.65,2.035+ajuste)],tono('onda'),3);
+          function pulso(z,color,opacidad=.45,principal=false,tipo='') {
+            const p=proyectar(c.x,yEco(z)+ajuste),extremo=proyectar(c.x+.4,yEco(z)+ajuste);
+            svg.appendChild(crearSVG('ellipse',{cx:p[0],cy:p[1],rx:Math.max(6,extremo[0]-p[0]),ry:4,fill:color,'fill-opacity':opacidad,stroke:color,'stroke-opacity':opacidad,'stroke-width':2,'data-eco':tipo}));
+            if(principal)svg.appendChild(crearSVG('circle',{cx:p[0],cy:p[1],r:4.5,fill:color,'data-pulso':'true'}));
+          }
+          if(c.regreso)pulso(c.incidente,tono('onda'),.22,false,'transmitido');
+          for(const eco of c.ecos)pulso(eco.z,tono('punto'),.36,false,eco.nombre);
+          if(c.tiempo<=d.retardo)pulso(c.z,tono(c.regreso?'punto':'onda'),.6,true);
+        } else {
+          for(let i=0;i<=180;i++) {
+            const q=d.campo*i/180,u=desplazamiento(q,d),p=proyectar(xOnda(q+u,d),0),v=proyectar(xOnda(q+u,d),radioMedio);
+            const activo=envolvente(q-centroPulso(d),d)>.01;
+            linea(svg,[[p[0],p[1]-(p[1]-v[1])],[p[0],p[1]+(p[1]-v[1])]],activo?tono('longitudinal'):tono('borde'),activo?1.8:1);
+          }
+          const q=d.centroInicial,u=desplazamiento(q,d),p=proyectar(xOnda(q+u,d),radioMedio+.06);
+          svg.appendChild(crearSVG('circle',{cx:p[0],cy:p[1],r:6,fill:tono('punto'),stroke:tono('tarjeta'),'stroke-width':2,'data-material':'true'}));
+        }
+      }
+      function dibujarMarcas(d) {
+        const svg=$('anotaciones');svg.replaceChildren();
+        if(estado.modo!=='onda') {
+          const c=contextoEco(d),ajuste=curvaPiel(c.x),arriba=proyectar(c.x-.9,3),piel=proyectar(-2.2,1.99),interfaz=proyectar(-2.2,yEco(d.profundidad));
+          const compacto=alto<190;
+          texto(svg,arriba[0],Math.max(14,arriba[1]),'Transductor',tono('texto'));
+          if(!compacto) {
+            texto(svg,piel[0]-8,piel[1]+4,'Piel',tono('texto-secundario'),'end');
+            const f=fronteras(d,-2.1);
+            for(const [nombre,z] of [['Grasa',(f[0].profundidad+f[1].profundidad)/2],['Músculo',(f[1].profundidad+d.profundidad)/2]]) {
+              const p=proyectar(-2.2,yEco(z));texto(svg,p[0]-8,p[1]+4,nombre,tono('texto-secundario'),'end');
+            }
+            texto(svg,interfaz[0]-8,interfaz[1]+4,ancho<500?'Frontera':'Frontera entre tejidos',tono('punto'),'end');
+            const gel=proyectar(c.x+.82,2.09+ajuste);texto(svg,gel[0],gel[1]-6,'Gel',tono('onda'),'start');
+          }
+          const p=proyectar(c.x,yEco(c.z)+ajuste);
+          const regreso=c.regreso;
+          if(!compacto&&c.tiempo<=d.retardo)texto(svg,p[0]+14,p[1]-(regreso?12:-20),regreso?'Eco ↑':'Pulso ↓',tono(regreso?'punto':'onda'),'start');
+          if(estado.parametro==='retardo') {
+            marca(svg,proyectar(2.45,2),proyectar(2.45,yEco(d.profundidad)),`d = ${numero(d.profundidad)} cm`,tono('texto'),true);
+            const medio=(2+yEco(d.profundidad))/2;
+            if(estado.modo==='eco') {
+              flecha(svg,proyectar(-.48,2-.15),proyectar(-.48,yEco(d.profundidad)+.15),tono('onda'));
+              flecha(svg,proyectar(.48,yEco(d.profundidad)+.15),proyectar(.48,2-.15),tono('punto'));
+            }
+            if(!compacto&&estado.modo==='eco') {
+              texto(svg,proyectar(-.65,medio)[0],proyectar(-.65,medio)[1],'Ida',tono('onda'),'end');
+              texto(svg,proyectar(.65,medio)[0],proyectar(.65,medio)[1],'Vuelta',tono('punto'),'start');
+            }
+          } else if(estado.parametro==='velocidad') {
+            const a=proyectar(1.3,yEco(c.z)+.3),b=proyectar(1.3,yEco(c.z)-.3);
+            flecha(svg,regreso?b:a,regreso?a:b,tono('onda'));
+            texto(svg,b[0]+10,(a[1]+b[1])/2,`cₛ = ${numero(d.velocidad,0)} m/s`,tono('texto'),'start');
+          }
+        } else {
+          const neutral=tono('borde'),q=d.centroInicial,actual=q+desplazamiento(q,d);
+          linea(svg,[proyectar(-6,-.72),proyectar(6,-.72)],neutral);
+          for(const posicion of [0,d.campo/2,d.campo]) {
+            const p=proyectar(xOnda(posicion,d),-.72);
+            linea(svg,[[p[0],p[1]-3],[p[0],p[1]+3]],tono('texto-secundario'));
+            texto(svg,p[0],p[1]+19,`${numero(posicion,2)}${posicion===d.campo?' mm':''}`);
+          }
+          const base=proyectar(xOnda(q,d),radioMedio+.06),p=proyectar(xOnda(actual,d),radioMedio+.06);
+          linea(svg,[base,p],tono('punto'),2);
+          svg.appendChild(crearSVG('circle',{cx:base[0],cy:base[1],r:5,fill:'none',stroke:tono('punto'),'stroke-opacity':.5}));
+          if(estado.parametro==='ciclos') {
+            const centro=centroPulso(d),a=Math.max(0,centro-d.largo/2),b=Math.min(d.campo,centro+d.largo/2);
+            if(b>a)marca(svg,proyectar(xOnda(a,d),.86),proyectar(xOnda(b,d),.86),`L = Nλ = ${numero(d.largo,3)} mm`);
+          } else {
+            // En la parte plana de la envolvente, las compresiones tienen fase π/2.
+            const centro=centroPulso(d),a=centro-.75*d.lambda,b=centro+.25*d.lambda;
+            if(a>=0&&b<=d.campo) {
+              marca(svg,proyectar(xOnda(a,d),.88),proyectar(xOnda(b,d),.88),`λ = ${numero(d.lambda,3)} mm`);
+              for(const x of [a,b])linea(svg,[proyectar(xOnda(x,d),radioMedio+.06),proyectar(xOnda(x,d),.83)],neutral,1,'3 4');
+            }
+          }
+        }
+      }
+      function dibujarGrafica(d) {
+        const svg=$('grafica');svg.replaceChildren();
+        const izq=39,der=316,arriba=40,abajo=152;
+        linea(svg,[[izq,arriba-8],[izq,abajo],[der,abajo]],tono('borde'));
+        if(estado.modo==='eco') {
+          const sx=t=>izq+t/d.retardo*(der-izq),sy=z=>abajo-z/16*(abajo-arriba);
+          const puntos=[0,d.retardo/2,d.retardo].map(t=>[sx(t),sy(posicionEco(t,d))]);
+          linea(svg,puntos,tono('borde'),2,'4 4');
+          const t=estado.tiempo,z=posicionEco(t,d),recorridos=[[sx(0),sy(0)]];
+          if(t>=d.retardo/2)recorridos.push(puntos[1]);recorridos.push([sx(t),sy(z)]);
+          linea(svg,recorridos,tono(t>d.retardo/2?'punto':'onda'),2.5);
+          linea(svg,[[sx(t),arriba],[sx(t),abajo]],tono('acento'),1,'3 5');
+          svg.appendChild(crearSVG('circle',{cx:sx(t),cy:sy(z),r:4.5,fill:tono('punto')}));
+          for(const n of [0,8,16])texto(svg,izq-8,sy(n)+4,String(n),tono('texto-secundario'),'end');
+          for(const n of [0,d.retardo/2,d.retardo])texto(svg,sx(n),174,numero(n,0));
+          texto(svg,izq,20,'z (cm)',tono('texto-secundario'),'start');texto(svg,der,20,'t (µs)',tono('texto-secundario'),'end');
+          marca(svg,[sx(0),30],[sx(d.retardo),30],`Δt = ${numero(d.retardo,0)} µs`,tono('texto-secundario'));
+          texto(svg,sx(d.retardo/2),Math.max(52,sy(d.profundidad)-10),`d = ${numero(d.profundidad)} cm`,tono('punto'));
+        } else if(estado.modo==='imagen') {
+          const c=contextoEco(d),sx=t=>izq+t/d.tiempoLinea*(der-izq),sy=a=>abajo-a*(abajo-arriba);
+          const sigma=Math.max(d.duracion/2,d.retardo/180);
+          const senal=t=>c.capas.reduce((s,f)=>s+f.amplitud*Math.exp(-.5*((t-f.retardo)/sigma)**2),0);
+          const puntos=Array.from({length:481},(_,i)=>{const t=i*d.tiempoLinea/480;return [sx(t),sy(t<=c.tiempo?senal(t):0)];});
+          linea(svg,puntos,tono('punto'),2.3);
+          linea(svg,[[sx(c.tiempo),arriba],[sx(c.tiempo),abajo]],tono('acento'),1,'3 5');
+          for(const n of [0,.5,1])texto(svg,izq-8,sy(n)+4,numero(n,1),tono('texto-secundario'),'end');
+          for(const n of [0,d.retardo/2,d.retardo])texto(svg,sx(n),174,numero(n,0));
+          texto(svg,izq,20,'Envolvente (u.a.)',tono('texto-secundario'),'start');texto(svg,der,20,'t (µs)',tono('texto-secundario'),'end');
+        } else {
+          const sx=q=>izq+q/d.campo*(der-izq),sy=p=>96-p*33;
+          linea(svg,[[izq,96],[der,96]],tono('borde'));
+          const puntos=Array.from({length:421},(_,i)=>{const q=i*d.campo/420;return [sx(q),sy(presion(q,d))];});
+          linea(svg,puntos,tono('onda'),2);
+          const q=d.centroInicial,p=presion(q,d);linea(svg,[[sx(q),43],[sx(q),152]],tono('acento'),1,'3 5');
+          svg.appendChild(crearSVG('circle',{cx:sx(q),cy:sy(p),r:4,fill:tono('punto')}));
+          for(const n of [-1,0,1])texto(svg,izq-8,sy(n)+4,String(n),tono('texto-secundario'),'end');
+          for(const n of [0,d.campo/2,d.campo])texto(svg,sx(n),174,numero(n,2));
+          texto(svg,izq,20,'p/p₀',tono('texto-secundario'),'start');texto(svg,der,20,'q (mm)',tono('texto-secundario'),'end');
+          const centro=centroPulso(d),a=centro-.75*d.lambda,b=centro+.25*d.lambda;
+          if(a>=0&&b<=d.campo)marca(svg,[sx(a),35],[sx(b),35],`λ = ${numero(d.lambda,3)} mm`,tono('texto-secundario'));
+        }
+      }
+      // Una columna por posición de la sonda. Los ecos aparecen al ser recibidos,
+      // usando su tiempo para la profundidad y su amplitud relativa para el brillo.
+      const imagenMemoria=document.createElement('canvas');imagenMemoria.width=32;imagenMemoria.height=160;
+      const contextoMemoria=imagenMemoria.getContext('2d'),pixeles=contextoMemoria.createImageData(32,160);
+      const contextoImagen=$('ecografia').getContext('2d');
+      function dibujarImagen(d) {
+        const completadas=Math.min(d.lineas,Math.floor((estado.tiempoImagen+1e-8)/d.tiempoLinea));
+        const actual=contextoEco(d),sigma=Math.max(.045,d.largo/10*.35);
+        for(let columna=0;columna<32;columna++) {
+          const recibidas=fronteras(d,-1.4+2.8*columna/31).filter(f=>columna<completadas||(columna===completadas&&actual.tiempo>=f.retardo));
+          for(let fila=0;fila<160;fila++) {
+            const z=16*(fila+.5)/160;
+            const intensidad=recibidas.reduce((max,f)=>Math.max(max,f.amplitud*Math.exp(-.5*((z-f.profundidad)/sigma)**2)),0);
+            const brillo=Math.round(12+243*intensidad),i=4*(fila*32+columna);
+            pixeles.data[i]=pixeles.data[i+1]=pixeles.data[i+2]=brillo;pixeles.data[i+3]=255;
+          }
+        }
+        contextoMemoria.putImageData(pixeles,0,0);
+        const ctx=contextoImagen;ctx.fillStyle='#202733';ctx.fillRect(0,0,320,240);
+        ctx.imageSmoothingEnabled=true;ctx.drawImage(imagenMemoria,35,18,267,196);
+        ctx.font='11px system-ui';ctx.fillStyle='#DDE6EA';ctx.textAlign='right';
+        for(const z of [0,8,16]) {ctx.fillText(String(z),27,22+196*z/16);ctx.fillRect(30,18+196*z/16,3,1);}
+        ctx.textAlign='left';ctx.fillText('cm',9,236);ctx.textAlign='center';ctx.fillText('posición lateral de la sonda',169,236);
+        if(completadas<32) {ctx.fillStyle=tono('acento');ctx.fillRect(35+267*actual.indice/32,18,1,196);}
+        $('lineas-imagen').value=completadas===32?'32 líneas completas':`Línea ${actual.indice+1} / 32`;
+        $('ecografia').setAttribute('aria-label',`Imagen esquemática de ecos: ${completadas} de 32 líneas completas; profundidad de 0 a 16 centímetros.`);
+      }
+      function renderizar() {
+        const d=datos(),t=tiempoActual();
+        const c=contextoEco(d),regreso=c.regreso;
+        $('tiempo').value=estado.modo==='imagen'?`Línea ${c.indice+1} · t = ${numero(c.tiempo,1)} µs`:`t = ${numero(t,estado.modo==='eco'?1:3)} µs`;
+        $('estado-escena').classList.toggle('eco',estado.modo!=='onda'&&regreso);
+        $('etapa').textContent=estado.modo==='onda'?'Compresión → · medio ↔':estado.modo==='imagen'?(t>=d.limiteImagen-1e-8?'Imagen completa':'Barrido · ecos → brillo'):estado.tiempo>=d.retardo-1e-8?'Eco recibido ↑':Math.abs(estado.tiempo-d.retardo/2)<1e-6?'Reflexión':regreso?'Eco · regreso ↑':'Pulso · ida ↓';
+        $('progreso').style.width=`${100*estado.tiempo/d.retardo}%`;
+        $('progreso').style.background=tono(regreso?'punto':'onda');
+        if(getComputedStyle($('area-escena')).visibility!=='hidden') {
+          if(vista3D)vista3D.dibujar(d);else dibujar2D(d);
+          dibujarMarcas(d);
+        }
+        if(estado.graficas)dibujarGrafica(d);
+        if(estado.modo==='imagen')dibujarImagen(d);
+      }
+      function pedirFotograma() { if(fotograma===null&&!document.hidden)fotograma=requestAnimationFrame(animar); }
+      function animar(marcaTiempo) {
+        fotograma=null;
+        if(!estado.pausado&&anterior!==null) {
+          const d=datos(),avance=(marcaTiempo-anterior)/1000*(estado.modo==='eco'?20:estado.modo==='imagen'?8*d.retardo:.12);
+          if(estado.modo==='eco')estado.tiempo=Math.min(d.retardo,estado.tiempo+avance);
+          else if(estado.modo==='imagen')estado.tiempoImagen=Math.min(d.limiteImagen,estado.tiempoImagen+avance);
+          else estado.tiempoOnda=Math.min(d.limiteOnda,estado.tiempoOnda+avance);
+          if(tiempoActual()>=limite(d)-1e-8){estado.pausado=true;actualizarInterfaz();$('resumen-accesible').textContent=estado.modo==='eco'?'Eco recibido: terminó el recorrido de ida y vuelta.':estado.modo==='imagen'?'Imagen completa: se recibieron los ecos de las 32 líneas.':'El pulso salió del encuadre.';}
+        }
+        anterior=estado.pausado?null:marcaTiempo;renderizar();if(!estado.pausado)pedirFotograma();
+      }
+      function cambiarModo(modo) {
+        estado.modo=modo;anterior=null;if(vista3D)vista3D.reiniciar();actualizarInterfaz();pedirFotograma();
+      }
+      function seleccionar(nombre) {
+        estado.parametro=nombre;
+        if(nombre==='frecuencia'||nombre==='ciclos')cambiarModo('onda');
+        else if(nombre==='retardo')cambiarModo('eco');
+        else actualizarInterfaz();
+        pedirFotograma();
+      }
+      for(const [nombre,entrada] of Object.entries(controles))entrada.addEventListener('input',()=>{
+        estado.tiempo=0;estado.tiempoOnda=0;estado.tiempoImagen=0;estado.pausado=true;anterior=null;
+        if(estado.modo==='imagen'){estado.parametro=nombre;actualizarInterfaz();pedirFotograma();}else seleccionar(nombre);
+      });
+      document.querySelectorAll('[data-parametro]').forEach(b=>b.addEventListener('click',()=>seleccionar(b.dataset.parametro)));
+      document.querySelectorAll('[data-modo]').forEach(b=>b.addEventListener('click',()=>{
+        estado.parametro=b.dataset.modo==='onda'?'frecuencia':'retardo';cambiarModo(b.dataset.modo);
+      }));
+      $('pausa').addEventListener('click',()=>{
+        if(estado.pausado&&tiempoActual()>=limite(datos())-1e-8){if(estado.modo==='eco')estado.tiempo=0;else if(estado.modo==='imagen')estado.tiempoImagen=0;else estado.tiempoOnda=0;}
+        estado.pausado=!estado.pausado;anterior=null;actualizarInterfaz();pedirFotograma();
+      });
+      $('paso').addEventListener('click',()=>{
+        const d=datos();estado.pausado=true;anterior=null;
+        if(estado.modo==='eco')estado.tiempo=Math.min(d.retardo,estado.tiempo+d.retardo/24);
+        else if(estado.modo==='imagen')estado.tiempoImagen=Math.min(d.limiteImagen,estado.tiempoImagen+d.tiempoLinea);
+        else estado.tiempoOnda=Math.min(d.limiteOnda,estado.tiempoOnda+d.periodo/16);
+        actualizarInterfaz();pedirFotograma();
+      });
+      $('graficas').addEventListener('click',()=>{estado.graficas=!estado.graficas;actualizarInterfaz();pedirFotograma();});
+      $('reiniciar').addEventListener('click',()=>{
+        for(const [nombre,valor] of Object.entries(inicial))controles[nombre].value=valor;
+        Object.assign(estado,{tiempo:0,tiempoOnda:0,tiempoImagen:0,pausado:reducido.matches,graficas:false,parametro:estado.modo==='onda'?'frecuencia':'retardo'});
+        anterior=null;if(vista3D)vista3D.reiniciar();actualizarInterfaz();pedirFotograma();
+      });
+      $('vista-inicial').addEventListener('click',()=>{if(vista3D)vista3D.reiniciar();pedirFotograma();});
+      $('pantalla-completa').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('laboratorio').requestFullscreen();}catch{$('pantalla-completa').textContent='Vista completa';}});
+      document.addEventListener('fullscreenchange',()=>{$('pantalla-completa').textContent=document.fullscreenElement?'Salir de pantalla completa':'Pantalla completa';encuadrar();});
+      function mostrarModelo(mostrar) {$('detalle').hidden=!mostrar;$('ayuda').setAttribute('aria-expanded',String(mostrar));if(mostrar)$('cerrar-detalle').focus();else if(document.activeElement===$('cerrar-detalle'))$('ayuda').focus();}
+      $('ayuda').addEventListener('click',()=>mostrarModelo($('detalle').hidden));$('cerrar-detalle').addEventListener('click',()=>mostrarModelo(false));
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')mostrarModelo(false);});
+      document.addEventListener('visibilitychange',()=>{if(fotograma!==null)cancelAnimationFrame(fotograma);fotograma=null;anterior=null;if(!document.hidden)pedirFotograma();});
+      reducido.addEventListener('change',()=>{if(reducido.matches)estado.pausado=true;anterior=null;actualizarInterfaz();pedirFotograma();});
+      window.addEventListener('resize',encuadrar);
+      new ResizeObserver(encuadrar).observe($('laboratorio').querySelector('.dock'));
+
+      async function iniciar3D() {
+        let renderizador=null,orbita=null;
+        try {
+          const [THREE,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
+          const escena=new THREE.Scene(),eco=new THREE.Group(),onda=new THREE.Group();escena.add(eco,onda);
+          const camara=new THREE.OrthographicCamera(-6,6,3,-3,.1,100);
+          renderizador=new THREE.WebGLRenderer({antialias:true,alpha:true});renderizador.setPixelRatio(Math.min(devicePixelRatio||1,2));renderizador.outputColorSpace=THREE.SRGBColorSpace;
+          const lienzo=renderizador.domElement;lienzo.id='lienzo';lienzo.setAttribute('aria-hidden','true');$('area-escena').prepend(lienzo);
+          orbita=new OrbitControls(camara,$('area-escena'));orbita.enablePan=false;orbita.enableDamping=false;orbita.minZoom=.75;orbita.maxZoom=1.55;orbita.minPolarAngle=.65;orbita.maxPolarAngle=1.7;orbita.minAzimuthAngle=-.6;orbita.maxAzimuthAngle=.6;orbita.addEventListener('change',pedirFotograma);
+          escena.add(new THREE.HemisphereLight(tono('tarjeta'),tono('primario'),2));
+          const luz=new THREE.DirectionalLight(tono('tarjeta'),2.3);luz.position.set(-4,8,10);escena.add(luz);
+          const solido=(color,opacidad=1)=>new THREE.MeshStandardMaterial({color,roughness:.55,transparent:opacidad<1,opacity:opacidad,depthWrite:opacidad===1,side:THREE.DoubleSide});
+          // Geometría reutilizable: piel y capas suaves, en vez de un reflector aislado.
+          function crearCapa(nombre,opacidad) {
+            const geometria=new THREE.BufferGeometry(),vertices=new Float32Array(25*4*3),indices=[];
+            for(let i=0;i<24;i++) {
+              const n=i*4;
+              for(const q of [[0,4,6,2],[0,1,5,4],[1,3,7,5],[2,6,7,3]])indices.push(n+q[0],n+q[1],n+q[2],n+q[0],n+q[2],n+q[3]);
+            }
+            indices.push(0,2,3,0,3,1,96,97,99,96,99,98);
+            geometria.setAttribute('position',new THREE.BufferAttribute(vertices,3));geometria.setIndex(indices);
+            const malla=new THREE.Mesh(geometria,solido(tono(nombre),opacidad));malla.renderOrder=1;eco.add(malla);
+            return {geometria,vertices};
+          }
+          const capas3D=[crearCapa('piel',.65),crearCapa('grasa',.38),crearCapa('musculo',.27),crearCapa('profundo',.14)];
+          const bordes3D=Array.from({length:5},(_,i)=>{
+            const geometria=new THREE.BufferGeometry();geometria.setAttribute('position',new THREE.BufferAttribute(new Float32Array(25*3),3));
+            const borde=new THREE.Line(geometria,new THREE.LineBasicMaterial({color:tono(i===3?'punto':'texto-secundario'),transparent:true,opacity:i===3?.8:.24}));eco.add(borde);return borde;
+          });
+          let profundidadDibujada=-1;
+          function actualizarCapas(d) {
+            if(d.profundidad===profundidadDibujada)return;profundidadDibujada=d.profundidad;
+            for(let i=0;i<=24;i++) {
+              const x=-2.1+4.2*i/24,alturas=[0,...fronteras(d,x).map(f=>f.profundidad),16].map(z=>yEco(z)+curvaPiel(x));
+              for(let capa=0;capa<4;capa++) {
+                const v=capas3D[capa].vertices,n=i*12;
+                v.set([x,alturas[capa],.9,x,alturas[capa+1],.9,x,alturas[capa],-.9,x,alturas[capa+1],-.9],n);
+              }
+              for(let borde=0;borde<5;borde++)bordes3D[borde].geometry.attributes.position.array.set([x,alturas[borde],.91],i*3);
+            }
+            for(const capa of capas3D){capa.geometria.attributes.position.needsUpdate=true;capa.geometria.computeVertexNormals();capa.geometria.computeBoundingSphere();}
+            for(const borde of bordes3D){borde.geometry.attributes.position.needsUpdate=true;borde.geometry.computeBoundingSphere();}
+          }
+          const sonda=new THREE.Group();eco.add(sonda);
+          const transductor=new THREE.Mesh(new THREE.BoxGeometry(1.15,.65,1.1),solido(tono('primario')));transductor.position.y=2.5;sonda.add(transductor);
+          const cara=new THREE.Mesh(new THREE.BoxGeometry(1.2,.11,1.14),solido(tono('onda')));cara.position.y=2.12;sonda.add(cara);
+          const gel=new THREE.Mesh(new THREE.BoxGeometry(1.3,.065,1.2),solido(tono('secundario'),.8));gel.position.y=2.0325;sonda.add(gel);
+          const pulso=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.075,48),solido(tono('onda'),.56));eco.add(pulso);
+          const nucleo=new THREE.Mesh(new THREE.SphereGeometry(.055,16,12),solido(tono('onda')));eco.add(nucleo);
+          const transmitido=new THREE.Mesh(pulso.geometry,solido(tono('onda'),.25));eco.add(transmitido);
+          const ecosTempranos=Array.from({length:2},()=>{const m=new THREE.Mesh(pulso.geometry,solido(tono('punto'),.42));eco.add(m);return m;});
+          for(const m of [pulso,transmitido,...ecosTempranos])m.renderOrder=2;
+          const cantidad=181,anillos=new THREE.InstancedMesh(new THREE.TorusGeometry(.34,.017,5,18),solido(tono('secundario')),cantidad);anillos.frustumCulled=false;anillos.instanceMatrix.setUsage(THREE.DynamicDrawUsage);onda.add(anillos);
+          const punto=new THREE.Mesh(new THREE.SphereGeometry(.075,20,14),solido(tono('punto')));onda.add(punto);
+          const auxiliar=new THREE.Object3D(),posicion=new THREE.Vector3(),gris=new THREE.Color(tono('borde')),verde=new THREE.Color(tono('longitudinal')),colorInstancia=new THREE.Color();
+          function camaraInicial() {
+            camara.zoom=1;orbita.target.set(0,0,0);
+            camara.position.set(estado.modo!=='onda'?7.5:1.5,estado.modo!=='onda'?5.2:1.3,18);orbita.update();
+          }
+          vista3D={
+            redimensionar() {
+              renderizador.setSize(ancho,alto,false);
+              const h=estado.modo!=='onda'?Math.max(6.2,9.2/(ancho/alto)):Math.max(3,14/(ancho/alto)),w=h*ancho/alto;
+              camara.left=-w/2;camara.right=w/2;camara.top=h/2;camara.bottom=-h/2;camara.updateProjectionMatrix();
+            },
+            proyectar(x,y,z=0) {posicion.set(x,y,z).project(camara);return [(posicion.x+1)*ancho/2,(1-posicion.y)*alto/2];},
+            reiniciar(){camaraInicial();},
+            dibujar(d) {
+              eco.visible=estado.modo!=='onda';onda.visible=!eco.visible;
+              if(eco.visible) {
+                actualizarCapas(d);
+                const c=contextoEco(d),ajuste=curvaPiel(c.x),color=tono(c.regreso?'punto':'onda');
+                sonda.position.set(c.x,ajuste,0);pulso.position.set(c.x,yEco(c.z)+ajuste,0);nucleo.position.copy(pulso.position);
+                pulso.visible=nucleo.visible=c.tiempo<=d.retardo;
+                pulso.material.color.set(color);nucleo.material.color.set(color);
+                transmitido.visible=c.regreso&&c.incidente<16;transmitido.position.set(c.x,yEco(c.incidente)+ajuste,0);
+                ecosTempranos.forEach((m,i)=>{m.visible=i<c.ecos.length;if(m.visible)m.position.set(c.x,yEco(c.ecos[i].z)+ajuste,0);});
+              } else {
+                for(let i=0;i<cantidad;i++) {
+                  const q=d.campo*i/(cantidad-1),u=desplazamiento(q,d),h=envolvente(q-centroPulso(d),d);
+                  auxiliar.position.set(xOnda(q+u,d),0,0);auxiliar.rotation.set(0,Math.PI/2,0);auxiliar.scale.set(radioMedio/.34,radioMedio/.34,1);auxiliar.updateMatrix();anillos.setMatrixAt(i,auxiliar.matrix);
+                  colorInstancia.copy(gris).lerp(verde,h*.8);anillos.setColorAt(i,colorInstancia);
+                }
+                anillos.instanceMatrix.needsUpdate=true;anillos.instanceColor.needsUpdate=true;
+                punto.position.set(xOnda(d.centroInicial+desplazamiento(d.centroInicial,d),d),radioMedio+.06,0);punto.scale.setScalar(innerWidth<=680?1.4:1);
+              }
+              renderizador.render(escena,camara);
+            }
+          };
+          camaraInicial();encuadrar();vista3D.dibujar(datos());$('alternativa').style.display='none';$('modo-render').textContent='3D';
+          $('estado-carga').textContent='Three.js 0.180.0 y OrbitControls desde jsDelivr. La vista 3D necesita internet y WebGL 2; sin ellos se conserva el mismo modelo en 2D.';
+          $('area-escena').addEventListener('keydown',e=>{
+            if(!vista3D||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-'].includes(e.key))return;e.preventDefault();
+            const esfera=new THREE.Spherical().setFromVector3(camara.position.clone().sub(orbita.target));
+            if(e.key==='ArrowLeft')esfera.theta=Math.max(-.6,esfera.theta-.1);if(e.key==='ArrowRight')esfera.theta=Math.min(.6,esfera.theta+.1);
+            if(e.key==='ArrowUp')esfera.phi=Math.max(.65,esfera.phi-.1);if(e.key==='ArrowDown')esfera.phi=Math.min(1.7,esfera.phi+.1);
+            if(e.key==='+'||e.key==='=')camara.zoom=Math.min(1.55,camara.zoom*1.1);if(e.key==='-')camara.zoom=Math.max(.75,camara.zoom/1.1);
+            camara.position.setFromSpherical(esfera).add(orbita.target);camara.updateProjectionMatrix();orbita.update();pedirFotograma();
+          });
+          lienzo.addEventListener('webglcontextlost',e=>{
+            e.preventDefault();vista3D=null;orbita.dispose();lienzo.style.display='none';$('alternativa').style.display='block';$('modo-render').textContent='2D';
+            $('estado-carga').textContent='El navegador perdió el contexto gráfico. El pulso, las ecuaciones y los controles siguen funcionando en 2D.';encuadrar();
+          });
+        } catch(error) {
+          vista3D=null;if(orbita)orbita.dispose();if(renderizador){renderizador.domElement.remove();renderizador.dispose();}
+          $('alternativa').style.display='block';$('modo-render').textContent='2D';$('estado-carga').textContent='Vista 2D activa. Para ver 3D se necesita conexión a internet y WebGL 2.';encuadrar();
+        }
+      }
+      actualizarInterfaz();renderizar();iniciar3D();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Problema universitario resuelto: función de partición, energía, entropía y calor específico de partículas con tres niveles. Exploración 3D del ensamble canónico.">
+  <title>Tres niveles de energía · Problema S–5–3</title>
+  <style>
+    :root{color-scheme:only light;--color-fondo:#F7F8FC;--color-tarjeta:#FFF;--color-primario:#A8C7FA;--color-secundario:#B8E0D2;--color-acento:#CDB4DB;--color-texto:#273043;--color-texto-secundario:#667085;--color-borde:#E4E7EC;--color-onda:#668EC6;--color-verde:#67998A;--color-punto:#9471AE;--radio-tarjeta:18px;--sombra:0 10px 32px rgba(39,48,67,.07)}
+    *{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0;width:100%;height:100%;background:var(--color-fondo);color:var(--color-texto);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}button,input{-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--color-onda);outline-offset:3px}button{color:inherit}math{font-family:"Cambria Math","STIX Two Math","Latin Modern Math",serif;font-size:1.13em}math[display="block"]{margin:0}annotation{display:none}.app{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 20% 20%,rgba(168,199,250,.12),transparent 70%),var(--color-fondo)}
+    .cabecera{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 28px 18px;flex-shrink:0}.identidad h1{margin:4px 0 0;font-size:1.5rem;line-height:1.2;letter-spacing:-.045em;font-weight:720}.kicker{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-weight:650;color:var(--color-texto-secundario)}.selector{display:inline-flex;gap:3px;padding:4px;border-radius:12px;background:rgba(228,231,236,.7)}.selector button{padding:8px 14px;min-height:36px;border:0;background:transparent;border-radius:9px;font-size:.84rem;font-weight:650;color:var(--color-texto-secundario)}.selector button[aria-selected="true"],.selector button[aria-pressed="true"]{background:var(--color-tarjeta);color:var(--color-texto);box-shadow:0 2px 6px rgba(39,48,67,.06)}.pagina{flex:1;min-height:0}.lectura{overflow:auto;padding:16px 28px 48px;scroll-behavior:smooth}.papel{max-width:960px;margin:0 auto;padding:38px 46px;background:var(--color-tarjeta);border:1px solid var(--color-borde);border-radius:var(--radio-tarjeta);box-shadow:var(--sombra)}.papel .numero-pagina{color:var(--color-onda);font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.papel h2{font-size:1.5rem;line-height:1.32;letter-spacing:-.035em;margin:14px 0 24px}.papel p{font-size:1rem;line-height:1.85;margin:14px 0}.math-block{overflow-x:auto;overflow-y:hidden;padding:16px 8px;margin:8px 0;text-align:center;max-width:100%;font-size:1.04rem}.math-block .katex{display:block;width:max-content;min-width:100%;}.apartados{padding:0;list-style:none;margin:26px 0 30px;display:grid;gap:16px}.apartados li{display:flex;gap:15px;font-size:1rem;line-height:1.7}.apartado-letra{font-weight:650;color:var(--color-onda)}.lectura-footer{display:flex;justify-content:space-between;gap:14px;margin-top:28px;border-top:1px solid var(--color-borde);padding-top:23px;align-items:center}.fuente{font-size:.75rem;color:var(--color-texto-secundario)}.boton{border:1px solid var(--color-borde);border-radius:11px;background:var(--color-tarjeta);padding:10px 14px;min-height:38px;font-size:.8rem;font-weight:650;white-space:nowrap}.boton:hover{background:rgba(168,199,250,.12)}.principal{background:var(--color-texto);color:var(--color-tarjeta);border-color:var(--color-texto)}.principal:hover{background:#42516A}.solucion-intro{color:var(--color-texto-secundario);font-size:.8rem!important;margin-top:0!important}.paso-solucion{padding:28px 0;border-bottom:1px solid var(--color-borde);scroll-margin-top:16px}.paso-solucion:first-of-type{padding-top:8px}.paso-solucion:last-of-type{border-bottom:0}.paso-solucion h2{font-size:1.18rem;margin:0 0 20px}.explorar{margin-top:18px;color:var(--color-onda);font-size:.77rem}.indice{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 16px}.indice a{text-decoration:none;color:var(--color-texto-secundario);font-size:.78rem;padding:6px 10px;background:var(--color-fondo);border-radius:8px}.indice a:hover{color:var(--color-onda)}
+    .laboratorio{display:flex;flex-direction:column;gap:12px;padding:0 28px 20px;position:relative}.cristal{background:rgba(255,255,255,.92);border:1px solid var(--color-borde);border-radius:var(--radio-tarjeta);box-shadow:var(--sombra);backdrop-filter:blur(12px)}.barra-viz{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-shrink:0}.modos button{font-size:.76rem;padding:7px 10px;min-height:34px}.modo-corto{display:none}.acciones{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.acciones .boton{padding:8px 11px;font-size:.75rem;min-height:35px}.ecuacion{align-self:flex-start;padding:12px 18px;max-width:100%;flex-shrink:0;min-height:100px}.ecuacion-titulo{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:8px}.ecuacion-titulo h2{font-size:.78rem;margin:0;font-weight:650;color:var(--color-texto-secundario)}.valor-principal{font-size:1.24rem;font-weight:700;letter-spacing:-.025em;font-variant-numeric:tabular-nums}.valor-principal small{font-size:.75rem;font-weight:500}.formula{font-size:1.07rem;line-height:1.3;overflow:auto}.formula math{font-size:1em}.formula .katex{display:block}.relaciones{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;color:var(--color-texto-secundario);font-size:.73rem}.relaciones button{border:0;background:transparent;border-radius:5px;padding:3px 6px;font-variant-numeric:tabular-nums;color:inherit}.relaciones button[data-nivel="0"]{color:var(--color-onda)}.relaciones button[data-nivel="1"]{color:var(--color-verde)}.relaciones button[data-nivel="2"]{color:var(--color-punto)}.relaciones button[aria-pressed="true"]{background:rgba(168,199,250,.18);box-shadow:inset 0 0 0 1px var(--color-borde)}.cuerpo-viz{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;flex:1;min-height:0}.con-graficas .cuerpo-viz{grid-template-columns:minmax(0,1fr) 335px}.figura{min-width:0;min-height:0;position:relative;display:flex;flex-direction:column}.escena-label{display:flex;align-items:center;justify-content:space-between;color:var(--color-texto-secundario);font-size:.74rem;gap:10px;flex-shrink:0;height:24px}.escena-label strong{color:var(--color-texto)}#escena{flex:1;min-height:90px;position:relative;overflow:hidden;touch-action:none;cursor:grab;border-radius:14px}#escena:active{cursor:grabbing}#lienzo,#alternativa,#anotaciones{position:absolute;inset:0;width:100%;height:100%;display:block}#alternativa,#anotaciones{pointer-events:none}#anotaciones{z-index:2}#anotaciones text,#alternativa text,.grafica text{font-family:Inter,system-ui,sans-serif;font-size:12px}.pie-escena{font-size:.75rem;text-align:center;color:var(--color-texto-secundario);padding:5px 0 0;flex-shrink:0;line-height:1.5}.pie-escena strong{color:var(--color-punto)}.panel-graficas{padding:14px;min-width:0;min-height:0;display:flex;flex-direction:column;justify-content:center}.panel-graficas h2{font-size:.84rem;margin:0 0 8px}.grafica{width:100%;height:100%;max-height:310px;min-height:140px;display:block}.grafica-nota{font-size:.71rem;line-height:1.5;color:var(--color-texto-secundario);margin:10px 0 0}.dock{width:min(1100px,100%);align-self:center;padding:13px 19px 10px;flex-shrink:0}.parametros{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:28px}.parametro{min-width:0}.parametro-cabecera{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.79rem;margin-bottom:10px}.parametro-cabecera label{font-weight:650}.parametro-cabecera output{font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}input[type="range"]{appearance:none;width:100%;height:6px;border-radius:99px;background:linear-gradient(to right,var(--color-primario) var(--progreso,50%),#EBEEF3 var(--progreso,50%));margin:4px 0 8px;cursor:pointer}input[type="range"]::-webkit-slider-thumb{appearance:none;width:21px;height:21px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto);box-shadow:0 2px 7px rgba(39,48,67,.2)}input[type="range"]::-moz-range-thumb{width:15px;height:15px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto)}.presets{display:flex;gap:8px;flex-wrap:wrap}.presets button{border:0;background:var(--color-fondo);border-radius:6px;padding:4px 8px;font-size:.7rem;color:var(--color-texto-secundario);min-height:26px}.presets button[aria-pressed="true"]{background:rgba(168,199,250,.3);color:var(--color-texto)}.dock-pie{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--color-borde);padding-top:9px;margin-top:10px;font-size:.73rem;color:var(--color-texto-secundario);line-height:1.4}.herramientas{display:flex;gap:12px;align-items:center;flex-shrink:0}.enlace{border:0;padding:0;background:transparent;color:inherit;font-size:inherit;text-decoration:underline;text-underline-offset:3px;min-height:24px}.detalle{position:absolute;z-index:8;right:28px;bottom:165px;padding:20px;width:min(470px,calc(100% - 56px));max-height:calc(100% - 185px);overflow:auto;font-size:.82rem;line-height:1.65}.detalle h2{font-size:.95rem;margin:0 25px 12px 0}.detalle p{margin:9px 0}.detalle a{color:var(--color-onda)}.cerrar{position:absolute;right:10px;top:8px;background:transparent;border:0;font-size:1.4rem;color:var(--color-texto-secundario)}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.modo-render{color:var(--color-onda);font-size:.69rem}.lectura math[display="inline"]{white-space:nowrap}
+    @media(max-width:1100px){.barra-viz{flex-wrap:wrap}.acciones{justify-content:flex-start}.laboratorio{gap:10px}.con-graficas .cuerpo-viz{grid-template-columns:minmax(0,1fr) 295px}.cabecera{gap:12px}.identidad h1{font-size:1.32rem}.selector button{padding:8px 11px}}
+    @media(max-width:680px){.cabecera{padding:13px 13px 11px;display:block}.identidad h1{font-size:1.15rem;margin:4px 0 10px}.kicker{font-size:.59rem}.paginas{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.paginas button{padding:6px 4px;font-size:.74rem;min-height:33px}.lectura{padding:8px 13px 26px}.papel{padding:23px 19px;border-radius:16px}.papel h2{font-size:1.25rem;margin-bottom:18px}.papel p,.apartados li{font-size:.91rem;line-height:1.8}.apartados{gap:14px}.math-block{font-size:.93rem;padding:13px 2px}.lectura-footer{align-items:flex-start;flex-direction:column}.solucion-intro{font-size:.75rem!important}.paso-solucion h2{font-size:1.04rem}.laboratorio{padding:0 13px 12px;gap:8px}.barra-viz{gap:6px}.modos{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}.modos button{padding:5px 3px;font-size:.76rem;min-height:30px}.modo-largo{display:none}.modo-corto{display:inline}.acciones{width:100%;gap:5px;justify-content:space-between;flex-wrap:nowrap}.acciones .boton{padding:7px 7px;font-size:.68rem;min-height:32px;border-radius:9px}.ecuacion{width:100%;padding:10px 12px;min-height:95px}.ecuacion-titulo{gap:8px;margin-bottom:6px}.ecuacion-titulo h2{font-size:.7rem}.valor-principal{font-size:1.08rem}.valor-principal small{font-size:.68rem}.formula{font-size:.91rem}.relaciones{gap:2px 8px;font-size:.69rem;margin-top:5px}.relaciones button{padding:3px 2px}.cuerpo-viz,.con-graficas .cuerpo-viz{grid-template-columns:minmax(0,1fr);gap:0}.con-graficas .figura{display:none}.panel-graficas{padding:11px 12px;min-height:0}.panel-graficas h2{font-size:.77rem}.grafica{min-height:90px;max-height:none}.grafica-nota{font-size:.67rem;margin-top:5px}.escena-label{font-size:.63rem;height:20px}.pie-escena{font-size:.66rem;padding-top:3px}.dock{padding:11px 12px 8px}.parametros{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px}.parametro-cabecera{font-size:.7rem;gap:3px;margin-bottom:6px}.parametro-cabecera label small{display:none}.presets{gap:4px}.presets button{padding:3px 5px;font-size:.63rem;min-height:24px}.dock-pie{display:block;font-size:.68rem;margin-top:7px;padding-top:7px}.herramientas{justify-content:flex-end;gap:12px;margin-top:4px}.detalle{right:13px;bottom:177px;width:calc(100% - 26px);max-height:calc(100% - 190px);padding:16px;font-size:.77rem}.anotacion-poblacion{display:none}}
+    @media(max-width:350px){.identidad h1{font-size:1.06rem}.acciones .boton{padding:7px 5px;font-size:.65rem}.formula{font-size:.84rem}.relaciones{font-size:.65rem;gap:4px}.parametro-cabecera{font-size:.66rem}.papel{padding:20px 15px}.ecuacion-titulo h2{font-size:.66rem}}
+    @media(max-height:710px) and (min-width:681px){.cabecera{padding-top:13px;padding-bottom:11px}.laboratorio{gap:7px;padding-bottom:12px}.ecuacion{padding:9px 15px;min-height:89px}.dock{padding:10px 17px 7px}.presets button{min-height:22px;padding-top:2px;padding-bottom:2px}.dock-pie{margin-top:5px;padding-top:5px}.parametro-cabecera{margin-bottom:5px}.pie-escena{font-size:.69rem}.detalle{bottom:147px}}
+    @media(prefers-reduced-motion:reduce){.lectura{scroll-behavior:auto}*{transition:none!important}}
+  
+#pagina-3 #lienzo,#pagina-3 #alternativa,#pagina-3 #anotaciones{bottom:auto;height:calc(100% - var(--pie-alto,30px))}
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+<main class="app" id="app">
+  <header class="cabecera">
+    <div class="identidad"><span class="kicker">Mecánica estadística · Problema S–5–3</span><h1>Tres niveles de energía</h1></div>
+    <nav class="selector paginas" role="tablist" aria-label="Páginas del problema">
+      <button type="button" id="tab-1" role="tab" aria-selected="true" aria-controls="pagina-1" data-pagina="1">1 · Enunciado</button>
+      <button type="button" id="tab-2" role="tab" aria-selected="false" aria-controls="pagina-2" tabindex="-1" data-pagina="2">2 · Solución</button>
+      <button type="button" id="tab-3" role="tab" aria-selected="false" aria-controls="pagina-3" tabindex="-1" data-pagina="3">3 · Visualización</button>
+    </nav>
+  </header>
+  <section id="pagina-1" class="pagina lectura" role="tabpanel" aria-labelledby="tab-1" tabindex="0">
+    <article class="papel"><span class="numero-pagina">Enunciado · 01 / 03</span><h2>Sistema de partículas con tres niveles de energía.</h2>
+      <p>Considere un sistema de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span> partículas clásicas, no interactuantes, en contacto con un reservorio térmico a temperatura <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span>. Cada partícula puede tener una de las tres energías</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>ϵ</mi><mn>0</mn></msub><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mspace width="2em"/><msub><mi>ϵ</mi><mn>1</mn></msub><mo>=</mo><mi>ϵ</mi><mo separator="true">,</mo><mspace width="2em"/><msub><mi>ϵ</mi><mn>2</mn></msub><mo>=</mo><mn>3</mn><mi>ϵ</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">\epsilon_0=0,
+\qquad
+\epsilon_1=\epsilon,
+\qquad
+\epsilon_2=3\epsilon,</annotation></semantics></math></span></div>
+<p>con <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\epsilon&gt;0</annotation></semantics></math></span>.</p><ol class="apartados"><li><span class="apartado-letra">(a)</span><span>Obtenga la función de partición canónica del sistema.</span></li><li><span class="apartado-letra">(b)</span><span>Calcule la energía interna por partícula <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">u(T)</annotation></semantics></math></span>.</span></li><li><span class="apartado-letra">(c)</span><span>Analice los límites <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">T\to 0</annotation></semantics></math></span> y <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">T\to\infty</annotation></semantics></math></span> de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">u(T)</annotation></semantics></math></span>.</span></li><li><span class="apartado-letra">(d)</span><span>Obtenga la entropía por partícula <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">s(T)</annotation></semantics></math></span>.</span></li><li><span class="apartado-letra">(e)</span><span>Determine el calor específico por partícula y discuta su comportamiento cualitativo.</span></li></ol>
+      <footer class="lectura-footer"><span class="fuente">Fuente: Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, problema 5.3.</span><button class="boton principal" data-ir="2">Ver solución paso a paso →</button></footer>
+    </article>
+  </section>
+  <section id="pagina-2" class="pagina lectura" role="tabpanel" aria-labelledby="tab-2" tabindex="0" hidden>
+    <article class="papel"><span class="numero-pagina">Solución · 02 / 03</span><h2>Del ensamble a sus propiedades térmicas</h2><p class="solucion-intro">Desarrollo del archivo original. Cada apartado enlaza con su representación interactiva.</p>
+      <nav class="indice" aria-label="Apartados de la solución"><a href="#solucion-particion">(a) Partición</a><a href="#solucion-energia">(b) Energía</a><a href="#solucion-limites">(c) Límites</a><a href="#solucion-entropia">(d) Entropía</a><a href="#solucion-calor">(e) Calor específico</a></nav>
+      <section class="paso-solucion" id="solucion-particion"><h2>(a) Función de partición</h2><p>Para una partícula, la función de partición es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><munder><mo>∑</mo><mi>r</mi></munder><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><msub><mi>ϵ</mi><mi>r</mi></msub></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">Z_1
+=
+\sum_r e^{-\beta\epsilon_r}.</annotation></semantics></math></span></div>
+<p>Como los niveles disponibles son</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mn>0</mn><mo separator="true">,</mo><mspace width="2em"/><mi>ϵ</mi><mo separator="true">,</mo><mspace width="2em"/><mn>3</mn><mi>ϵ</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">0,\qquad \epsilon,\qquad 3\epsilon,</annotation></semantics></math></span></div>
+<p>tenemos</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mo stretchy="false">(</mo><mn>0</mn><mo stretchy="false">)</mo></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">Z_1
+=
+e^{-\beta(0)}
++
+e^{-\beta\epsilon}
++
+e^{-3\beta\epsilon}.</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+Z_1
+=
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}.
+}</annotation></semantics></math></span></div>
+<p>Como las partículas son independientes,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>Z</mi><mo>=</mo><msubsup><mi>Z</mi><mn>1</mn><mi>N</mi></msubsup><mo>=</mo><msup><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi>N</mi></msup><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+Z=Z_1^N
+=
+\left(
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+\right)^N.
+}</annotation></semantics></math></span></div><button class="boton explorar" data-explorar="particion">Explorar este resultado <span aria-hidden="true">↗</span></button></section>
+<section class="paso-solucion" id="solucion-energia"><h2>(b) Energía interna por partícula</h2><p>La energía interna total es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><mi>Z</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">U=-\frac{\partial}{\partial\beta}\ln Z.</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ln</mi><mo>⁡</mo><mi>Z</mi><mo>=</mo><mi>N</mi><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">\ln Z=N\ln Z_1,</annotation></semantics></math></span></div>
+<p>la energía interna por partícula es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo>=</mo><mfrac><mi>U</mi><mi>N</mi></mfrac><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">u=\frac{U}{N}
+=
+-\frac{\partial}{\partial\beta}\ln Z_1.</annotation></semantics></math></span></div>
+<p>Ahora,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">Z_1=1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}.</annotation></semantics></math></span></div>
+<p>Entonces</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mi mathvariant="normal">∂</mi><msub><mi>Z</mi><mn>1</mn></msub></mrow><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mo>=</mo><mo>−</mo><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>−</mo><mn>3</mn><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\frac{\partial Z_1}{\partial\beta}
+=
+-\epsilon e^{-\beta\epsilon}
+-
+3\epsilon e^{-3\beta\epsilon}.</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><msub><mi>Z</mi><mn>1</mn></msub></mfrac><mfrac><mrow><mi mathvariant="normal">∂</mi><msub><mi>Z</mi><mn>1</mn></msub></mrow><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>3</mn><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">u
+=
+-\frac{1}{Z_1}
+\frac{\partial Z_1}{\partial\beta}
+=
+\frac{
+\epsilon e^{-\beta\epsilon}
++
+3\epsilon e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}.</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><mi>ϵ</mi><mfrac><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>3</mn><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+u(T)
+=
+\epsilon
+\frac{
+e^{-\beta\epsilon}
++
+3e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}.
+}</annotation></semantics></math></span></div><button class="boton explorar" data-explorar="energia">Explorar este resultado <span aria-hidden="true">↗</span></button></section>
+<section class="paso-solucion" id="solucion-limites"><h2>(c) Límites de temperatura</h2><p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">T\to 0</annotation></semantics></math></span>, se tiene <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\beta\to\infty</annotation></semantics></math></span>. Entonces</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>→</mo><mn>0</mn><mo separator="true">,</mo><mspace width="2em"/><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>→</mo><mn>0.</mn></mrow><annotation encoding="application/x-tex">e^{-\beta\epsilon}\to 0,
+\qquad
+e^{-3\beta\epsilon}\to 0.</annotation></semantics></math></span></div>
+<p>Luego,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mn>0</mn><mo stretchy="false">)</mo><mo>→</mo><mn>0.</mn></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+u(T\to 0)\to 0.
+}</annotation></semantics></math></span></div>
+<p>Esto corresponde a que todas las partículas ocupan el nivel fundamental de energía cero.</p>
+<p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">T\to\infty</annotation></semantics></math></span>, se tiene <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\beta\to 0</annotation></semantics></math></span>. Entonces</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>→</mo><mn>1</mn><mo separator="true">,</mo><mspace width="2em"/><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>→</mo><mn>1.</mn></mrow><annotation encoding="application/x-tex">e^{-\beta\epsilon}\to 1,
+\qquad
+e^{-3\beta\epsilon}\to 1.</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mo>=</mo><mi>ϵ</mi><mfrac><mrow><mn>1</mn><mo>+</mo><mn>3</mn></mrow><mrow><mn>1</mn><mo>+</mo><mn>1</mn><mo>+</mo><mn>1</mn></mrow></mfrac><mo>=</mo><mfrac><mrow><mn>4</mn><mi>ϵ</mi></mrow><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">u(T\to\infty)
+=
+\epsilon
+\frac{1+3}{1+1+1}
+=
+\frac{4\epsilon}{3}.</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mo>→</mo><mfrac><mrow><mn>4</mn><mi>ϵ</mi></mrow><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+u(T\to\infty)\to \frac{4\epsilon}{3}.
+}</annotation></semantics></math></span></div>
+<p>A temperatura alta, los tres niveles se ocupan con igual probabilidad, por eso la energía media es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mrow><mn>0</mn><mo>+</mo><mi>ϵ</mi><mo>+</mo><mn>3</mn><mi>ϵ</mi></mrow><mn>3</mn></mfrac><mo>=</mo><mfrac><mrow><mn>4</mn><mi>ϵ</mi></mrow><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\frac{0+\epsilon+3\epsilon}{3}
+=
+\frac{4\epsilon}{3}.</annotation></semantics></math></span></div><button class="boton explorar" data-explorar="limites">Explorar este resultado <span aria-hidden="true">↗</span></button></section>
+<section class="paso-solucion" id="solucion-entropia"><h2>(d) Entropía por partícula</h2><p>La energía libre por partícula es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>β</mi></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mo>−</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">f=-\frac{1}{\beta}\ln Z_1=-k_BT\ln Z_1.</annotation></semantics></math></span></div>
+<p>La entropía por partícula puede escribirse como</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>s</mi><mo>=</mo><mfrac><mrow><mi>u</mi><mo>−</mo><mi>f</mi></mrow><mi>T</mi></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">s=\frac{u-f}{T}.</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>s</mi><mo>=</mo><mfrac><mi>u</mi><mi>T</mi></mfrac><mo>+</mo><msub><mi>k</mi><mi>B</mi></msub><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">s
+=
+\frac{u}{T}
++
+k_B\ln Z_1.</annotation></semantics></math></span></div>
+<p>Como <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>=</mo><mn>1</mn><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\beta=1/(k_BT)</annotation></semantics></math></span>,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>u</mi><mi>T</mi></mfrac><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><mi>β</mi><mi>u</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\frac{u}{T}=k_B\beta u.</annotation></semantics></math></span></div>
+<p>Luego,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>s</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><mi>ln</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mo>+</mo><msub><mi>k</mi><mi>B</mi></msub><mi>β</mi><mi>ϵ</mi><mfrac><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>3</mn><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+s(T)
+=
+k_B\ln\left(
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+\right)
++
+k_B\beta
+\epsilon
+\frac{
+e^{-\beta\epsilon}
++
+3e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}.
+}</annotation></semantics></math></span></div>
+<p>En los límites,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>T</mi><mo>→</mo><mn>0</mn><mo>:</mo><mspace width="2em"/><msub><mi>Z</mi><mn>1</mn></msub><mo>→</mo><mn>1</mn><mo separator="true">,</mo><mspace width="2em"/><mi>u</mi><mo>→</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">T\to 0:
+\qquad
+Z_1\to 1,
+\qquad
+u\to 0,</annotation></semantics></math></span></div>
+<p>por lo que</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>s</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mn>0</mn><mo stretchy="false">)</mo><mo>→</mo><mn>0.</mn></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+s(T\to 0)\to 0.
+}</annotation></semantics></math></span></div>
+<p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">T\to\infty</annotation></semantics></math></span>,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>→</mo><mn>3</mn><mo separator="true">,</mo><mspace width="2em"/><mi>β</mi><mi>u</mi><mo>→</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">Z_1\to 3,
+\qquad
+\beta u\to 0,</annotation></semantics></math></span></div>
+<p>y entonces</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>s</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mo>→</mo><msub><mi>k</mi><mi>B</mi></msub><mi>ln</mi><mo>⁡</mo><mn>3.</mn></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+s(T\to\infty)\to k_B\ln 3.
+}</annotation></semantics></math></span></div><button class="boton explorar" data-explorar="entropia">Explorar este resultado <span aria-hidden="true">↗</span></button></section>
+<section class="paso-solucion" id="solucion-calor"><h2>(e) Calor específico</h2><p>El calor específico por partícula es</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>c</mi><mo>=</mo><mfrac><mrow><mi mathvariant="normal">∂</mi><mi>u</mi></mrow><mrow><mi mathvariant="normal">∂</mi><mi>T</mi></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">c
+=
+\frac{\partial u}{\partial T}.</annotation></semantics></math></span></div>
+<p>En el ensamble canónico también se puede escribir como</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>c</mi><mo>=</mo><mfrac><mn>1</mn><mrow><msub><mi>k</mi><mi>B</mi></msub><msup><mi>T</mi><mn>2</mn></msup></mrow></mfrac><mrow><mo fence="true">(</mo><mo stretchy="false">⟨</mo><msup><mi>ϵ</mi><mn>2</mn></msup><mo stretchy="false">⟩</mo><mo>−</mo><mo stretchy="false">⟨</mo><mi>ϵ</mi><msup><mo stretchy="false">⟩</mo><mn>2</mn></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">c
+=
+\frac{1}{k_BT^2}
+\left(
+\langle \epsilon^2\rangle
+-
+\langle \epsilon\rangle^2
+\right).</annotation></semantics></math></span></div>
+<p>Para una partícula,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">⟨</mo><mi>ϵ</mi><mo stretchy="false">⟩</mo><mo>=</mo><mi>u</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">\langle \epsilon\rangle=u,</annotation></semantics></math></span></div>
+<p>y</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">⟨</mo><msup><mi>ϵ</mi><mn>2</mn></msup><mo stretchy="false">⟩</mo><mo>=</mo><mfrac><mrow><msup><mn>0</mn><mn>2</mn></msup><msup><mi>e</mi><mn>0</mn></msup><mo>+</mo><msup><mi>ϵ</mi><mn>2</mn></msup><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mo stretchy="false">(</mo><mn>3</mn><mi>ϵ</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><msub><mi>Z</mi><mn>1</mn></msub></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\langle \epsilon^2\rangle
+=
+\frac{
+0^2e^{0}
++
+\epsilon^2e^{-\beta\epsilon}
++
+(3\epsilon)^2e^{-3\beta\epsilon}
+}{
+Z_1
+}.</annotation></semantics></math></span></div>
+<p>Entonces</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">⟨</mo><msup><mi>ϵ</mi><mn>2</mn></msup><mo stretchy="false">⟩</mo><mo>=</mo><msup><mi>ϵ</mi><mn>2</mn></msup><mfrac><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>9</mn><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\langle \epsilon^2\rangle
+=
+\epsilon^2
+\frac{
+e^{-\beta\epsilon}
++
+9e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}.</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>c</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><mo stretchy="false">(</mo><mi>β</mi><mi>ϵ</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mrow><mo fence="true">[</mo><mfrac><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>9</mn><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mo>−</mo><msup><mrow><mo fence="true">(</mo><mfrac><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>3</mn><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+c(T)
+=
+k_B(\beta\epsilon)^2
+\left[
+\frac{
+e^{-\beta\epsilon}
++
+9e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}
+-
+\left(
+\frac{
+e^{-\beta\epsilon}
++
+3e^{-3\beta\epsilon}
+}{
+1+e^{-\beta\epsilon}+e^{-3\beta\epsilon}
+}
+\right)^2
+\right].
+}</annotation></semantics></math></span></div>
+<p>En el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">T\to 0</annotation></semantics></math></span>, las partículas permanecen congeladas en el estado fundamental y las fluctuaciones de energía desaparecen:</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>c</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mn>0</mn><mo stretchy="false">)</mo><mo>→</mo><mn>0.</mn></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+c(T\to 0)\to 0.
+}</annotation></semantics></math></span></div>
+<p>En el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">T\to\infty</annotation></semantics></math></span>, los tres niveles se ocupan casi por igual, pero el factor <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>β</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\beta^2</annotation></semantics></math></span> hace que</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>c</mi><mo stretchy="false">(</mo><mi>T</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mo>→</mo><mn>0.</mn></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">\boxed{
+c(T\to\infty)\to 0.
+}</annotation></semantics></math></span></div>
+<p>Por lo tanto, <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>c</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">c(T)</annotation></semantics></math></span> presenta un máximo intermedio, asociado a la escala térmica</p>
+<div class="math-block"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mo>∼</mo><mi>ϵ</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">k_BT\sim \epsilon.</annotation></semantics></math></span></div><button class="boton explorar" data-explorar="calor">Explorar este resultado <span aria-hidden="true">↗</span></button></section>
+
+      <footer class="lectura-footer"><button class="boton" data-ir="1">← Enunciado</button><button class="boton principal" data-ir="3">Explorar en 3D →</button></footer>
+    </article>
+  </section>
+  <section id="pagina-3" class="pagina laboratorio" role="tabpanel" aria-labelledby="tab-3" hidden>
+    <div class="barra-viz">
+      <nav class="selector modos" aria-label="Resultado que se interpreta">
+        <button data-resultado="particion" aria-pressed="false"><span class="modo-largo">Partición</span><span class="modo-corto">Z</span></button>
+        <button data-resultado="energia" aria-pressed="true"><span class="modo-largo">Energía</span><span class="modo-corto">u</span></button>
+        <button data-resultado="limites" aria-pressed="false">Límites</button>
+        <button data-resultado="entropia" aria-pressed="false"><span class="modo-largo">Entropía</span><span class="modo-corto">s</span></button>
+        <button data-resultado="calor" aria-pressed="false"><span class="modo-largo">Calor específico</span><span class="modo-corto">c</span></button>
+      </nav>
+      <nav class="acciones" aria-label="Herramientas del ensamble"><button class="boton principal" id="pausa" aria-pressed="false">Muestrear</button><button class="boton" id="paso">Paso</button><button class="boton" id="reiniciar">Reiniciar</button><button class="boton" id="graficas" aria-pressed="false">Gráficas</button><button class="boton" id="pantalla-completa" aria-label="Pantalla completa" title="Pantalla completa">⛶</button></nav>
+    </div>
+    <section class="ecuacion cristal" aria-label="Resultado y probabilidades">
+      <div class="ecuacion-titulo"><h2 id="titulo-resultado">(b) Energía por partícula</h2><output class="valor-principal" id="valor-principal"></output></div>
+      <div data-formula="particion" class="formula" hidden><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>Z</mi><mo>=</mo><msubsup><mi>Z</mi><mn>1</mn><mi>N</mi></msubsup><mo separator="true">,</mo><mspace width="2em"/><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>1</mn><mi mathvariant="normal">/</mi><mi>θ</mi></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>3</mn><mi mathvariant="normal">/</mi><mi>θ</mi></mrow></msup></mrow><annotation encoding="application/x-tex">Z=Z_1^N,\qquad Z_1=1+e^{-1/\theta}+e^{-3/\theta}</annotation></semantics></math></span></div><div data-formula="energia" class="formula" hidden><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>u</mi><mi>ϵ</mi></mfrac><mo>=</mo><msub><mi>p</mi><mn>1</mn></msub><mo>+</mo><mn>3</mn><msub><mi>p</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">\frac{u}{\epsilon}=p_1+3p_2</annotation></semantics></math></span></div><div data-formula="limites" class="formula" hidden><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mn>0</mn><mo stretchy="false">)</mo><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mspace width="2em"/><mi>u</mi><mo stretchy="false">(</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mn>4</mn><mi>ϵ</mi></mrow><mn>3</mn></mfrac></mrow><annotation encoding="application/x-tex">u(0)=0,\qquad u(\infty)=\frac{4\epsilon}{3}</annotation></semantics></math></span></div><div data-formula="entropia" class="formula" hidden><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>s</mi><msub><mi>k</mi><mi>B</mi></msub></mfrac><mo>=</mo><mo>−</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><mn>2</mn></munderover><msub><mi>p</mi><mi>r</mi></msub><mi>ln</mi><mo>⁡</mo><msub><mi>p</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">\frac{s}{k_B}=-\sum_{r=0}^{2}p_r\ln p_r</annotation></semantics></math></span></div><div data-formula="calor" class="formula" hidden><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>c</mi><msub><mi>k</mi><mi>B</mi></msub></mfrac><mo>=</mo><mfrac><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false">(</mo><mi>E</mi><mi mathvariant="normal">/</mi><mi>ϵ</mi><mo stretchy="false">)</mo></mrow><msup><mi>θ</mi><mn>2</mn></msup></mfrac></mrow><annotation encoding="application/x-tex">\frac{c}{k_B}=\frac{\mathrm{Var}(E/\epsilon)}{\theta^2}</annotation></semantics></math></span></div>
+      <div class="relaciones" aria-label="Probabilidades de los niveles"><button data-nivel="0" aria-pressed="false" aria-label="Destacar nivel cero">p₀ = <strong id="p-0"></strong></button><button data-nivel="1" aria-pressed="false" aria-label="Destacar nivel epsilon">p₁ = <strong id="p-1"></strong></button><button data-nivel="2" aria-pressed="false" aria-label="Destacar nivel tres epsilon">p₂ = <strong id="p-2"></strong></button><span id="relacion-extra"></span></div>
+    </section>
+    <div class="cuerpo-viz">
+      <div class="figura">
+        <div class="escena-label"><span><strong>Niveles fijos</strong> · ocupaciones variables</span><span id="contador-muestras"></span></div>
+        <div id="escena" tabindex="0" role="img" aria-label="Partículas repartidas entre tres niveles de energía" aria-describedby="descripcion-escena"><svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg></div>
+        <div class="pie-escena" id="pie-escena"></div>
+      </div>
+      <aside id="panel-graficas" class="panel-graficas cristal" hidden><h2 id="titulo-grafica"></h2><svg id="grafica" class="grafica" role="img" aria-label="Resultado en función de la temperatura reducida"></svg><p class="grafica-nota" id="nota-grafica"></p></aside>
+    </div>
+    <section class="dock cristal" aria-label="Parámetros del sistema">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><label for="temperatura">Temperatura θ <small>= kBT/ε</small></label><output id="salida-temperatura" for="temperatura"></output></div><input id="temperatura" type="range" min="-1.522879" max="1.778151" step="0.005" value="0" aria-describedby="unidades-temperatura"><div class="presets"><button data-theta="0" id="limite-frio">T → 0</button><button data-theta="0.5793" id="respuesta-maxima">Máxima respuesta</button><button data-theta="Infinity" id="limite-caliente">T → ∞</button></div></div>
+        <div class="parametro"><div class="parametro-cabecera"><label for="cantidad">Partículas N</label><output id="salida-cantidad" for="cantidad"></output></div><input id="cantidad" type="range" min="12" max="120" step="6" value="60"><span class="fuente" id="beta-valor"></span></div>
+      </div>
+      <div class="dock-pie"><span id="concepto"></span><div class="herramientas"><button id="vista-inicial" class="enlace">Restablecer vista</button><button id="ayuda" class="enlace" aria-expanded="false" aria-controls="detalle">Modelo</button><span class="modo-render" id="modo-render">2D</span></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden><button id="cerrar-detalle" class="cerrar" aria-label="Cerrar modelo">×</button><h2>Qué representa este ensamble</h2>
+      <p>Los niveles son 0, ε y 3ε. Las plataformas representan energía; sus alturas conservan la razón 0:1:3. Las esferas son las N partículas del modelo; su altura indica el nivel que ocupa cada una. Azul, verde y lavanda identifican respectivamente los tres niveles.</p>
+      <p>θ = kBT/ε es la temperatura reducida y βε = 1/θ. Las energías permanecen fijas al variar T. Los valores u/ε, s/kB y c/kB son por partícula; U = Nu, S = Ns y C = Nc. ε fija la escala de energía.</p>
+      <p>Seguimos Z = Z₁ᴺ de la solución: N grados de libertad independientes e identificables.</p>
+      <p>Una muestra asigna a cada partícula un nivel con probabilidades pᵣ = exp(−βεᵣ)/Z₁. Las cantidades nᵣ cuentan las esferas en cada nivel y fluctúan entre muestras, junto con la energía de la configuración. La línea discontinua de u corresponde al promedio exacto del ensamble.</p>
+      <p>Muestrear genera una configuración independiente cada 1,2 segundos de reproducción; Paso genera exactamente una. El intervalo define el ritmo de presentación. Cambiar θ o N inicia un nuevo conjunto de muestras; navegar o girar la cámara conserva los parámetros.</p>
+      <p>s/kB = −Σpᵣ ln pᵣ mide la incertidumbre de la energía de una partícula. c/kB = Var(E/ε)/θ² mide cuánto responde u a T. En Calor específico, la marca vertical σE muestra la desviación estándar de la energía de una partícula. A temperatura muy alta la varianza sigue siendo finita, aunque c tiende a cero.</p>
+      <p>Las gráficas muestran el resultado seleccionado frente a θ en escala logarítmica; en Partición, las tres curvas representan p₀, p₁ y p₂ con los colores de los niveles. Los puntos señalan los valores de la temperatura elegida. Las líneas horizontales discontinuas indican los límites 4/3 para u/ε y ln 3 para s/kB. T → 0 y T → ∞ se calculan como límites exactos; el deslizador recorre 0,03 ≤ θ ≤ 60.</p>
+      <p>Arrastra para girar, rueda o gesto para acercar. Flechas y +/− ofrecen controles de cámara por teclado. Reiniciar vuelve a θ = 1, N = 60 y la cámara inicial, conservando el resultado seleccionado.</p>
+      <p id="estado-carga">La escena 3D requiere conexión para Three.js y WebGL 2. Las ecuaciones, cálculos, controles y vista 2D funcionan sin conexión.</p>
+      <p>Fuente del problema: Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, problema 5.3. Enunciado y solución suministrados en prob_S-5-3.tex.</p>
+    <p>Las plataformas son bandejas abiertas en un bastidor de tres alturas. Los bordes y escuadras permiten seguir las partículas de cada configuración; la regla lateral y su cursor lavanda leen la energía media exacta del ensamble. Las graduaciones de las bandejas ordenan las posiciones de las muestras, mientras la separación vertical conserva las energías 0, ε y 3ε.</p></aside>
+    <p class="sr-only" id="unidades-temperatura">θ es una temperatura sin dimensiones. La escala del deslizador es logarítmica.</p><p class="sr-only" id="descripcion-escena"></p><p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const SVG = 'http://www.w3.org/2000/svg';
+  const movimientoReducido = matchMedia('(prefers-reduced-motion: reduce)');
+  const estilos = getComputedStyle(document.documentElement);
+  const color = nombre => estilos.getPropertyValue('--color-' + nombre).trim();
+  const tonos = [color('onda'), color('verde'), color('punto')];
+  const pasteles = [color('primario'), color('secundario'), color('acento')];
+  const energias = [0, 1, 3];
+  const configuracion={};let escenaActual=null;
+  Object.assign(tonos,{azul:tonos[0],verde:tonos[1],lavanda:tonos[2],claro:pasteles[0],base:pasteles[1],neutro:color('texto-secundario'),metal:'#B8C3D0',metalClaro:'#E1E6ED',metalOscuro:'#7E8B9D',papel:'#F1F4F8',caucho:'#8993A3'});
+  const alturas = [-1.8, -.6, 1.8];
+  const fmt = (n, d = 3) => Number.isFinite(n) ? new Intl.NumberFormat('es-CL', {maximumFractionDigits:d,minimumFractionDigits:d}).format(n) : '∞';
+  const pct = n => fmt(n*100, 1) + ' %';
+  const resultados = {
+    particion: {titulo:'(a) Función de partición', grafica:'Probabilidades y temperatura', unidad:'pᵣ', concepto:'Z₁ normaliza los pesos; N partículas independientes dan Z = Z₁ᴺ.'},
+    energia: {titulo:'(b) Energía por partícula', grafica:'Energía media por partícula', unidad:'u / ε', concepto:'u es un promedio del ensamble; cada partícula ocupa 0, ε o 3ε.'},
+    limites: {titulo:'(c) Límites de temperatura', grafica:'Del estado fundamental a la equiprobabilidad', unidad:'u / ε', concepto:'Frío: p₀ → 1. Caliente: pᵣ → ⅓ y u → 4ε/3.'},
+    entropia: {titulo:'(d) Entropía por partícula', grafica:'Entropía e incertidumbre', unidad:'s / kB', concepto:'Al repartirse las probabilidades, s crece hasta kB ln 3.'},
+    calor: {titulo:'(e) Calor específico por partícula', grafica:'Respuesta térmica y máximo intermedio', unidad:'c / kB', concepto:'c es la respuesta de u a T: crece, alcanza un máximo y vuelve a cero.'}
+  };
+  const estado = {pagina:1,resultado:'energia',theta:1,N:60,pausado:true,graficas:false,nivel:null,muestras:0,cuentas:[0,0,0],asignaciones:[],sumaEnergia:0,render:'2D'};
+  let semilla = 5353, vista3D = null, promesa3D = null, marco = null, anterior = null, relojMuestreo = 0, sucio = true, anuncio = null;
+  let ancho = 1, alto = 1, graficaGeometria = null;
+
+  // Todas las vistas usan este modelo, incluidas las ramas de los límites exactos.
+  function modelo(theta, N = 1) {
+    if (!(theta >= 0) || !Number.isFinite(N) || N < 1) throw new RangeError('Parámetros fuera de dominio');
+    const x = theta === 0 ? Infinity : 1/theta;
+    const a = theta === 0 ? 0 : Math.exp(-x), b = theta === 0 ? 0 : Math.exp(-3*x);
+    const z1 = 1+a+b, p = [1/z1,a/z1,b/z1];
+    const u = p[1]+3*p[2], segundo = p[1]+9*p[2];
+    const varianza = p.reduce((s,q,r) => s+q*(energias[r]-u)**2,0);
+    const s = -p.reduce((sum,q) => sum+(q > 0 ? q*Math.log(q) : 0),0);
+    const c = theta === 0 || theta === Infinity ? 0 : varianza/(theta*theta);
+    const lnZ = N*Math.log(z1);
+    return {theta,N,x,p,z1,lnZ,Z:Math.exp(lnZ),u,segundo,varianza,s,c,U:N*u,S:N*s,C:N*c};
+  }
+  function azar() {semilla = (semilla+0x6D2B79F5)|0;let t=semilla;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;}
+  function nuevaMuestra() {
+    const d = modelo(estado.theta,estado.N), cuentas = [0,0,0], asignaciones = [];
+    for (let i=0;i<estado.N;i++) {const q=azar(),r=q<d.p[0]?0:q<d.p[0]+d.p[1]?1:2;cuentas[r]++;asignaciones.push(r);}
+    estado.cuentas=cuentas;estado.asignaciones=asignaciones;estado.muestras++;
+    estado.sumaEnergia += cuentas[1]+3*cuentas[2];
+    sucio=true;
+  }
+  function reiniciarMuestras() {estado.muestras=0;estado.sumaEnergia=0;relojMuestreo=0;nuevaMuestra();}
+  function elemento(tipo, atributos = {}, contenido) {
+    const e=document.createElementNS(SVG,tipo);
+    for(const [k,v] of Object.entries(atributos))e.setAttribute(k,String(v));
+    if(contenido!==undefined)e.textContent=contenido;
+    return e;
+  }
+  function linea(padre,puntos,tono,grosor=1.2,guiones='') {padre.appendChild(elemento('polyline',{points:puntos.map(p=>p.join(',')).join(' '),fill:'none',stroke:tono,'stroke-width':grosor,'stroke-dasharray':guiones,'stroke-linecap':'round'}));}
+  function texto(padre,x,y,contenido,tono=color('texto-secundario'),ancla='middle') {padre.appendChild(elemento('text',{x,y,fill:tono,'text-anchor':ancla},contenido));}
+  function proyectar(x,y,z=0){const p=Array.isArray(x)?x:[x,y,z];if(vista3D)return vista3D.proyectar(p);const f=encuadreAnatomia2D(escenaActual);return [ancho/2+(p[0]+.18*p[2]-f.cx)*f.escala,(alto-40)/2-(p[1]-.16*p[2]-f.cy)*f.escala];}
+  function destacada(clave){return !clave||estado.nivel===null||clave==='nivel-'+estado.nivel;}
+  function espacio(g){const l=g.limites;return {cx:(l[0]+l[1])/2,cy:(l[2]+l[3])/2,W:l[1]-l[0],H:l[3]-l[2]};}
+  function posiciones() {
+    const usadas=[0,0,0];
+    return estado.asignaciones.map((r,id)=>{
+      const q=usadas[r]++, columnas=Math.min(15,estado.cuentas[r]),filas=Math.ceil(estado.cuentas[r]/15);
+      return {id,r,x:(q%15-(columnas-1)/2)*.46,y:alturas[r]+.13,z:(Math.floor(q/15)-(filas-1)/2)*.23};
+    });
+  }
+
+ function geometria(d=modelo(estado.theta,estado.N)){
+  const objetos=[],lineas=[],caras=[],etiquetas=[];
+  for(let r=0;r<3;r++)objetos.push({tipo:'caja',p:[0,alturas[r]+.02,0],tamano:[7.8,.04,2.25],tono:['claro','base','lavanda'][r],clave:'nivel-'+r,opacidad:1,nombre:'bandeja de energía'});
+  for(const p of posiciones())objetos.push({tipo:'esfera',p:[p.x,p.y,p.z],r:.09,tono:['azul','verde','lavanda'][p.r],clave:'nivel-'+p.r,opacidad:1,nombre:'partícula'});
+  const y=-1.8+1.2*d.u;
+  if(['energia','limites','calor'].includes(estado.resultado))lineas.push({puntos:[[-4.05,y,-1.18],[4.05,y,-1.18]],tono:'lavanda',clave:'',opacidad:1});
+  for(let r=0;r<3;r++)etiquetas.push({p:[-4.15,alturas[r]+.1,-.9],texto:['0','ε','3ε'][r],tono:['azul','verde','lavanda'][r]});
+  return anatomiaPagina3({objetos,lineas,caras,etiquetas,limites:[-4.6,4.6,-2.55,2.35,-1.5,1.5],pie:''},d);
+ }
+// Partes del montaje: el mismo sólido alimenta WebGL y SVG, con Y hacia arriba.
+function anatomiaPagina3(g,d){
+ const piezas=g.objetos;
+ const box=(p,tamano,tono='metal',clave='',nombre='soporte')=>piezas.push({tipo:'caja',p,tamano,tono,clave,opacidad:1,nombre});
+ const ball=(p,r,tono='metal',clave='',nombre='rótula')=>piezas.push({tipo:'esfera',p,r,tono,clave,opacidad:1,nombre});
+ const cylinder=(p,r,h,tono='metal',eje=[0,1,0],clave='',nombre='casquillo')=>piezas.push({tipo:'cilindro',p,r,h,eje,tono,clave,opacidad:1,nombre});
+ const ring=(p,r,tono='metalOscuro',eje=[0,1,0],clave='',nombre='aro')=>piezas.push({tipo:'anillo',p,r,eje,tono,clave,opacidad:1,nombre});
+ const beam=(a,b,r,tono='metal',clave='',nombre='barra')=>{const v=b.map((x,i)=>x-a[i]),h=Math.hypot(...v);if(h>1e-8)cylinder(a.map((x,i)=>(x+b[i])/2),r,h,tono,v.map(x=>x/h),clave,nombre);};
+ const screw=(p,eje=[0,1,0])=>{cylinder(p,.038,.028,'metalOscuro',eje,'','tornillo');const a=p.map((x,i)=>x+eje[i]*.016);beam([a[0]-.023,a[1],a[2]],[a[0]+.023,a[1],a[2]],.004,'metalClaro','','ranura');};
+ const feet=(x,y,z,w,depth)=>{for(const a of [-1,1])for(const b of [-1,1]){const p=[x+a*(w/2-.18),y,z+b*(depth/2-.16)];cylinder(p,.11,.12,'caucho',[0,1,0],'','pie');cylinder([p[0],y+.075,p[2]],.13,.03,'metal',[0,1,0],'','brida');}};
+ const deck=(x,y,z,w,depth)=>{feet(x,y-.17,z,w,depth);box([x,y,z],[w,.16,depth],'metal','','bandeja');box([x,y+.09,z],[w-.10,.025,depth-.10],'papel','','superficie');for(const a of [-1,1])for(const b of [-1,1])screw([x+a*(w/2-.12),y+.12,z+b*(depth/2-.12)]);};
+ const ruler=(x,y,z,w,n=20)=>{box([x,y,z],[w,.045,.12],'metalClaro','','regla');for(let i=0;i<=n;i++){const xx=x-w/2+i*w/n;box([xx,y+.026,z+.06-(i%5===0?.065:.035)],[.008,.006,i%5===0?.13:.07],'metalOscuro','','graduación');}};
+ const rack=(x,y,z,w,h)=>{box([x,y-.10,z],[w,.14,.85],'metal','','base del expositor');feet(x,y-.24,z,w,.85);for(const side of [-1,1]){box([x+side*(w/2-.10),y+h/2,z-.36],[.12,h,.12],'metal','','montante');for(const yy of [y,y+h]){box([x+side*(w/2-.10),yy,z-.28],[.24,.14,.20],'metalClaro','','escuadra');screw([x+side*(w/2-.10),yy+.08,z-.28]);}}box([x,y+h,z-.36],[w,.10,.12],'metal','','travesaño');};
+ const histogram=(fixedHeight=0)=>{const bars=piezas.filter(o=>o.tipo==='caja'&&o.clave);if(!bars.length)return;const min=Math.min(...bars.map(o=>o.p[0]-o.tamano[0]/2)),max=Math.max(...bars.map(o=>o.p[0]+o.tamano[0]/2)),floor=Math.min(...bars.map(o=>o.p[1]-o.tamano[1]/2)),top=Math.max(floor+fixedHeight,...bars.map(o=>o.p[1]+o.tamano[1]/2));rack((min+max)/2,floor-.02,-.10,max-min+.75,top-floor+.30);for(const o of bars){box([o.p[0],floor-.01,o.p[2]],[o.tamano[0]+.08,.035,o.tamano[2]+.07],'metalClaro','','zapata del contador');box([o.p[0],o.p[1]+o.tamano[1]/2+.016,o.p[2]],[o.tamano[0]+.025,.025,o.tamano[2]+.025],o.tono,o.clave,'lectura superior');}box([min-.28,(floor+top)/2,-.25],[.19,top-floor+.04,.06],'metalClaro','','regla de lectura');for(let i=0;i<=10;i++){const yy=floor+(top-floor)*i/10;box([min-.28,yy,-.22],[i%5===0?.18:.09,.015,.04],'metalOscuro','','escala común');}g.limites[0]=Math.min(g.limites[0],min-.7);g.limites[1]=Math.max(g.limites[1],max+.7);g.limites[2]=Math.min(g.limites[2],floor-.6);};
+ 
+ deck(0,-2.14,0,8.65,2.9);
+ for(const x of [-3.94,3.94]){
+  box([x,.05,-1.18],[.13,4.25,.12],'metal','','montante del ensamble');
+  for(let r=0;r<3;r++){
+   const y=alturas[r]-.08;box([x,y,-.95],[.28,.13,.52],'metalClaro','','escuadra de bandeja');
+   screw([x,y+.09,-.98]);
+  }
+  cylinder([x,-1.98,-1.18],.18,.09,'metalClaro',[0,1,0],'','anclaje');
+ }
+ for(let r=0;r<3;r++){
+  const y=alturas[r];box([0,y+.11,-1.06],[7.8,.14,.10],'metalClaro','','tope de fondo');
+  for(const x of [-3.85,3.85])box([x,y+.11,0],[.10,.14,2.2],'metalClaro','','borde lateral');
+  ruler(0,y+.07,1.06,7.6,30);
+ }
+ box([0,2.20,-1.18],[8,.12,.14],'metal','','travesaño');
+ box([4.27,.01,-1.24],[.19,4.0,.12],'metalClaro','','escala de energía media');
+ for(let r=0;r<=12;r++)box([4.24,-1.8+r*.3,-1.16],[r%4===0?.14:.08,.018,.03],'metalOscuro','','marca de energía');
+ const y=-1.8+1.2*d.u;box([4.15,y,-1.12],[.34,.07,.14],'lavanda','','cursor del ensamble');
+
+ g.anatomia={version:1,piezas:piezas.length,solidos:piezas.filter(o=>o.nombre).length};
+ return g;
+}
+// El encuadre usa los sólidos realmente dibujados, también en el respaldo.
+function puntosAnatomia(g){
+ const points=[];for(const o of g.objetos){let half;if(o.tipo==='caja')half=o.tamano.map(x=>x/2);else if(o.tipo==='esfera')half=[o.r,o.r,o.r];else{const axis=o.eje||[0,1,0];half=axis.map(a=>o.tipo==='cilindro'?Math.abs(a)*o.h/2+o.r*Math.sqrt(Math.max(0,1-a*a)):o.r*(Math.sqrt(Math.max(0,1-a*a))+.09));}for(let n=0;n<8;n++)points.push(o.p.map((x,i)=>x+(n&(1<<i)?1:-1)*half[i]));}
+ for(const l of g.lineas)points.push(...l.puntos);for(const f of g.caras)points.push(...f.puntos);for(const t of g.etiquetas)points.push(t.p);return points;
+}
+let marcoAnatomia2D=null;
+function encuadreAnatomia2D(g){
+ if(marcoAnatomia2D&&marcoAnatomia2D.g===g&&marcoAnatomia2D.w===ancho&&marcoAnatomia2D.h===alto)return marcoAnatomia2D;
+ const e=configuracion.vistaElevada?.5:.16;let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+ for(const p of puntosAnatomia(g)){const x=p[0]+.18*p[2],y=p[1]-e*p[2];xmin=Math.min(xmin,x);xmax=Math.max(xmax,x);ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);}
+ const scale=Math.min(Math.max(1,ancho-30)/(xmax-xmin+.45),Math.max(1,alto-52)/(ymax-ymin+.45));
+ return marcoAnatomia2D={g,w:ancho,h:alto,cx:(xmin+xmax)/2,cy:(ymin+ymax)/2,escala:scale};
+}
+function respaldo(g){
+ const svg=$('alternativa');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+ const gs=encuadreAnatomia2D(g),escala=gs.escala;
+ const view=[-.18,configuracion.vistaElevada?.5:.16,1],dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),add=(a,b)=>a.map((v,i)=>v+b[i]),mul=(a,k)=>a.map(v=>v*k),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const tint=(c,k)=>{const rgb=c.match(/\w\w/g).map(v=>parseInt(v,16));return '#'+rgb.map(v=>Math.round(k<1?v*k:v+(255-v)*(k-1)).toString(16).padStart(2,'0')).join('');};
+ const faces=[];
+ const face=(points,fill,opacity=1,normal=null)=>{if(normal&&dot(normal,view)<=1e-8)return;faces.push({points,fill,opacity,depth:dot(points.reduce((a,p)=>add(a,mul(p,1/points.length)),[0,0,0]),view)});};
+ for(const c of g.caras)face(c.puntos,tonos[c.tono],c.opacidad);
+ const spheres=[];
+ for(const o of g.objetos){
+  const fill=tonos[o.tono],opacity=o.opacidad*(destacada(o.clave)?1:.35),p=o.p;
+  if(o.tipo==='esfera'){
+   spheres.push({sphere:o,fill,opacity});continue;
+  }
+  if(o.tipo==='caja'){
+   const v=[];for(let i=0;i<8;i++)v.push(p.map((x,j)=>x+(i&(1<<j)?1:-1)*o.tamano[j]/2));
+   for(const [ids,n,k] of [[[1,3,7,5],[1,0,0],.83],[[0,4,6,2],[-1,0,0],.69],[[2,6,7,3],[0,1,0],1.26],[[0,1,5,4],[0,-1,0],.62],[[4,5,7,6],[0,0,1],1],[[0,2,3,1],[0,0,-1],.72]])face(ids.map(i=>v[i]),tint(fill,k),opacity,n);
+   continue;
+  }
+  const axis=o.eje||[0,1,0],raw=cross(axis,Math.abs(axis[0])<.9?[1,0,0]:[0,0,1]),u=mul(raw,1/Math.hypot(...raw)),v=cross(axis,u),at=(r,t,h=0)=>add(p,add(mul(axis,h),add(mul(u,r*Math.cos(t)),mul(v,r*Math.sin(t))))),N=24;
+  if(o.tipo==='cilindro'){
+   for(let i=0;i<N;i++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,n=add(mul(u,Math.cos((a+b)/2)),mul(v,Math.sin((a+b)/2)));face([at(o.r,a,-o.h/2),at(o.r,b,-o.h/2),at(o.r,b,o.h/2),at(o.r,a,o.h/2)],tint(fill,.84+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+   for(const side of [-1,1])face(Array.from({length:N},(_,i)=>at(o.r,2*Math.PI*i/N,side*o.h/2)),tint(fill,side===1?1.20:.75),opacity,mul(axis,side));
+  }else if(o.tipo==='anillo'){
+   const point=(t,phi)=>at(o.r*(1+.09*Math.cos(phi)),t,o.r*.09*Math.sin(phi));
+   for(let i=0;i<N;i++)for(let j=0;j<8;j++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,c=j*Math.PI/4,d=(j+1)*Math.PI/4,n=add(mul(axis,Math.sin((c+d)/2)),add(mul(u,Math.cos((a+b)/2)*Math.cos((c+d)/2)),mul(v,Math.sin((a+b)/2)*Math.cos((c+d)/2))));face([point(a,c),point(b,c),point(b,d),point(a,d)],tint(fill,.88+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+  }
+ }
+ // Respaldo autónomo con profundidad por píxel: una bandeja grande nunca tapa
+ // las bolas que sostiene por culpa del centro usado para ordenar polígonos.
+ const ratio=Math.min(1.5,devicePixelRatio||1.5),W=Math.max(1,Math.ceil(ancho*ratio)),H=Math.max(1,Math.ceil(alto*ratio)),canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+ const ctx=canvas.getContext('2d'),im=ctx.createImageData(W,H),pixels=im.data,zbuf=new Float32Array(W*H);zbuf.fill(-Infinity);
+ const rgb=c=>c.match(/\w\w/g).map(v=>parseInt(v,16));
+ const write=(idx,z,c,a)=>{if(z<zbuf[idx]-1e-5)return;if(a>=.999){zbuf[idx]=z;pixels[idx*4]=c[0];pixels[idx*4+1]=c[1];pixels[idx*4+2]=c[2];pixels[idx*4+3]=255;}else{const aa=pixels[idx*4+3]/255,na=a+aa*(1-a);for(let j=0;j<3;j++)pixels[idx*4+j]=(c[j]*a+pixels[idx*4+j]*aa*(1-a))/na;pixels[idx*4+3]=na*255;}};
+ const tri=(points,c,alpha)=>{const p=points.map(q=>{const a=proyectar(q);return [a[0]*ratio,a[1]*ratio,dot(q,view)];}),[a,b,d]=p,den=(b[1]-d[1])*(a[0]-d[0])+(d[0]-b[0])*(a[1]-d[1]);if(Math.abs(den)<1e-9)return;
+  const xmin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[0])))),xmax=Math.min(W-1,Math.ceil(Math.max(...p.map(v=>v[0])))),ymin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[1])))),ymax=Math.min(H-1,Math.ceil(Math.max(...p.map(v=>v[1]))));
+  for(let y=ymin;y<=ymax;y++)for(let x=xmin;x<=xmax;x++){const aa=((b[1]-d[1])*(x+.5-d[0])+(d[0]-b[0])*(y+.5-d[1]))/den,bb=((d[1]-a[1])*(x+.5-d[0])+(a[0]-d[0])*(y+.5-d[1]))/den,cc=1-aa-bb;if(aa>=0&&bb>=0&&cc>=0)write(y*W+x,aa*a[2]+bb*b[2]+cc*d[2],c,alpha);}
+ };
+ const paintFace=f=>{const c=rgb(f.fill);for(let i=1;i<f.points.length-1;i++)tri([f.points[0],f.points[i],f.points[i+1]],c,f.opacity);};
+ const paintSphere=f=>{const o=f.sphere,c=rgb(f.fill),p=proyectar(o.p),vx=dot(view,view),len=Math.sqrt(vx),ex=o.r*Math.sqrt(1+.18**2)*escala*ratio,ey=o.r*Math.sqrt(1+view[1]**2)*escala*ratio;
+  for(let y=Math.max(0,Math.floor(p[1]*ratio-ey));y<=Math.min(H-1,Math.ceil(p[1]*ratio+ey));y++)for(let x=Math.max(0,Math.floor(p[0]*ratio-ex));x<=Math.min(W-1,Math.ceil(p[0]*ratio+ex));x++){
+   const origin=[(x+.5)/ratio/escala-ancho/2/escala+gs.cx,gs.cy-((y+.5)/ratio-(alto-40)/2)/escala,0],delta=o.p.map((v,i)=>v-origin[i]),along=dot(delta,view)/vx,perp=dot(delta,delta)-along*along*vx,inside=o.r*o.r-perp;if(inside<0)continue;
+   const t=along+Math.sqrt(inside)/len,normal=origin.map((v,i)=>(v+view[i]*t-o.p[i])/o.r),light=Math.max(0,dot(normal,[-.42,.77,.40])),shade=.72+.40*light,shine=18*Math.pow(Math.max(0,dot(normal,[-.3,.55,.78])),16);write(y*W+x,dot(o.p,view)+len*Math.sqrt(inside),c.map(v=>Math.min(255,v*shade+shine)),f.opacity);
+  }
+ };
+ for(const f of faces.filter(f=>f.opacity>=.999))paintFace(f);for(const f of spheres.filter(f=>f.opacity>=.999))paintSphere(f);
+ const transparent=[...faces.filter(f=>f.opacity<.999).map(f=>({...f,paint:paintFace})),...spheres.filter(f=>f.opacity<.999).map(f=>({...f,depth:dot(f.sphere.p,view),paint:paintSphere}))].sort((a,b)=>a.depth-b.depth);for(const f of transparent)f.paint(f);
+ ctx.putImageData(im,0,0);svg.append(elemento('image',{x:0,y:0,width:ancho,height:alto,href:canvas.toDataURL('image/png')}));
+ for(const l of g.lineas)linea(svg,l.puntos.map(proyectar),tonos[l.tono],l.tono==='neutro'||l.tono==='borde'?1:1.5);
+}
+
+  function anotaciones(d) {
+    const svg=$('anotaciones');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+    for(let r=0;r<3;r++) {
+      const iz=proyectar(-4.15,alturas[r]+.1,-.9),de=proyectar(3.9,alturas[r]+.18,-1.1);
+      texto(svg,Math.max(28,Math.min(ancho-40,iz[0])),Math.max(14,Math.min(alto-8,iz[1])),['0','ε','3ε'][r],tonos[r]);
+      texto(svg,Math.max(64,Math.min(ancho-8,de[0])),Math.max(14,Math.min(alto-8,de[1])),`n${['₀','₁','₂'][r]} = ${estado.cuentas[r]}`,tonos[r],'end');
+    }
+    if(['energia','limites','calor'].includes(estado.resultado)) {
+      const p=proyectar(4.15,-1.8+1.2*d.u,-1.18),cercaNivel=energias.some(e=>Math.abs(e-d.u)<.18);
+      texto(svg,Math.min(ancho-8,p[0]),Math.max(15,Math.min(alto-9,p[1]+(cercaNivel?19:-7))),`u = ${fmt(d.u)} ε`,color('punto'),'end');
+    }
+    if(estado.resultado==='calor' && d.varianza>1e-10) {
+      const y=-1.8+1.2*d.u,z=.6,a=proyectar(4.45,y,z),b=proyectar(4.45,y+1.2*Math.sqrt(d.varianza),z);
+      linea(svg,[a,b],color('punto'),1.4);linea(svg,[[a[0]-4,a[1]],[a[0]+4,a[1]]],color('punto'));linea(svg,[[b[0]-4,b[1]],[b[0]+4,b[1]]],color('punto'));
+      if(ancho>500)texto(svg,Math.min(ancho-10,b[0]+10),b[1]-5,'σE',color('punto'),'end');
+    }
+  }
+  function graficar(d) {
+    if(!estado.graficas||estado.pagina!==3)return;
+    const svg=$('grafica'),rect=svg.getBoundingClientRect(),w=Math.max(180,rect.width),h=Math.max(100,rect.height);
+    svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.replaceChildren();
+    const margen={l:42,r:13,t:22,b:34},pw=w-margen.l-margen.r,ph=h-margen.t-margen.b;
+    if(ph<30)return;
+    const l0=Math.log(.03),l1=Math.log(60),xx=t=>margen.l+(Math.log(t)-l0)/(l1-l0)*pw;
+    const modo=estado.resultado,maxY=modo==='particion'?1:modo==='entropia'?1.2:modo==='calor'?.56:1.5;
+    const yy=v=>margen.t+(1-v/maxY)*ph;
+    graficaGeometria={l:margen.l,r:w-margen.r,l0,l1,w};
+    for(let k=0;k<4;k++){const v=k*maxY/3;linea(svg,[[margen.l,yy(v)],[w-margen.r,yy(v)]],color('borde'),.8);texto(svg,margen.l-7,yy(v)+4,fmt(v,modo==='particion'?2:1),color('texto-secundario'),'end');}
+    linea(svg,[[margen.l,margen.t],[margen.l,h-margen.b],[w-margen.r,h-margen.b]],color('texto-secundario'),.9);
+    for(const t of [.1,1,10]){linea(svg,[[xx(t),h-margen.b],[xx(t),h-margen.b+4]],color('texto-secundario'),.9);texto(svg,xx(t),h-margen.b+17,fmt(t,t<1?1:0));}
+    texto(svg,margen.l,margen.t-9,resultados[modo].unidad,color('texto'),'start');texto(svg,(margen.l+w-margen.r)/2,h-2,'θ = kBT / ε',color('texto'));
+    const curvas=modo==='particion'?[0,1,2]:[0];
+    const valor=(m,r)=>modo==='particion'?m.p[r]:modo==='entropia'?m.s:modo==='calor'?m.c:m.u;
+    if(['energia','limites','entropia'].includes(modo)){const v=modo==='entropia'?Math.log(3):4/3;linea(svg,[[margen.l,yy(v)],[w-margen.r,yy(v)]],color('punto'),.9,'3 4');}
+    for(const r of curvas){const pts=[];for(let i=0;i<=240;i++){const t=Math.exp(l0+(l1-l0)*i/240);pts.push([xx(t),yy(valor(modelo(t),r))]);}linea(svg,pts,modo==='particion'?tonos[r]:color(modo==='entropia'?'verde':modo==='calor'?'punto':'onda'),2.3);
+      const t=Math.max(.03,Math.min(60,estado.theta)),cx=xx(t),cy=yy(valor(d,r));svg.appendChild(elemento('circle',{cx,cy,r:4,fill:modo==='particion'?tonos[r]:color('texto'),stroke:color('tarjeta'),'stroke-width':1.6}));}
+    if(modo==='calor'){const m=modelo(.5793);svg.appendChild(elemento('circle',{cx:xx(.5793),cy:yy(m.c),r:3,fill:color('punto')}));}
+    $('titulo-grafica').textContent=resultados[modo].grafica;
+    let nota=modo==='particion'?'Azul: p₀ · verde: p₁ · lavanda: p₂.':modo==='calor'?'Máximo: θ ≈ 0,579 y c/kB ≈ 0,495.':modo==='entropia'?'Referencia: ln 3. La entropía corresponde a las probabilidades exactas.':'Referencia: 4/3. La curva representa el promedio del ensamble.';
+    if(estado.theta===0||estado.theta===Infinity)nota+=' El punto al borde indica el límite exacto.';
+    $('nota-grafica').textContent=nota;
+  }
+  function actualizar() {
+    const d=modelo(estado.theta,estado.N),r=estado.resultado;
+    document.querySelectorAll('[data-resultado]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.resultado===r)));
+    document.querySelectorAll('[data-formula]').forEach(e=>e.hidden=e.dataset.formula!==r);
+    document.querySelectorAll('[data-nivel]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.nivel)===estado.nivel)));
+    $('titulo-resultado').textContent=resultados[r].titulo;
+    let value='',unit='';
+    if(r==='particion'){value=d.Z<1e5?fmt(d.Z,2):d.Z.toExponential(2).replace('.',',');unit='Z';}
+    else if(r==='entropia'){value=fmt(d.s);unit='kB';}else if(r==='calor'){value=fmt(d.c);unit='kB';}else{value=fmt(d.u);unit='ε';}
+    $('valor-principal').replaceChildren(document.createTextNode(value+' '));const small=document.createElement('small');small.textContent=unit;$('valor-principal').appendChild(small);
+    for(let j=0;j<3;j++)$('p-'+j).textContent=pct(d.p[j]);
+    $('relacion-extra').textContent=r==='particion'?`Z₁ = ${fmt(d.z1)} · ln Z = ${fmt(d.lnZ,2)}`:r==='calor'?`σE = ${fmt(Math.sqrt(d.varianza))} ε`:'';
+    $('salida-temperatura').textContent=estado.theta===0?'0 (límite)':estado.theta===Infinity?'∞ (límite)':fmt(estado.theta,estado.theta<1?3:2);
+    $('salida-cantidad').textContent=String(estado.N);
+    $('beta-valor').textContent='βε = '+(d.x===Infinity?'∞':fmt(d.x));
+    const entrada=$('temperatura');entrada.value=estado.theta===0?entrada.min:estado.theta===Infinity?entrada.max:Math.log10(estado.theta);
+    entrada.setAttribute('aria-valuetext',$('salida-temperatura').textContent+' en temperatura reducida');
+    $('cantidad').value=estado.N;
+    for(const id of ['temperatura','cantidad']){const e=$(id);e.style.setProperty('--progreso',((Number(e.value)-Number(e.min))/(Number(e.max)-Number(e.min))*100)+'%');}
+    document.querySelectorAll('[data-theta]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.theta)===estado.theta)));
+    $('contador-muestras').textContent='Muestra '+estado.muestras;
+    const configuracion=(estado.cuentas[1]+3*estado.cuentas[2])/estado.N;
+    $('pie-escena').replaceChildren(document.createTextNode('Configuración: '+fmt(configuracion)+' ε / partícula · '));const strong=document.createElement('strong');strong.textContent='Ensamble: '+fmt(d.u)+' ε';$('pie-escena').appendChild(strong);
+    $('concepto').textContent=resultados[r].concepto;
+    $('pausa').textContent=estado.pausado?'Muestrear':'Pausa';$('pausa').setAttribute('aria-pressed',String(!estado.pausado));
+    $('graficas').setAttribute('aria-pressed',String(estado.graficas));$('pagina-3').classList.toggle('con-graficas',estado.graficas);$('panel-graficas').hidden=!estado.graficas;
+    $('descripcion-escena').textContent=`${estado.N} partículas; ${estado.cuentas[0]} en energía cero, ${estado.cuentas[1]} en epsilon y ${estado.cuentas[2]} en tres epsilon. Energía media exacta ${fmt(d.u)} epsilon. Las alturas indican el nivel de energía de cada partícula.`;
+    sucio=true;solicitar();
+  }
+  function comunicar(){clearTimeout(anuncio);anuncio=setTimeout(()=>{$('resumen-accesible').textContent=$('titulo-resultado').textContent+'. '+$('descripcion-escena').textContent;},200);}
+  function cambiarTemperatura(theta) {estado.theta=theta;estado.pausado=true;anterior=null;reiniciarMuestras();actualizar();comunicar();}
+  function elegirResultado(resultado){estado.resultado=resultado;estado.nivel=null;actualizar();comunicar();}
+  function cambiarPagina(n,focus=false) {
+    if(estado.pagina===3 && n!==3){estado.pausado=true;anterior=null;relojMuestreo=0;}
+    estado.pagina=n;
+    for(let j=1;j<=3;j++){$('pagina-'+j).hidden=j!==n;$('tab-'+j).setAttribute('aria-selected',String(j===n));$('tab-'+j).tabIndex=j===n?0:-1;}
+    if(focus)$('tab-'+n).focus();
+    if(n===3){actualizar();redimensionar();iniciar3D();}
+    else{if(marco!==null)cancelAnimationFrame(marco);marco=null;cerrarModelo();}
+  }
+  function cerrarModelo(){$('detalle').hidden=true;$('ayuda').setAttribute('aria-expanded','false');}
+  function redimensionar(){
+    if(estado.pagina!==3)return;
+    const rect=$('escena').getBoundingClientRect(),reserva=Math.ceil($('pie-escena').offsetHeight)+12;$('escena').style.setProperty('--pie-alto',reserva+'px');
+    ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height-reserva);
+    if(vista3D&&rect.width>0&&rect.height>0)vista3D.redimensionar(ancho,alto);
+    sucio=true;solicitar();
+  }
+  function solicitar(){if(estado.pagina===3&&!document.hidden&&marco===null)marco=requestAnimationFrame(dibujar);}
+  function dibujar(t) {
+    marco=null;if(estado.pagina!==3||document.hidden){anterior=null;return;}
+    if(!estado.pausado){if(anterior!==null)relojMuestreo+=Math.min((t-anterior)/1000,.1);if(relojMuestreo>=1.2){relojMuestreo%=1.2;nuevaMuestra();actualizar();}}
+    anterior=t;
+    if(sucio){const d=modelo(estado.theta,estado.N);escenaActual=geometria(d);if(vista3D&&ancho>1&&alto>1)vista3D.dibujar(escenaActual);else respaldo(escenaActual);anotaciones(d);graficar(d);sucio=false;}
+    if(!estado.pausado)solicitar();else anterior=null;
+  }
+  async function iniciar3D() {
+    if(promesa3D)return promesa3D;
+    promesa3D=(async()=>{
+      let renderer=null,orbit=null;
+      try {
+        const [THREE,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
+        const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(-6,6,3,-3,.1,100);
+        camera.position.set(5.3,4.5,13);camera.lookAt(0,0,0);
+        renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
+        const canvas=renderer.domElement;canvas.id='lienzo';canvas.setAttribute('aria-hidden','true');$('escena').prepend(canvas);
+        orbit=new OrbitControls(camera,$('escena'));orbit.enablePan=false;orbit.enableDamping=false;orbit.minZoom=.75;orbit.maxZoom=1.5;orbit.minPolarAngle=.8;orbit.maxPolarAngle=1.5;orbit.minAzimuthAngle=-.55;orbit.maxAzimuthAngle=.6;orbit.update();orbit.saveState();orbit.addEventListener('change',()=>{sucio=true;solicitar();});
+        scene.add(new THREE.HemisphereLight(color('tarjeta'),color('primario'),2));const luz=new THREE.DirectionalLight(color('tarjeta'),2.4);luz.position.set(-3,8,7);scene.add(luz);
+        const escena=scene,camara=camera,orbita=orbit,renderizador=renderer;let espacioAnterior='';
+        const esferas=[],cajas=[],cilindros=[],anillos=[],trazos=[],superficies=[],geometriaEsfera=new THREE.SphereGeometry(1,24,16),geometriaCilindro=new THREE.CylinderGeometry(1,1,1,32),geometriaAnillo=new THREE.TorusGeometry(1,.09,8,32),vector=new THREE.Vector3(),vertical=new THREE.Vector3(0,1,0);geometriaAnillo.rotateX(Math.PI/2);
+  const perfilCaja=new THREE.Shape();perfilCaja.moveTo(-.465,-.465);perfilCaja.lineTo(.465,-.465);perfilCaja.lineTo(.465,.465);perfilCaja.lineTo(-.465,.465);perfilCaja.closePath();const geometriaCaja=new THREE.ExtrudeGeometry(perfilCaja,{depth:.93,bevelEnabled:true,bevelThickness:.035,bevelSize:.035,bevelSegments:2,steps:1});geometriaCaja.translate(0,0,-.465);
+  function encuadrar(g,forzar=false){const e=espacio(g),key=JSON.stringify(g.limites);if(key!==espacioAnterior||forzar){const delta=new THREE.Vector3(e.cx,e.cy,0).sub(orbita.target);camara.position.add(delta);orbita.target.set(e.cx,e.cy,0);orbita.update();espacioAnterior=key;}
+   camara.updateMatrixWorld(true);let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+   for(const p of puntosAnatomia(g)){vector.set(...p).applyMatrix4(camara.matrixWorldInverse);xmin=Math.min(xmin,vector.x);xmax=Math.max(xmax,vector.x);ymin=Math.min(ymin,vector.y);ymax=Math.max(ymax,vector.y);}
+   const aspect=ancho/Math.max(1,alto-30),padding=Math.max(.22,(ymax-ymin)*.08),H=Math.max(1,ymax-ymin+padding*2,(xmax-xmin+padding*2)/aspect),W=H*aspect,cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;
+   camara.left=cx-W/2;camara.right=cx+W/2;camara.top=cy+H/2;camara.bottom=cy-H/2;camara.updateProjectionMatrix();}
+  vista3D={redimensionar(w,h){renderizador.setSize(w,h,false);if(escenaActual)encuadrar(escenaActual,true);},proyectar(p){vector.set(...p).project(camara);return [(vector.x+1)*ancho/2,(1-vector.y)*alto/2];},reiniciar(){orbita.reset();espacioAnterior='';},camara,renderizador,renderer:renderizador,camera:camara,
+   dibujar(g){
+    encuadrar(g);const pools={esfera:esferas,caja:cajas,cilindro:cilindros,anillo:anillos},geos={esfera:geometriaEsfera,caja:geometriaCaja,cilindro:geometriaCilindro,anillo:geometriaAnillo},counts={esfera:0,caja:0,cilindro:0,anillo:0};
+    for(const o of g.objetos){const pool=pools[o.tipo],index=counts[o.tipo]++;let m=pool[index];if(!m){m=new THREE.Mesh(geos[o.tipo],new THREE.MeshStandardMaterial({roughness:.5}));pool.push(m);escena.add(m);}m.visible=true;m.position.set(...o.p);m.quaternion.identity();if(o.eje)m.quaternion.setFromUnitVectors(vertical,vector.set(...o.eje).normalize());if(o.tipo==='esfera'||o.tipo==='anillo')m.scale.setScalar(o.r);else if(o.tipo==='cilindro')m.scale.set(o.r,o.h,o.r);else m.scale.set(...o.tamano);m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);m.material.transparent=m.material.opacity<1;m.material.depthWrite=m.material.opacity>.5;m.material.roughness=o.tono.startsWith('metal')?.36:.58;m.material.metalness=o.tono.startsWith('metal')?.32:0;}
+    for(const [tipo,pool] of Object.entries(pools))for(let i=counts[tipo];i<pool.length;i++)pool[i].visible=false;
+    for(let i=0;i<g.lineas.length;i++){const o=g.lineas[i];let m=trazos[i];if(!m){m=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({transparent:true}));m.frustumCulled=false;trazos.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);const len=o.puntos.length*3;let a=m.geometry.getAttribute('position');if(!a||a.array.length!==len){a=new THREE.BufferAttribute(new Float32Array(len),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.lineas.length;i<trazos.length;i++)trazos[i].visible=false;
+    for(let i=0;i<g.caras.length;i++){const o=g.caras[i];let m=superficies[i];if(!m){m=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({transparent:true,side:THREE.DoubleSide,depthWrite:false}));m.frustumCulled=false;superficies.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad;let a=m.geometry.getAttribute('position');if(!a){a=new THREE.BufferAttribute(new Float32Array(9),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.caras.length;i<superficies.length;i++)superficies[i].visible=false;renderizador.render(escena,camara);
+   }
+  };
+        estado.render='3D';$('modo-render').textContent='3D';$('alternativa').setAttribute('hidden','');
+        $('estado-carga').textContent='Escena 3D activa. Si se pierde WebGL, los cálculos y controles continúan en 2D.';
+        canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();vista3D=null;estado.render='2D';canvas.hidden=true;orbit.dispose();$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='Se perdió el contexto gráfico. La representación 2D conserva el mismo modelo.';redimensionar();});
+        $('escena').addEventListener('keydown',e=>{
+          if(!vista3D||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-'].includes(e.key))return;e.preventDefault();
+          const esfera=new THREE.Spherical().setFromVector3(camera.position.clone().sub(orbit.target));
+          if(e.key==='ArrowLeft')esfera.theta=Math.max(-.55,esfera.theta-.08);if(e.key==='ArrowRight')esfera.theta=Math.min(.6,esfera.theta+.08);if(e.key==='ArrowUp')esfera.phi=Math.max(.8,esfera.phi-.08);if(e.key==='ArrowDown')esfera.phi=Math.min(1.5,esfera.phi+.08);
+          if(e.key==='+'||e.key==='=')camera.zoom=Math.min(1.5,camera.zoom*1.1);if(e.key==='-')camera.zoom=Math.max(.75,camera.zoom/1.1);
+          camera.position.setFromSpherical(esfera).add(orbit.target);camera.updateProjectionMatrix();orbit.update();sucio=true;solicitar();
+        });
+        redimensionar();
+      } catch(error) {
+        if(orbit)orbit.dispose();if(renderer){renderer.domElement.remove();renderer.dispose();}vista3D=null;estado.render='2D';$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='Vista 2D activa. El 3D requiere conexión para Three.js y soporte WebGL 2.';redimensionar();
+      }
+    })();return promesa3D;
+  }
+
+  document.querySelectorAll('[data-pagina]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.pagina))));
+  document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.ir),true)));
+  document.querySelectorAll('[data-explorar]').forEach(b=>b.addEventListener('click',()=>{elegirResultado(b.dataset.explorar);cambiarPagina(3,true);}));
+  document.querySelectorAll('[data-resultado]').forEach(b=>b.addEventListener('click',()=>elegirResultado(b.dataset.resultado)));
+  document.querySelectorAll('[data-nivel]').forEach(b=>b.addEventListener('click',()=>{const r=Number(b.dataset.nivel);estado.nivel=estado.nivel===r?null:r;actualizar();}));
+  document.querySelectorAll('[data-theta]').forEach(b=>b.addEventListener('click',()=>cambiarTemperatura(Number(b.dataset.theta))));
+  $('temperatura').addEventListener('input',()=>cambiarTemperatura(10**Number($('temperatura').value)));
+  $('cantidad').addEventListener('input',()=>{estado.N=Number($('cantidad').value);estado.pausado=true;reiniciarMuestras();actualizar();comunicar();});
+  $('pausa').addEventListener('click',()=>{estado.pausado=!estado.pausado;anterior=null;relojMuestreo=0;actualizar();});
+  $('paso').addEventListener('click',()=>{estado.pausado=true;anterior=null;nuevaMuestra();actualizar();comunicar();});
+  $('reiniciar').addEventListener('click',()=>{Object.assign(estado,{theta:1,N:60,pausado:true,nivel:null,graficas:false});semilla=5353;reiniciarMuestras();if(vista3D)vista3D.reiniciar();cerrarModelo();actualizar();redimensionar();});
+  $('graficas').addEventListener('click',()=>{estado.graficas=!estado.graficas;actualizar();redimensionar();});
+  $('vista-inicial').addEventListener('click',()=>{if(vista3D)vista3D.reiniciar();sucio=true;solicitar();});
+  $('ayuda').addEventListener('click',()=>{const abrir=$('detalle').hidden;$('detalle').hidden=!abrir;$('ayuda').setAttribute('aria-expanded',String(abrir));if(abrir)$('cerrar-detalle').focus();});
+  $('cerrar-detalle').addEventListener('click',()=>{cerrarModelo();$('ayuda').focus();});
+  $('pantalla-completa').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($('app').requestFullscreen)await $('app').requestFullscreen();}catch{$('pantalla-completa').title='Vista completa del navegador';}});
+  $('grafica').addEventListener('pointerdown',e=>{if(!graficaGeometria)return;const q=e.clientX-$('grafica').getBoundingClientRect().left,g=graficaGeometria;if(q<g.l||q>g.r)return;cambiarTemperatura(Math.exp(g.l0+(q-g.l)/(g.r-g.l)*(g.l1-g.l0)));});
+  document.querySelector('.paginas').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const n=e.key==='Home'?1:e.key==='End'?3:(estado.pagina-1+(e.key==='ArrowRight'?1:2))%3+1;cambiarPagina(n,true);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('detalle').hidden){cerrarModelo();$('ayuda').focus();}});
+  document.addEventListener('visibilitychange',()=>{anterior=null;relojMuestreo=0;if(marco!==null)cancelAnimationFrame(marco);marco=null;if(!document.hidden){sucio=true;solicitar();}});
+  movimientoReducido.addEventListener('change',()=>{if(movimientoReducido.matches){estado.pausado=true;anterior=null;actualizar();}});
+  new ResizeObserver(redimensionar).observe($('escena'));new ResizeObserver(()=>{sucio=true;solicitar();}).observe($('grafica'));
+  window.addEventListener('resize',redimensionar);
+  window.tresNiveles={modelo,instantanea:()=>({...estado,cuentas:[...estado.cuentas],asignaciones:[...estado.asignaciones],...modelo(estado.theta,estado.N),promedioMuestras:estado.sumaEnergia/(estado.muestras*estado.N),camara:vista3D?{posicion:vista3D.camera.position.toArray(),zoom:vista3D.camera.zoom}:null}),geometria:()=>geometria(),nuevaMuestra:()=>{nuevaMuestra();actualizar();},cambiarTemperatura,cambiarPagina};
+  reiniciarMuestras();actualizar();cambiarPagina(1);
+})();
+
+</script>
+</body>
+</html>
+<!-- anatomy-page3-v1 {"status":"verified","date":"2026-10-11T21:40:11.317433+00:00","sha256":"e38ff391451d064984a36817d4d8d021e462579fe976a506307790651a86c208"} -->

@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ondas transversales y longitudinales: amplitud, longitud de onda, período y fase en una escena interactiva a pantalla completa.">
+  <title>Ondas · Transversal y longitudinal</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --color-fondo: #F7F8FC; --color-tarjeta: #FFFFFF;
+      --color-primario: #A8C7FA; --color-secundario: #B8E0D2; --color-acento: #CDB4DB;
+      --color-texto: #273043; --color-texto-secundario: #667085; --color-borde: #E4E7EC;
+      --color-onda: #668EC6; --color-longitudinal: #67998A; --color-punto: #9471AE;
+      --sombra: 0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--color-texto); background: var(--color-fondo); }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .laboratorio { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 25% 28%, rgba(168,199,250,.16), transparent 65%), radial-gradient(ellipse at 90% 70%, rgba(205,180,219,.12), transparent 60%), var(--color-fondo); }
+    #lienzo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cristal { background: rgba(255,255,255,.91); border: 1px solid rgba(228,231,236,.9); box-shadow: var(--sombra); backdrop-filter: blur(14px); border-radius: 18px; }
+    .cabecera { position: absolute; z-index: 3; top: 22px; left: 28px; right: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .identidad h1 { margin: 0 0 9px; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -.035em; font-weight: 750; }
+    .selector { display: inline-flex; padding: 4px; border-radius: 12px; background: rgba(228,231,236,.65); gap: 3px; }
+    .selector button { border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: 9px; padding: 8px 13px; font-size: .86rem; font-weight: 650; min-height: 36px; }
+    .selector button[aria-pressed="true"] { color: var(--color-texto); background: var(--color-tarjeta); box-shadow: 0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .boton { border: 1px solid var(--color-borde); background: var(--color-tarjeta); color: var(--color-texto); padding: 9px 12px; border-radius: 11px; min-height: 40px; font-size: .83rem; font-weight: 650; }
+    .boton:hover { background: #F0F4FA; }
+    .boton[aria-pressed="true"] { background: #EAE2F0; border-color: var(--color-acento); }
+    .principal { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .principal:hover { background: #42516A; }
+    .principal[aria-pressed="true"] { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .ecuacion { position: absolute; z-index: 3; top: 122px; left: 28px; padding: 15px 19px 13px; width: max-content; max-width: calc(100% - 56px); }
+    .formula { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.4; white-space: nowrap; }
+    .formula button { font: inherit; border: 0; border-radius: 5px; background: transparent; padding: 0 3px; color: inherit; }
+    .formula button.activo { background: rgba(168,199,250,.25); color: #476B9D; }
+    .relaciones { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; font-size: .79rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); }
+    .relaciones strong { color: var(--color-texto); font-weight: 650; }
+    .rapidez { margin-top: 8px; font-size: .8rem; color: var(--color-texto-secundario); }
+    .rapidez strong { color: var(--color-texto); font-weight: 650; }
+    #area-onda { position: absolute; left: 32px; right: 32px; top: 264px; bottom: 190px; min-height: 80px; overflow: hidden; touch-action: none; cursor: grab; border-radius: 16px; }
+    #area-onda:active { cursor: grabbing; }
+    #alternativa, #anotaciones { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #anotaciones { z-index: 2; }
+    #anotaciones text, #alternativa text, .grafica text { font-family: Inter, system-ui, sans-serif; font-size: 12px; }
+    .escena-etiqueta { position: absolute; left: 50%; top: 238px; transform: translateX(-50%); white-space: nowrap; font-size: .84rem; color: var(--color-texto-secundario); }
+    .escena-etiqueta strong { color: var(--color-texto); font-weight: 650; }
+    .seguimiento { position: absolute; left: 50%; bottom: 166px; transform: translateX(-50%); text-align: center; font-size: .8rem; color: var(--color-texto-secundario); white-space: nowrap; }
+    .seguimiento strong { color: var(--color-punto); }
+    .tiempo { position: absolute; top: 246px; right: 36px; color: var(--color-texto-secundario); font-size: .8rem; font-variant-numeric: tabular-nums; }
+    .panel-graficas { position: absolute; z-index: 3; right: 28px; top: 270px; width: 340px; padding: 14px 14px 10px; }
+    .panel-graficas h2 { margin: 0 0 3px; font-size: .81rem; font-weight: 650; }
+    .selector-graficas { display: none; }
+    .grafica { display: block; width: 100%; height: 145px; overflow: visible; }
+    .punto-control { display: flex; align-items: center; gap: 12px; font-size: .78rem; color: var(--color-texto-secundario); margin: 6px 0 2px; }
+    .punto-control label { white-space: nowrap; }
+    .punto-control input { min-width: 0; }
+    .dock { position: absolute; z-index: 4; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(1100px, calc(100% - 56px)); padding: 16px 20px 12px; }
+    .parametros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 27px; }
+    .parametro { min-width: 0; }
+    .parametro-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+    .parametro-cabecera button { font-size: .81rem; font-weight: 650; padding: 3px 5px; margin-left: -5px; color: var(--color-texto-secundario); border: 0; background: transparent; border-radius: 6px; text-align: left; }
+    .parametro-cabecera button.activo { color: var(--color-texto); background: rgba(168,199,250,.25); }
+    output { font-size: .82rem; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 650; }
+    input[type="range"] { width: 100%; display: block; appearance: none; height: 6px; border-radius: 99px; margin: 0; background: linear-gradient(to right, var(--color-primario) var(--progreso, 50%), #EBEEF3 var(--progreso, 50%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 21px; height: 21px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); box-shadow: 0 2px 7px rgba(39,48,67,.2); }
+    input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); }
+    .dock-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; border-top: 1px solid var(--color-borde); padding-top: 10px; font-size: .76rem; color: var(--color-texto-secundario); }
+    .dock-pie .herramientas { display: flex; gap: 12px; align-items: center; }
+    .enlace { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; min-height: 22px; text-decoration: underline; text-underline-offset: 3px; }
+    .detalle { position: absolute; z-index: 5; left: 28px; bottom: 177px; width: min(380px, calc(100% - 56px)); max-height: calc(100dvh - 210px); overflow: auto; padding: 17px; font-size: .84rem; line-height: 1.6; }
+    .detalle p { margin: 7px 0; }
+    .detalle .cerrar { position: absolute; top: 7px; right: 9px; background: transparent; border: 0; font-size: 1.3rem; color: var(--color-texto-secundario); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .laboratorio.con-graficas #area-onda { right: 395px; }
+    .laboratorio.con-graficas .escena-etiqueta, .laboratorio.con-graficas .seguimiento { left: calc((100% - 360px) / 2); }
+    .laboratorio.con-graficas .tiempo { right: 395px; }
+    @media (max-width: 950px) {
+      .cabecera { left: 18px; right: 18px; top: 16px; }
+      .identidad h1 { font-size: 1.2rem; }
+      .ecuacion { left: 18px; top: 122px; max-width: calc(100% - 36px); }
+      .panel-graficas { width: 290px; right: 18px; }
+      .laboratorio.con-graficas #area-onda { right: 320px; }
+      .laboratorio.con-graficas .escena-etiqueta, .laboratorio.con-graficas .seguimiento { left: calc((100% - 290px) / 2); }
+      .laboratorio.con-graficas .tiempo { right: 326px; }
+      .dock { width: calc(100% - 36px); }
+      .parametros { gap: 17px; }
+    }
+    @media (max-width: 680px) {
+      .cabecera { top: 13px; left: 13px; right: 13px; align-items: flex-start; gap: 7px; }
+      .identidad h1 { font-size: 1.04rem; margin-bottom: 8px; }
+      .selector button { font-size: .75rem; padding: 7px 8px; }
+      .acciones { gap: 5px; width: 160px; }
+      .acciones .boton { padding: 7px 8px; min-height: 34px; font-size: .73rem; }
+      #pantalla-completa { display: none; }
+      .ecuacion { top: 114px; left: 13px; right: 13px; max-width: none; width: auto; padding: 11px 13px; }
+      .formula { font-size: 1.19rem; }
+      .relaciones { gap: 7px 15px; font-size: .73rem; }
+      .rapidez { font-size: .74rem; }
+      #area-onda, .laboratorio.con-graficas #area-onda { left: 14px; right: 14px; top: 267px; bottom: 234px; }
+      .escena-etiqueta, .laboratorio.con-graficas .escena-etiqueta { top: 246px; left: 50%; font-size: .76rem; }
+      .seguimiento, .laboratorio.con-graficas .seguimiento { bottom: 215px; left: 50%; font-size: .73rem; }
+      .tiempo, .laboratorio.con-graficas .tiempo { top: auto; bottom: 235px; right: 15px; font-size: .71rem; }
+      .dock { bottom: 12px; width: calc(100% - 26px); padding: 13px 15px 9px; border-radius: 16px; }
+      .parametros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 23px 20px; }
+      .parametro-cabecera { margin-bottom: 10px; }
+      .parametro-cabecera button, output { font-size: .76rem; }
+      .dock-pie { font-size: .69rem; gap: 5px; margin-top: 14px; padding-top: 8px; }
+      .dock-pie .herramientas { gap: 8px; }
+      .detalle { left: 13px; bottom: 218px; width: calc(100% - 26px); max-height: calc(100dvh - 245px); font-size: .8rem; }
+      .panel-graficas { top: auto; bottom: 245px; right: 13px; width: calc(100% - 26px); padding: 10px 12px 7px; }
+      .grafica { height: 110px; }
+      .panel-graficas h2 { font-size: .74rem; }
+      .punto-control { font-size: .7rem; }
+      .laboratorio.con-graficas #area-onda { bottom: 530px; top: 267px; }
+      .laboratorio.con-graficas.solo-tiempo #area-onda { bottom: 411px; }
+      .laboratorio.con-graficas .seguimiento { display: none; }
+      .laboratorio.con-graficas .tiempo { bottom: auto; top: 262px; }
+      .selector-graficas { display: inline-flex; margin-bottom: 6px; }
+      .selector-graficas button { font-size: .73rem; padding: 4px 9px; min-height: 27px; }
+      .panel-graficas.movil-temporal #grafica-espacial-panel, .panel-graficas.movil-espacial #grafica-temporal-panel { display: none; }
+      .laboratorio.con-graficas .ecuacion .relaciones, .laboratorio.con-graficas .ecuacion .rapidez { display: none; }
+      .laboratorio.con-graficas .escena-etiqueta { top: 177px; }
+      .laboratorio.con-graficas #area-onda, .laboratorio.con-graficas.solo-tiempo #area-onda { top: 199px; bottom: 460px; }
+      .laboratorio.con-graficas .tiempo { top: 197px; }
+    }
+    @media (max-height: 710px) and (min-width: 681px) {
+      .cabecera { top: 13px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .ecuacion { top: 108px; padding: 10px 15px; }
+      .escena-etiqueta { top: 218px; }
+      #area-onda { top: 240px; bottom: 165px; }
+      .seguimiento { bottom: 148px; }
+      .tiempo { top: 220px; }
+      .dock { bottom: 12px; padding: 12px 17px 9px; }
+      .panel-graficas { top: 235px; }
+      .grafica { height: 100px; }
+    }
+    @media (max-width: 680px) and (max-height: 750px) {
+      .ecuacion { top: 108px; }
+      .relaciones { gap: 6px 10px; }
+      .escena-etiqueta { top: 233px; }
+      #area-onda, .laboratorio.con-graficas #area-onda { top: 252px; }
+      .laboratorio.con-graficas #area-onda, .laboratorio.con-graficas.solo-tiempo #area-onda { top: 194px; bottom: 440px; }
+      .grafica { height: 112px; }
+      .laboratorio.con-graficas #area-onda, .laboratorio.con-graficas #lienzo { visibility: hidden; }
+      .laboratorio.con-graficas .panel-graficas { top: 211px; bottom: auto; }
+      .laboratorio.con-graficas .grafica { height: 130px; }
+      .laboratorio.con-graficas .tiempo { display: none; }
+    }
+    @media (max-width: 370px) {
+      .cabecera { display: grid; grid-template-columns: 1fr; gap: 7px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .acciones { width: 100%; justify-content: flex-start; flex-wrap: nowrap; }
+      .acciones .boton { padding: 5px 9px; min-height: 31px; }
+      .ecuacion { top: 136px; }
+      .escena-etiqueta { top: 265px; }
+      #area-onda { top: 286px; }
+      .laboratorio.con-graficas .escena-etiqueta { top: 199px; }
+      .laboratorio.con-graficas .panel-graficas { top: 232px; }
+      .parametro-cabecera button { white-space: nowrap; font-size: .72rem; }
+      output { font-size: .72rem; }
+    }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/" } }
+  </script>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1>Ondas en movimiento</h1>
+        <div class="selector" aria-label="Tipo de onda">
+          <button type="button" data-tipo="transversal" aria-pressed="true">Transversal</button>
+          <button type="button" data-tipo="longitudinal" aria-pressed="false">Longitudinal</button>
+        </div>
+      </div>
+      <nav class="acciones" aria-label="Controles de la escena">
+        <button class="boton principal" id="pausa" type="button" aria-pressed="false">Pausa</button>
+        <button class="boton" id="paso" type="button">Paso</button>
+        <button class="boton" id="graficas" type="button" aria-pressed="false">Gráficas</button>
+        <button class="boton" id="reiniciar" type="button">Reiniciar</button>
+        <button class="boton" id="pantalla-completa" type="button">Pantalla completa</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" aria-label="Ecuación y relaciones de la onda">
+      <p class="formula"><span id="simbolo">y</span>(x,t) = <button type="button" data-parametro="amplitud" aria-label="Mostrar amplitud A">A</button> cos(<button type="button" data-parametro="longitud" aria-label="Mostrar longitud de onda y número de onda k">k</button>x <span id="signo">−</span> <button type="button" data-parametro="periodo" aria-label="Mostrar período y frecuencia angular omega">ω</button>t + <button type="button" data-parametro="fase" aria-label="Mostrar fase inicial phi">φ</button>)</p>
+      <div class="relaciones"><span>k = 2π/λ = <strong id="valor-k">1,57 rad/m</strong></span><span>ω = 2π/T = <strong id="valor-omega">2,09 rad/s</strong></span></div>
+      <div class="rapidez">v = ω/k = λ/T = λf = <strong id="valor-v">1,33 m/s</strong> <span aria-hidden="true"> · </span> f = 1/T = <strong id="valor-f">0,33 Hz</strong></div>
+    </section>
+    <p class="escena-etiqueta" id="direccion-medio"><strong>Medio ↕</strong> · propagación → +x</p>
+    <output class="tiempo" id="tiempo">t = 0,00 s</output>
+    <div id="area-onda" tabindex="0" role="img" aria-label="Onda transversal interactiva" aria-describedby="descripcion-escena">
+      <svg id="alternativa" aria-hidden="true"></svg>
+      <svg id="anotaciones" aria-hidden="true"></svg>
+    </div>
+    <p class="seguimiento"><strong>Punto del medio</strong> · oscila alrededor de su posición</p>
+    <aside class="panel-graficas cristal" id="panel-graficas" hidden aria-label="Perfil espacial e historia temporal de la onda">
+      <div class="selector selector-graficas" aria-label="Gráfica visible"><button type="button" data-grafica="espacial" aria-pressed="false">Espacio</button><button type="button" data-grafica="temporal" aria-pressed="true">Tiempo</button></div>
+      <div id="grafica-espacial-panel"><h2 id="titulo-espacial">y(x,t) · t fijo</h2><svg class="grafica" id="grafica-espacial" viewBox="0 0 340 145" role="img" aria-label="Perfil de desplazamiento a tiempo fijo"></svg></div>
+      <div id="grafica-temporal-panel"><h2 id="titulo-temporal">y(x₀,t) · x₀ fijo</h2><svg class="grafica" id="grafica-temporal" viewBox="0 0 340 145" role="img" aria-label="Oscilación temporal de un punto fijo del medio"></svg></div>
+      <div class="punto-control"><label for="punto">Punto x₀ · <output id="salida-punto" for="punto">6,0 m</output></label><input id="punto" type="range" min="0" max="12" step="0.1" value="6"></div>
+    </aside>
+    <section class="dock cristal" aria-label="Parámetros de la onda">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="amplitud" id="etiqueta-amplitud">Amplitud A</button><output id="salida-amplitud" for="amplitud">0,30 m</output></div><input id="amplitud" aria-labelledby="etiqueta-amplitud" type="range" min="0.05" max="0.4" step="0.01" value="0.3"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="longitud" id="etiqueta-longitud">Longitud λ</button><output id="salida-longitud" for="longitud">4,0 m</output></div><input id="longitud" aria-labelledby="etiqueta-longitud" type="range" min="3.5" max="6" step="0.1" value="4"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="periodo" id="etiqueta-periodo">Período T</button><output id="salida-periodo" for="periodo">3,0 s</output></div><input id="periodo" aria-labelledby="etiqueta-periodo" type="range" min="1.5" max="6" step="0.1" value="3"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="fase" id="etiqueta-fase" aria-label="Fase inicial phi">Fase φ</button><output id="salida-fase" for="fase">0,00 rad</output></div><input id="fase" aria-labelledby="etiqueta-fase" type="range" min="-3.14" max="3.14" step="0.01" value="0"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">λ · distancia entre dos crestas</span><div class="herramientas"><button class="enlace" id="invertir" type="button">Hacia −x</button><button class="enlace" id="vista-inicial" type="button">Restablecer vista</button><button class="enlace" id="ayuda" type="button" aria-expanded="false">Modelo</button><span id="modo-render">2D</span></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden><button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar información del modelo">×</button><strong>Qué se está viendo</strong><p>Transversal: desplazamiento perpendicular a x. Longitudinal: desplazamiento paralelo a x; el perfil u(x,t) representa ese desplazamiento, no presión.</p><p>El punto sigue la misma porción del medio. x es su posición de equilibrio. La escala vertical de la transversal está ampliada ×3.</p><p>Variar λ o T cambia v = λ/T: se comparan distintas ondas. En un medio de rapidez fija, λ y T no son independientes.</p><p id="estado-carga">El 3D necesita internet y WebGL 2. La vista 2D funciona sin conexión.</p><p>Arrastra para girar. Flechas para girar; + y − para zoom. Paso avanza T/24. La fase inicial muestra t = 0.</p></aside>
+    <p class="sr-only" id="descripcion-escena">El medio oscila perpendicular a la propagación. La onda viaja hacia x positivo.</p>
+    <p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script>
+    (() => {
+      "use strict";
+      const $ = id => document.getElementById(id);
+      const espacioSVG = "http://www.w3.org/2000/svg";
+      const movimientoReducido = matchMedia("(prefers-reduced-motion: reduce)");
+      const inicial = { amplitud: .3, longitud: 4, periodo: 3, fase: 0, punto: 6 };
+      const controles = Object.fromEntries(Object.keys(inicial).map(nombre => [nombre, $(nombre)]));
+      const tema = getComputedStyle(document.documentElement);
+      const color = nombre => tema.getPropertyValue(`--color-${nombre}`).trim();
+      const numero = (valor, decimales = 2) => new Intl.NumberFormat("es-CL", { minimumFractionDigits: decimales, maximumFractionDigits: decimales }).format(valor);
+      const estado = { tipo: "transversal", parametro: "longitud", direccion: 1, tiempo: 0, pausado: movimientoReducido.matches, graficas: false, grafica: "temporal" };
+      let vista3D = null, fotograma = null, tiempoAnterior = null, anuncio = null;
+      let ancho = 1, alto = 1, medioVisible = true, radioResorte = .24;
+      const escalaVertical = 3;
+      function datos() {
+        const d = Object.fromEntries(Object.entries(controles).map(([nombre, entrada]) => [nombre, Number(entrada.value)]));
+        return { ...d, k: 2 * Math.PI / d.longitud, omega: 2 * Math.PI / d.periodo, frecuencia: 1 / d.periodo, velocidad: d.longitud / d.periodo };
+      }
+      function desplazamiento(x, tiempo, d) { return d.amplitud * Math.cos(d.k * x - estado.direccion * d.omega * tiempo + d.fase); }
+      function crearSVG(tipo, atributos, texto) {
+        const elemento = document.createElementNS(espacioSVG, tipo);
+        for (const [clave, valor] of Object.entries(atributos)) elemento.setAttribute(clave, valor);
+        if (texto !== undefined) elemento.textContent = texto;
+        return elemento;
+      }
+      function trazo(padre, puntos, tono, grosor = 1.2, guiones = "") {
+        const linea = crearSVG("polyline", { points: puntos.map(p => p.join(",")).join(" "), fill: "none", stroke: tono, "stroke-width": grosor, "stroke-linecap": "round", "stroke-linejoin": "round" });
+        if (guiones) linea.setAttribute("stroke-dasharray", guiones);
+        padre.appendChild(linea);
+      }
+      function texto(padre, x, y, contenido, tono = color("texto-secundario"), ancla = "middle") { padre.appendChild(crearSVG("text", { x, y, fill: tono, "text-anchor": ancla }, contenido)); }
+      function proyectar(x, y, z = 0) {
+        if (vista3D) return vista3D.proyectar(x, y, z);
+        const escala = Math.min(ancho / 14, alto / 3.8);
+        return [ancho / 2 + x * escala, alto / 2 - y * escala];
+      }
+      function configurarGraficas() {
+        const soloTiempo = !estado.graficas && estado.parametro === "periodo";
+        const mostrar = estado.graficas || soloTiempo;
+        $("panel-graficas").hidden = !mostrar;
+        $("grafica-espacial-panel").hidden = soloTiempo;
+        $("laboratorio").classList.toggle("con-graficas", mostrar);
+        $("laboratorio").classList.toggle("solo-tiempo", soloTiempo);
+        $("graficas").setAttribute("aria-pressed", String(estado.graficas));
+        $("panel-graficas").classList.toggle("movil-temporal", estado.grafica === "temporal");
+        $("panel-graficas").classList.toggle("movil-espacial", estado.grafica === "espacial");
+        document.querySelectorAll("[data-grafica]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.grafica === estado.grafica)));
+        redimensionar();
+      }
+      function interfaz() {
+        const d = datos();
+        for (const [nombre, entrada] of Object.entries(controles)) {
+          entrada.style.setProperty("--progreso", `${(Number(entrada.value) - Number(entrada.min)) / (Number(entrada.max) - Number(entrada.min)) * 100}%`);
+          const unidad = nombre === "periodo" ? "s" : nombre === "fase" ? "rad" : "m";
+          $("salida-" + nombre).value = `${numero(d[nombre], nombre === "amplitud" || nombre === "fase" ? 2 : 1)} ${unidad}`;
+        }
+        $("valor-k").textContent = `${numero(d.k)} rad/m`;
+        $("valor-omega").textContent = `${numero(d.omega)} rad/s`;
+        $("valor-v").textContent = `${numero(d.velocidad)} m/s`;
+        $("valor-f").textContent = `${numero(d.frecuencia)} Hz`;
+        $("simbolo").textContent = estado.tipo === "transversal" ? "y" : "u";
+        $("signo").textContent = estado.direccion === 1 ? "−" : "+";
+        $("direccion-medio").innerHTML = `<strong>Medio ${estado.tipo === "transversal" ? "↕" : "↔"}</strong> · propagación ${estado.direccion === 1 ? "→ +x" : "← −x"}`;
+        $("invertir").textContent = estado.direccion === 1 ? "Hacia −x" : "Hacia +x";
+        $("pausa").textContent = estado.pausado ? "Reproducir" : "Pausa";
+        $("pausa").setAttribute("aria-pressed", String(estado.pausado));
+        document.querySelectorAll("[data-tipo]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tipo === estado.tipo)));
+        document.querySelectorAll("[data-parametro]").forEach(b => b.classList.toggle("activo", b.dataset.parametro === estado.parametro));
+        $("concepto").textContent = ({ amplitud: "A · máximo desplazamiento desde el equilibrio", longitud: estado.tipo === "transversal" ? "λ · distancia entre dos crestas" : "λ · distancia entre dos compresiones", periodo: "T · una oscilación del mismo punto", fase: "φ · estado de la onda en t = 0" })[estado.parametro];
+        const simbolo = estado.tipo === "transversal" ? "y" : "u";
+        $("titulo-espacial").textContent = `${simbolo}(x,t) · t fijo`;
+        $("titulo-temporal").textContent = `${simbolo}(x₀,t) · x₀ fijo`;
+        $("area-onda").setAttribute("aria-label", `Onda ${estado.tipo} interactiva`);
+        $("descripcion-escena").textContent = `El medio oscila ${estado.tipo === "transversal" ? "perpendicular" : "paralelo"} a la propagación. Amplitud ${numero(d.amplitud)} m; longitud de onda ${numero(d.longitud, 1)} m; período ${numero(d.periodo, 1)} s; rapidez ${numero(d.velocidad)} m/s. La onda viaja hacia x ${estado.direccion === 1 ? "positivo" : "negativo"}.`;
+        clearTimeout(anuncio);
+        anuncio = setTimeout(() => { $("resumen-accesible").textContent = $("descripcion-escena").textContent; }, 200);
+      }
+      function dibujarAnotaciones(d) {
+        const svg = $("anotaciones");
+        svg.replaceChildren();
+        const neutral = color("borde"), textoColor = color("texto-secundario"), acento = color("punto");
+        trazo(svg, [proyectar(-6, 0), proyectar(6, 0)], neutral, 1, "4 6");
+        for (const x of [0, 3, 6, 9, 12]) {
+          const p = proyectar(x - 6, estado.tipo === "transversal" ? -d.amplitud * escalaVertical - .32 : -radioResorte - .4);
+          texto(svg, p[0], p[1], x === 12 ? "12 m · x" : String(x));
+        }
+        const u = desplazamiento(d.punto, estado.tiempo, d);
+        const giro = d.punto * 8 * Math.PI;
+        const equilibrio = estado.tipo === "transversal" ? [d.punto - 6, 0, 0] : [d.punto - 6, radioResorte * Math.cos(giro), radioResorte * Math.sin(giro)];
+        const actual = estado.tipo === "transversal" ? [d.punto - 6, u * escalaVertical, 0] : [d.punto - 6 + u, equilibrio[1], equilibrio[2]];
+        trazo(svg, [proyectar(...equilibrio), proyectar(...actual)], acento, 1.5);
+        const e = proyectar(...equilibrio);
+        svg.appendChild(crearSVG("circle", { cx: e[0], cy: e[1], r: 5, fill: "none", stroke: acento, "stroke-opacity": .45 }));
+        if (estado.parametro === "longitud") {
+          // Crestas: fase 0. Compresiones: fase π/2, porque ∂u/∂x < 0.
+          const faseObjetivo = estado.tipo === "transversal" ? 0 : Math.PI / 2;
+          const origen = (estado.direccion * d.omega * estado.tiempo - d.fase + faseObjetivo) / d.k;
+          const x = ((origen % d.longitud) + d.longitud) % d.longitud;
+          const y = estado.tipo === "transversal" ? d.amplitud * escalaVertical : radioResorte;
+          const p1 = proyectar(x - 6, y + .48), p2 = proyectar(x + d.longitud - 6, y + .48);
+          trazo(svg, [p1, p2], textoColor);
+          for (const p of [p1, p2]) trazo(svg, [[p[0], p[1] - 4], [p[0], p[1] + 4]], textoColor);
+          trazo(svg, [proyectar(x - 6, y + .08), p1], neutral, 1, "3 4");
+          trazo(svg, [proyectar(x + d.longitud - 6, y + .08), p2], neutral, 1, "3 4");
+          texto(svg, (p1[0] + p2[0]) / 2, Math.min(p1[1], p2[1]) - 9, `λ = ${numero(d.longitud, 1)} m`, color("texto"));
+        }
+        if (estado.parametro === "amplitud") {
+          if (estado.tipo === "transversal") {
+            const x = d.punto - 6 + .65;
+            const p1 = proyectar(x, 0), p2 = proyectar(x, d.amplitud * escalaVertical);
+            trazo(svg, [p1, p2], textoColor);
+            for (const p of [p1, p2]) trazo(svg, [[p[0]-4,p[1]], [p[0]+4,p[1]]], textoColor);
+            texto(svg, p2[0] + 9, (p1[1]+p2[1])/2, `A = ${numero(d.amplitud)} m`, color("texto"), "start");
+            trazo(svg, [proyectar(-6, d.amplitud*escalaVertical), proyectar(6, d.amplitud*escalaVertical)], neutral, 1, "3 7");
+          } else {
+            const p1 = proyectar(d.punto-6, radioResorte+.7), p2 = proyectar(d.punto-6+d.amplitud, radioResorte+.7);
+            trazo(svg, [p1,p2], textoColor);
+            for(const p of [p1,p2]) trazo(svg, [[p[0],p[1]-4],[p[0],p[1]+4]], textoColor);
+            texto(svg, (p1[0]+p2[0])/2, p1[1]-10, `A = ${numero(d.amplitud)} m`, color("texto"));
+            trazo(svg, [proyectar(d.punto-6,radioResorte+.09),p1], neutral, 1, "3 4");
+          }
+        }
+        if (estado.parametro === "fase") {
+          const p = estado.tipo === "transversal" ? proyectar(-6, desplazamiento(0,0,d)*escalaVertical) : proyectar(-6+desplazamiento(0,0,d),radioResorte);
+          texto(svg, Math.max(45,p[0]), Math.max(18,p[1]-14), `φ = ${numero(d.fase)} rad`, color("texto"));
+        }
+      }
+      function grafica(svg, temporal, d) {
+        svg.replaceChildren();
+        const izquierda=36, derecha=320, centro=76, escala=35/.4;
+        const limite=temporal ? 2*d.periodo : 12;
+        const comienzo=temporal ? Math.floor(estado.tiempo / limite)*limite : 0;
+        const sx=valor=>izquierda+valor/limite*(derecha-izquierda);
+        const sy=valor=>centro-valor*escala;
+        trazo(svg, [[izquierda,23],[izquierda,116]], color("borde"));
+        trazo(svg, [[izquierda,centro],[derecha,centro]], color("borde"));
+        const puntos=Array.from({length:181},(_,i)=>{
+          const z=limite*i/180;
+          return [sx(z),sy(desplazamiento(temporal?d.punto:z,temporal?comienzo+z:estado.tiempo,d))];
+        });
+        trazo(svg,puntos,temporal?color("punto"):color("onda"),2);
+        texto(svg,izquierda-8,sy(.4)+4,"0,4",color("texto-secundario"),"end");
+        texto(svg,izquierda-8,centro+4,"0",color("texto-secundario"),"end");
+        texto(svg,izquierda-8,sy(-.4)+4,"−0,4",color("texto-secundario"),"end");
+        texto(svg,izquierda-5,15,`${estado.tipo==="transversal"?"y":"u"} (m)`,color("texto-secundario"),"start");
+        const marcas=temporal?[0,d.periodo,2*d.periodo]:[0,6,12];
+        marcas.forEach(z=>texto(svg,sx(z),134,numero(z+(temporal?comienzo:0),1)));
+        texto(svg,derecha,15,temporal?"t (s)":"x (m)",color("texto-secundario"),"end");
+        const z=temporal?estado.tiempo-comienzo:d.punto;
+        const u=desplazamiento(d.punto,estado.tiempo,d);
+        trazo(svg,[[sx(z),28],[sx(z),113]],color("acento"),1,"3 5");
+        svg.appendChild(crearSVG("circle",{cx:sx(z),cy:sy(u),r:4.5,fill:color("punto"),stroke:color("tarjeta"),"stroke-width":1.5}));
+        if(temporal){
+          const y=23;
+          trazo(svg,[[sx(0),y],[sx(d.periodo),y]],color("texto-secundario"));
+          for(const x of [sx(0),sx(d.periodo)])trazo(svg,[[x,y-3],[x,y+3]],color("texto-secundario"));
+          texto(svg,(sx(0)+sx(d.periodo))/2,y-7,`T = ${numero(d.periodo,1)} s`,color("texto"));
+        }else{
+          const origen=(estado.direccion*d.omega*estado.tiempo-d.fase)/d.k;
+          const x=((origen%d.longitud)+d.longitud)%d.longitud,y=23;
+          trazo(svg,[[sx(x),y],[sx(x+d.longitud),y]],color("texto-secundario"));
+          for(const z of [sx(x),sx(x+d.longitud)])trazo(svg,[[z,y-3],[z,y+3]],color("texto-secundario"));
+          texto(svg,(sx(x)+sx(x+d.longitud))/2,y-7,`λ = ${numero(d.longitud,1)} m`,color("texto"));
+        }
+      }
+      function dibujar2D(d) {
+        const svg=$("alternativa");svg.replaceChildren();
+        const puntos=[];
+        for(let i=0;i<=720;i++){
+          const q=12*i/720, u=desplazamiento(q,estado.tiempo,d);
+          puntos.push(proyectar(q-6+(estado.tipo==="longitudinal"?u:0),estado.tipo==="transversal"?u*escalaVertical:radioResorte*Math.cos(q*8*Math.PI)));
+        }
+        trazo(svg,puntos,color(estado.tipo==="transversal"?"onda":"longitudinal"),estado.tipo==="transversal"?3.5:2);
+        const u=desplazamiento(d.punto,estado.tiempo,d);
+        const p=proyectar(d.punto-6+(estado.tipo==="longitudinal"?u:0),estado.tipo==="transversal"?u*escalaVertical:radioResorte*Math.cos(d.punto*8*Math.PI));
+        svg.appendChild(crearSVG("circle",{cx:p[0],cy:p[1],r:7,fill:color("punto"),stroke:color("tarjeta"),"stroke-width":2}));
+      }
+      function renderizar() {
+        const d=datos();
+        $("tiempo").value=`t = ${numero(estado.tiempo)} s`;
+        if(medioVisible){if(vista3D)vista3D.dibujar(d);else dibujar2D(d);dibujarAnotaciones(d);}
+        if(!$("panel-graficas").hidden){grafica($("grafica-espacial"),false,d);grafica($("grafica-temporal"),true,d);}
+      }
+      function pedirFotograma(){if(fotograma===null&&!document.hidden)fotograma=requestAnimationFrame(animar);}
+      function animar(tiempo){
+        fotograma=null;
+        if(!estado.pausado&&tiempoAnterior!==null)estado.tiempo+=(tiempo-tiempoAnterior)/1000;
+        tiempoAnterior=estado.pausado?null:tiempo;
+        renderizar();
+        if(!estado.pausado)pedirFotograma();
+      }
+      function redimensionar(){
+        const rect=$('area-onda').getBoundingClientRect();ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height);
+        medioVisible=getComputedStyle($("area-onda")).visibility!=="hidden";
+        radioResorte=innerWidth<=680?.52:.24;
+        for(const id of ["alternativa","anotaciones"])$(id).setAttribute("viewBox",`0 0 ${ancho} ${alto}`);
+        if(vista3D)vista3D.redimensionar(rect);
+        pedirFotograma();
+      }
+      function seleccionar(nombre){estado.parametro=nombre;if(nombre==="fase"){estado.tiempo=0;estado.pausado=true;tiempoAnterior=null;}if(nombre==="periodo")estado.grafica="temporal";interfaz();configurarGraficas();pedirFotograma();}
+      for(const [nombre,entrada] of Object.entries(controles))entrada.addEventListener("input",()=>{
+        if(nombre!=="punto")estado.parametro=nombre;
+        if(nombre==="periodo")estado.grafica="temporal";
+        if(nombre==="fase"){estado.tiempo=0;estado.pausado=true;tiempoAnterior=null;}
+        interfaz();configurarGraficas();pedirFotograma();
+      });
+      document.querySelectorAll("[data-parametro]").forEach(b=>b.addEventListener("click",()=>seleccionar(b.dataset.parametro)));
+      document.querySelectorAll("[data-tipo]").forEach(b=>b.addEventListener("click",()=>{estado.tipo=b.dataset.tipo;interfaz();pedirFotograma();}));
+      $("pausa").addEventListener("click",()=>{estado.pausado=!estado.pausado;tiempoAnterior=null;interfaz();pedirFotograma();});
+      $("paso").addEventListener("click",()=>{estado.pausado=true;estado.tiempo+=datos().periodo/24;tiempoAnterior=null;interfaz();pedirFotograma();});
+      $("graficas").addEventListener("click",()=>{estado.graficas=!estado.graficas;if(!estado.graficas&&estado.parametro==="periodo")estado.parametro="longitud";interfaz();configurarGraficas();});
+      document.querySelectorAll("[data-grafica]").forEach(b=>b.addEventListener("click",()=>{estado.grafica=b.dataset.grafica;estado.graficas=true;configurarGraficas();pedirFotograma();}));
+      $("reiniciar").addEventListener("click",()=>{
+        for(const [nombre,valor] of Object.entries(inicial))controles[nombre].value=valor;
+        Object.assign(estado,{tiempo:0,direccion:1,parametro:"longitud",graficas:false,pausado:movimientoReducido.matches});
+        tiempoAnterior=null;if(vista3D)vista3D.reiniciar();interfaz();configurarGraficas();pedirFotograma();
+      });
+      $("invertir").addEventListener("click",()=>{estado.direccion*=-1;estado.tiempo=0;tiempoAnterior=null;interfaz();pedirFotograma();});
+      $("vista-inicial").addEventListener("click",()=>{if(vista3D)vista3D.reiniciar();pedirFotograma();});
+      $("pantalla-completa").addEventListener("click",async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $("laboratorio").requestFullscreen();}catch{$("pantalla-completa").textContent="Vista completa";}});
+      function ayuda(mostrar){$("detalle").hidden=!mostrar;$("ayuda").setAttribute("aria-expanded",String(mostrar));}
+      $("ayuda").addEventListener("click",()=>ayuda($("detalle").hidden));$("cerrar-detalle").addEventListener("click",()=>ayuda(false));
+      document.addEventListener("keydown",e=>{if(e.key==="Escape")ayuda(false);});
+      document.addEventListener("visibilitychange",()=>{if(fotograma!==null)cancelAnimationFrame(fotograma);fotograma=null;tiempoAnterior=null;if(!document.hidden)pedirFotograma();});
+      movimientoReducido.addEventListener("change",()=>{if(movimientoReducido.matches)estado.pausado=true;tiempoAnterior=null;interfaz();pedirFotograma();});
+      window.addEventListener("resize",redimensionar);
+
+      async function iniciar3D(){
+        let renderizador=null, orbita=null;
+        try{
+          const [THREE,{OrbitControls}]=await Promise.all([import("three"),import("three/addons/controls/OrbitControls.js")]);
+          const escena=new THREE.Scene();
+          const camara=new THREE.OrthographicCamera(-7,7,2,-2,.1,80);
+          camara.position.set(0,1.2,16);
+          renderizador=new THREE.WebGLRenderer({antialias:true,alpha:true});
+          renderizador.setPixelRatio(Math.min(devicePixelRatio||1,2));renderizador.outputColorSpace=THREE.SRGBColorSpace;
+          const lienzo=renderizador.domElement;lienzo.id="lienzo";lienzo.setAttribute("aria-hidden","true");
+          $("laboratorio").prepend(lienzo);
+          orbita=new OrbitControls(camara,$("area-onda"));orbita.enablePan=false;orbita.enableDamping=false;orbita.minZoom=.7;orbita.maxZoom=2;orbita.minPolarAngle=.75;orbita.maxPolarAngle=2.3;orbita.maxAzimuthAngle=.7;orbita.minAzimuthAngle=-.7;orbita.update();orbita.saveState();orbita.addEventListener("change",pedirFotograma);
+          escena.add(new THREE.HemisphereLight(color("tarjeta"),color("primario"),1.7));
+          const luz=new THREE.DirectionalLight(color("tarjeta"),1.7);luz.position.set(-2,5,8);escena.add(luz);
+          // Tubos con buffers reutilizados; no se crean geometrías en cada fotograma.
+          const muestras=1056, lados=6;
+          const vertices=new Float32Array((muestras+1)*(lados+1)*3), normales=new Float32Array(vertices.length);
+          const indices=[];
+          for(let i=0;i<muestras;i++)for(let j=0;j<lados;j++){
+            const a=i*(lados+1)+j,b=a+lados+1;indices.push(a,a+1,b,b,a+1,b+1);
+          }
+          const geometria=new THREE.BufferGeometry();geometria.setAttribute("position",new THREE.BufferAttribute(vertices,3).setUsage(THREE.DynamicDrawUsage));geometria.setAttribute("normal",new THREE.BufferAttribute(normales,3).setUsage(THREE.DynamicDrawUsage));geometria.setIndex(indices);
+          const material=new THREE.MeshStandardMaterial({color:color("primario"),roughness:.5});
+          const medio=new THREE.Mesh(geometria,material);medio.frustumCulled=false;escena.add(medio);
+          const punto=new THREE.Mesh(new THREE.SphereGeometry(.09,20,14),new THREE.MeshStandardMaterial({color:color("punto"),roughness:.4}));escena.add(punto);
+          const posicion=new THREE.Vector3();
+          function actualizarMedio(d){
+            const transversal=estado.tipo==="transversal";
+            material.color.set(color(transversal?"primario":"secundario"));
+            for(let i=0;i<=muestras;i++){
+              const q=12*i/muestras,fase=d.k*q-estado.direccion*d.omega*estado.tiempo+d.fase,u=d.amplitud*Math.cos(fase);
+              let x=q-6,y=u*escalaVertical,z=0,nx,ny,nz,bx,by,bz;
+              if(transversal){const pendiente=-escalaVertical*d.amplitud*d.k*Math.sin(fase),norma=Math.hypot(1,pendiente);nx=-pendiente/norma;ny=1/norma;nz=0;bx=0;by=0;bz=1;}
+              else{
+                const giro=q*8*Math.PI,c=Math.cos(giro),s=Math.sin(giro);x+=u;y=radioResorte*c;z=radioResorte*s;nx=0;ny=c;nz=s;
+                const tx=1-d.amplitud*d.k*Math.sin(fase),ty=-radioResorte*8*Math.PI*s,tz=radioResorte*8*Math.PI*c;
+                bx=ty*nz-tz*ny;by=-tx*nz;bz=tx*ny;const norma=Math.hypot(bx,by,bz);bx/=norma;by/=norma;bz/=norma;
+              }
+              const radio=transversal?.035:.021;
+              for(let j=0;j<=lados;j++){
+                const angulo=j/lados*2*Math.PI,c=Math.cos(angulo),s=Math.sin(angulo),indice=(i*(lados+1)+j)*3;
+                const vx=nx*c+bx*s,vy=ny*c+by*s,vz=nz*c+bz*s;
+                vertices[indice]=x+radio*vx;vertices[indice+1]=y+radio*vy;vertices[indice+2]=z+radio*vz;
+                normales[indice]=vx;normales[indice+1]=vy;normales[indice+2]=vz;
+              }
+            }
+            geometria.attributes.position.needsUpdate=true;geometria.attributes.normal.needsUpdate=true;
+            const u=desplazamiento(d.punto,estado.tiempo,d);
+            punto.position.set(d.punto-6+(transversal?0:u),transversal?u*escalaVertical:radioResorte*Math.cos(d.punto*8*Math.PI),transversal?0:radioResorte*Math.sin(d.punto*8*Math.PI));
+            punto.scale.setScalar(innerWidth<=680?2:1);
+          }
+          vista3D={
+            redimensionar(rect){
+              renderizador.setSize(innerWidth,innerHeight,false);
+              const h=Math.max(3.8,14/(ancho/alto)),w=h*ancho/alto;
+              camara.left=-w/2;camara.right=w/2;camara.top=h/2;camara.bottom=-h/2;camara.updateProjectionMatrix();
+              renderizador.setViewport(rect.left,innerHeight-rect.bottom,rect.width,rect.height);
+            },
+            proyectar(x,y,z=0){posicion.set(x,y,z).project(camara);return [(posicion.x+1)/2*ancho,(1-posicion.y)/2*alto];},
+            dibujar(d){actualizarMedio(d);renderizador.render(escena,camara);},
+            reiniciar(){orbita.reset();}
+          };
+          redimensionar();vista3D.dibujar(datos());$("alternativa").style.display="none";$("modo-render").textContent="3D";
+          $("estado-carga").textContent="Escena 3D cargada. Sin conexión o WebGL, se conserva la alternativa 2D.";
+          $("area-onda").addEventListener("keydown",e=>{
+            if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","+","=","-"].includes(e.key))return;e.preventDefault();
+            const esfera=new THREE.Spherical().setFromVector3(camara.position.clone());
+            if(e.key==="ArrowLeft")esfera.theta=Math.max(-.7,esfera.theta-.1);if(e.key==="ArrowRight")esfera.theta=Math.min(.7,esfera.theta+.1);
+            if(e.key==="ArrowUp")esfera.phi=Math.max(.75,esfera.phi-.1);if(e.key==="ArrowDown")esfera.phi=Math.min(2.3,esfera.phi+.1);
+            if(e.key==="+"||e.key==="=")camara.zoom=Math.min(2,camara.zoom*1.1);if(e.key==="-")camara.zoom=Math.max(.7,camara.zoom/1.1);
+            camara.position.setFromSpherical(esfera);camara.updateProjectionMatrix();orbita.update();pedirFotograma();
+          });
+          lienzo.addEventListener("webglcontextlost",e=>{e.preventDefault();vista3D=null;lienzo.hidden=true;orbita.dispose();$("alternativa").style.display="block";$("modo-render").textContent="2D";$("estado-carga").textContent="El navegador perdió el contexto gráfico. La onda y los controles siguen funcionando en 2D.";redimensionar();});
+        }catch(error){
+          vista3D=null;if(orbita)orbita.dispose();if(renderizador){renderizador.domElement.remove();renderizador.dispose();}
+          $("alternativa").style.display="block";$("modo-render").textContent="2D";$("estado-carga").textContent="Vista 2D activa. Para usar 3D, comprueba la conexión y el soporte WebGL 2.";redimensionar();
+        }
+      }
+      interfaz();configurarGraficas();iniciar3D();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Fermi ultrarrelativista y calor específico: enunciado, solución íntegra y resultados interactivos del problema S-9-6.">
+<title>Fermi ultrarrelativista y calor específico · S-9-6</title>
+<style>
+:root{color-scheme:only light;--color-fondo:#F7F8FC;--color-tarjeta:#FFFFFF;--color-primario:#A8C7FA;--color-secundario:#B8E0D2;--color-acento:#CDB4DB;--color-texto:#273043;--color-texto-secundario:#667085;--color-borde:#E4E7EC;--color-onda:#668EC6;--color-verde:#67998A;--color-punto:#9471AE;--radio-tarjeta:18px;--sombra:0 10px 32px rgba(39,48,67,.07)}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0;width:100%;height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--color-fondo);color:var(--color-texto)}button,input{font:inherit;color:inherit}button{cursor:pointer}button,input{-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--color-onda);outline-offset:3px}.app{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 20% 20%,rgba(168,199,250,.12),transparent 70%),var(--color-fondo)}
+.cabecera{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;flex-shrink:0}.identidad h1{margin:4px 0 0;font-size:1.4rem;line-height:1.2;letter-spacing:-.035em}.kicker{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-texto-secundario)}.selector{display:flex;flex-wrap:wrap;gap:3px;padding:4px;border-radius:12px;background:rgba(228,231,236,.7)}.selector button{padding:8px 12px;min-height:36px;border:0;background:transparent;border-radius:9px;font-size:.83rem;color:var(--color-texto-secundario)}.selector button[aria-selected="true"],.selector button[aria-pressed="true"]{background:var(--color-tarjeta);color:var(--color-texto);box-shadow:0 2px 6px rgba(39,48,67,.06)}.boton{border:1px solid var(--color-borde);border-radius:11px;background:var(--color-tarjeta);padding:8px 12px;min-height:38px;font-size:.8rem;white-space:nowrap}.boton:hover{background:rgba(168,199,250,.12)}.boton[aria-pressed="true"]{background:var(--color-acento)}.principal{background:var(--color-texto);color:var(--color-tarjeta);border-color:var(--color-texto)}.principal:hover{background:#42516A}.pagina{flex:1;min-height:0}.lectura{overflow:auto;padding:12px 28px 48px}.papel{max-width:960px;margin:auto;padding:34px 44px;background:var(--color-tarjeta);border:1px solid var(--color-borde);border-radius:18px;box-shadow:var(--sombra)}.numero-pagina{font-size:.74rem;color:var(--color-onda);letter-spacing:.1em;text-transform:uppercase}.papel h2{font-size:1.45rem;margin:18px 0 24px;line-height:1.4}.papel h3{font-size:1.16rem;margin:32px 0 12px}.papel h4{font-size:1rem;margin:22px 0 10px}.papel p,.papel li{line-height:1.8;font-size:1rem}.papel p{margin:12px 0}.papel li{margin:10px 0}.papel li p{margin:6px 0}.math-block{overflow-x:auto;overflow-y:hidden;padding:14px 8px;margin:8px 0;max-width:100%;text-align:center}.math-block .katex{display:block;width:max-content;min-width:100%}math{font-family:"Cambria Math","STIX Two Math",serif;font-size:1.12em}math[display="block"]{margin:0}annotation{display:none}.fuente{font-size:.8rem;color:var(--color-texto-secundario);line-height:1.6}.fuente a,.detalle a{color:var(--color-onda)}.lectura-footer{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;border-top:1px solid var(--color-borde);padding-top:22px;margin-top:30px}.explorar{margin:16px 0}.indice{display:flex;flex-wrap:wrap;gap:8px}.indice a{font-size:.8rem;color:var(--color-onda)}
+.laboratorio{display:flex;flex-direction:column;gap:10px;position:relative;padding:0 28px 18px;overflow:hidden}.barra-viz{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}.acciones{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.cristal{background:rgba(255,255,255,.93);border:1px solid rgba(228,231,236,.9);box-shadow:var(--sombra);backdrop-filter:blur(14px);border-radius:18px}.ecuacion{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 18px;flex-shrink:0}.formula{font-family:Georgia,serif;font-size:1.3rem;line-height:1.4;margin:0}.simbolo{border:0;border-radius:5px;background:transparent;padding:2px 4px;font:inherit;color:inherit}.simbolo.activo{background:rgba(168,199,250,.3);color:var(--color-texto)}.numeros{font-size:.81rem;line-height:1.5;color:var(--color-texto-secundario);text-align:right;font-variant-numeric:tabular-nums;max-width:55%}.numeros strong{color:var(--color-texto)}.cuerpo-viz{display:flex;gap:16px;flex:1;min-height:0;position:relative}.escena{position:relative;flex:1;min-width:0;min-height:0;overflow:hidden;touch-action:none;border-radius:12px;cursor:grab}.escena:active{cursor:grabbing}#lienzo,#alternativa,#anotaciones{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#anotaciones{z-index:2}#anotaciones text,#alternativa text,.grafica text{font-family:Inter,system-ui,sans-serif;font-size:12px}#pie-escena{position:absolute;bottom:4px;left:8px;right:8px;font-size:.76rem;text-align:center;color:var(--color-texto-secundario);pointer-events:none;background:rgba(247,248,252,.8)}.panel-graficas{width:340px;flex-shrink:0;padding:14px;align-self:center;max-height:100%;overflow:auto}.panel-graficas h2{font-size:.9rem;margin:0 0 8px}.grafica{width:100%;height:225px;display:block}.leyenda{display:flex;flex-wrap:wrap;gap:10px;font-size:.76rem;color:var(--color-texto-secundario)}.leyenda span{display:flex;gap:5px;align-items:center}.muestra-color{width:12px;height:3px;display:inline-block}.dock{padding:13px 18px 10px;flex-shrink:0;max-width:1100px;width:100%;align-self:center}.parametros{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}.parametro{min-width:0}.parametro-cabecera{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:10px;font-size:.81rem}.parametro-cabecera button{border:0;background:transparent;padding:2px 3px;border-radius:5px;text-align:left}.parametro-cabecera button.activo{background:rgba(168,199,250,.3)}output{font-size:.81rem;font-variant-numeric:tabular-nums;white-space:nowrap}input[type="range"]{display:block;width:100%;margin:0;height:22px;appearance:none;background:transparent;cursor:pointer}input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--color-primario) var(--progreso,50%),var(--color-borde) var(--progreso,50%))}input[type="range"]::-webkit-slider-thumb{appearance:none;margin-top:-7px;width:20px;height:20px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto);box-shadow:0 2px 7px rgba(39,48,67,.2)}input[type="range"]::-moz-range-track{height:6px;border-radius:99px;background:var(--color-borde)}input[type="range"]::-moz-range-progress{height:6px;border-radius:99px;background:var(--color-primario)}input[type="range"]::-moz-range-thumb{width:14px;height:14px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto)}.dock-pie{display:flex;gap:12px;justify-content:space-between;align-items:center;border-top:1px solid var(--color-borde);margin-top:11px;padding-top:9px;font-size:.76rem;color:var(--color-texto-secundario)}.herramientas{display:flex;gap:10px;flex-shrink:0}.enlace{background:transparent;border:0;padding:4px 0;min-height:28px;text-decoration:underline;text-underline-offset:3px;color:inherit;font-size:.76rem}.detalle{position:absolute;z-index:6;right:28px;top:55px;width:min(510px,calc(100% - 56px));max-height:calc(100% - 70px);overflow:auto;padding:20px;font-size:.87rem;line-height:1.7}.detalle h2{margin:0 0 16px;font-size:1.1rem;padding-right:35px}.detalle p{margin:12px 0}.cerrar{position:absolute;right:12px;top:10px}.sr-only{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}.etiqueta-render{font-size:.7rem;color:var(--color-texto-secundario)}
+@media(max-width:1050px){.barra-viz{align-items:flex-start}.acciones{max-width:390px}.panel-graficas{width:290px}.cabecera{gap:12px}.identidad h1{font-size:1.2rem}.selector button{padding:7px 9px}.formula{font-size:1.15rem}}
+@media(max-width:680px){.cabecera{display:block;padding:12px 13px 10px}.identidad h1{font-size:1.05rem;margin:3px 0 9px}.kicker{font-size:.62rem}.paginas{justify-content:space-between}.paginas button{padding:6px 8px;font-size:.77rem;min-height:34px}.laboratorio{padding:0 13px 12px;gap:8px}.barra-viz{display:block}.barra-viz .selector{width:100%;justify-content:space-between}.barra-viz .selector button{font-size:.73rem;min-height:31px;padding:5px 8px}.acciones{max-width:none;justify-content:space-between;gap:4px;margin-top:6px}.acciones .boton{font-size:.71rem;padding:6px 7px;min-height:34px}.ecuacion{display:block;padding:9px 12px}.formula{font-size:1.06rem}.numeros{max-width:none;text-align:left;font-size:.74rem;margin-top:5px;line-height:1.4}.parametros{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 18px}.parametro-cabecera{font-size:.74rem;gap:3px;margin-bottom:3px}.parametro-cabecera output{font-size:.73rem}.dock{padding:10px 12px 7px}.dock-pie{align-items:flex-start;flex-direction:column;gap:2px;font-size:.72rem;margin-top:7px;padding-top:6px}.herramientas{width:100%;justify-content:space-between}.enlace{font-size:.73rem;min-height:28px}.detalle{right:13px;top:0;width:calc(100% - 26px);max-height:100%;font-size:.84rem}.panel-graficas{width:100%;align-self:stretch;padding:10px;max-height:none;overflow:hidden;display:flex;flex-direction:column;height:100%}.con-graficas .numeros{display:none}.leyenda{flex-shrink:0}.con-graficas .escena{display:none}.con-graficas .cuerpo-viz{min-height:110px}.grafica{height:auto;min-height:0;flex:1}.panel-graficas h2{flex-shrink:0}.panel-graficas h2{font-size:.8rem}.lectura{padding:6px 13px 28px}.papel{padding:24px 18px}.papel h2{font-size:1.25rem}.papel p,.papel li{font-size:.94rem}.papel ul{padding-left:20px}.math-block{font-size:.91rem;padding:12px 0}.lectura-footer .boton{white-space:normal}.etiqueta-render{font-size:.66rem}}
+@media(max-height:720px) and (min-width:681px){.cabecera{padding:12px 24px}.laboratorio{gap:7px;padding-bottom:12px}.ecuacion{padding:9px 14px}.dock{padding:10px 14px 7px}.grafica{height:180px}.detalle{max-height:calc(100% - 50px);top:35px}}
+@media(max-width:370px){.paginas button{padding:6px 5px;font-size:.72rem}.identidad h1{font-size:1rem}.acciones .boton{font-size:.67rem;padding:5px 6px}.formula{font-size:.98rem}.numeros{font-size:.7rem}.barra-viz .selector button{font-size:.69rem;padding:5px 6px}.parametro-cabecera{font-size:.71rem}.parametro-cabecera output{font-size:.71rem}.dock-pie{font-size:.7rem}.enlace{font-size:.7rem}}
+@media(pointer:coarse){input[type="range"]{height:26px}.boton,.selector button,.enlace{min-height:38px}.parametro-cabecera button{min-height:24px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.barra-viz .selector{max-width:60%}.barra-viz .selector button{flex:1}.formula{overflow-wrap:anywhere}.indice:empty{display:none}.nota-convencion{font-size:.86rem;padding:14px;border-radius:12px;background:var(--color-fondo);line-height:1.7}
+@media(max-width:680px){.barra-viz .selector{max-width:none;flex-wrap:wrap;justify-content:flex-start}.barra-viz .selector button{padding:5px;flex:1 1 auto}.ecuacion{max-height:120px;overflow:auto}.identidad h1{font-size:1rem}.parametros{gap:8px 14px}.cuerpo-viz{min-height:90px}.boton,.selector button{min-height:34px!important}.formula{font-size:1rem}.numeros{font-size:.73rem}.dock-pie{font-size:.7rem}}
+input:disabled{opacity:.45;cursor:default}.parametro-cabecera button:disabled{color:var(--color-texto-secundario);cursor:default}
+#pagina-3 #lienzo,#pagina-3 #alternativa,#pagina-3 #anotaciones{bottom:auto;height:calc(100% - var(--pie-alto,30px))}
+
+#pagina-3 #alternativa polygon{shape-rendering:geometricPrecision}#pagina-3 #alternativa{isolation:isolate}
+#pagina-3{--anatomia-metal:#B8C3D0;--anatomia-metalClaro:#E1E6ED;--anatomia-metalOscuro:#7E8B9D;--anatomia-papel:#F1F4F8;--anatomia-caucho:#8993A3}
+:fullscreen::backdrop{background:var(--color-fondo)}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body><main class="app" id="app">
+<header class="cabecera"><div class="identidad"><span class="kicker">Mecánica estadística · Problema S-9-6</span><h1>Fermi ultrarrelativista y calor específico</h1></div><nav class="selector paginas" role="tablist" aria-label="Páginas del problema"><button id="tab-1" role="tab" aria-selected="true" aria-controls="pagina-1" data-pagina="1">1 · Enunciado</button><button id="tab-2" role="tab" aria-selected="false" aria-controls="pagina-2" data-pagina="2" tabindex="-1">2 · Solución</button><button id="tab-3" role="tab" aria-selected="false" aria-controls="pagina-3" data-pagina="3" tabindex="-1">3 · Visualización</button></nav></header>
+<section id="pagina-1" class="pagina lectura" role="tabpanel" aria-labelledby="tab-1" tabindex="0"><article class="papel"><span class="numero-pagina">Enunciado · 01 / 03</span><p><strong>Gas de electrones libres ultrarrelativista.</strong></p>
+<p>Considere un gas de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span> electrones libres en una región de volumen <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi></mrow><annotation encoding="application/x-tex">V</annotation></semantics></math></span>, en el régimen ultrarrelativista. El espectro de energía es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ε</mi><mo>=</mo><msqrt><mrow><msup><mi>p</mi><mn>2</mn></msup><msup><mi>c</mi><mn>2</mn></msup><mo>+</mo><msup><mi>m</mi><mn>2</mn></msup><msup><mi>c</mi><mn>4</mn></msup></mrow></msqrt><mo>≃</mo><mi>p</mi><mi>c</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    \varepsilon=\sqrt{p^2c^2+m^2c^4}\simeq pc,
+</annotation></semantics></math></span></div>
+<p>donde <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>p</mi><mo>⃗</mo></mover></mrow><annotation encoding="application/x-tex">\vec p</annotation></semantics></math></span> es el momento lineal.</p>
+<ul>
+<li>
+<strong>(a)</strong> 
+<p>Calcule la energía de Fermi de este sistema.</p>
+</li>
+<li>
+<strong>(b)</strong> 
+<p>Calcule la energía total en el estado fundamental.</p>
+</li>
+<li>
+<strong>(c)</strong> 
+<p>Calcule el calor específico a volumen constante en el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>≪</mo><msub><mi>T</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">T\ll T_F</annotation></semantics></math></span>, expresando el resultado como una expansión en potencias de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi mathvariant="normal">/</mi><msub><mi>T</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">T/T_F</annotation></semantics></math></span> hasta el primer término no nulo dependiente de la temperatura.</p>
+</li>
+</ul><footer class="lectura-footer"><span class="fuente">Problema 9.6 de Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001). Numeración según el archivo de trabajo y LETTER-CODES.txt; se conserva su adaptación en español.</span><button class="boton principal" data-ir="2">Ver solución paso a paso →</button></footer></article></section>
+<section id="pagina-2" class="pagina lectura" role="tabpanel" aria-labelledby="tab-2" tabindex="0" hidden><article class="papel"><span class="numero-pagina">Solución · 02 / 03</span><h2>Desarrollo completo del archivo de trabajo</h2><p class="fuente">Se reproduce íntegramente la solución suministrada, incluida la sección <code>comment</code>.</p><nav class="indice" aria-label="Índice de la solución"><a href="#paso-1">(a) Energía de Fermi</a> · <a href="#paso-2">(b) Energía total en el estado fundamental</a> · <a href="#paso-3">(c) Calor específico para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>≪</mo><msub><mi>T</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">T\ll T_F</annotation></semantics></math></span></a></nav><p>En el régimen ultrarrelativista,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ε</mi><mo>≃</mo><mi>p</mi><mi>c</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon\simeq pc.
+</annotation></semantics></math></span></div>
+<p>Como <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>k</mi></mrow><annotation encoding="application/x-tex">p=\hbar k</annotation></semantics></math></span>, también podemos escribir</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ε</mi><mo stretchy="false">(</mo><mi>k</mi><mo stretchy="false">)</mo><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>c</mi><mi>k</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon(k)=\hbar c k.
+</annotation></semantics></math></span></div>
+<p>Para electrones libres, la degeneración de espín es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>γ</mi><mo>=</mo><mn>2.</mn></mrow><annotation encoding="application/x-tex">
+    \gamma=2.
+</annotation></semantics></math></span></div>
+<p>En el límite termodinámico,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mo>∑</mo><mover accent="true"><mi>k</mi><mo>⃗</mo></mover></munder><mo>⟶</mo><mi>γ</mi><mfrac><mi>V</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mi>π</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup></mrow></mfrac><mo>∫</mo><msup><mi>d</mi><mn>3</mn></msup><mi>k</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \sum_{\vec k}
+    \longrightarrow
+    \gamma \frac{V}{(2\pi)^3}\int d^3k.
+</annotation></semantics></math></span></div>
+<p>Usando coordenadas esféricas en el espacio <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>k</mi><mo>⃗</mo></mover></mrow><annotation encoding="application/x-tex">\vec k</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>d</mi><mn>3</mn></msup><mi>k</mi><mo>=</mo><mn>4</mn><mi>π</mi><msup><mi>k</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>k</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    d^3k=4\pi k^2\,dk.
+</annotation></semantics></math></span></div>
+<p>Por lo tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mo>∑</mo><mover accent="true"><mi>k</mi><mo>⃗</mo></mover></munder><mo>⟶</mo><mn>2</mn><mfrac><mi>V</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mi>π</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup></mrow></mfrac><mn>4</mn><mi>π</mi><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>k</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>k</mi><mo>=</mo><mfrac><mi>V</mi><msup><mi>π</mi><mn>2</mn></msup></mfrac><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>k</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>k</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \sum_{\vec k}
+    \longrightarrow
+    2\frac{V}{(2\pi)^3}4\pi\int_0^\infty k^2\,dk
+    =
+    \frac{V}{\pi^2}\int_0^\infty k^2\,dk.
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ε</mi><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>c</mi><mi>k</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    \varepsilon=\hbar c k,
+</annotation></semantics></math></span></div>
+<p>tenemos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>k</mi><mo>=</mo><mfrac><mi>ε</mi><mrow><mi mathvariant="normal">ℏ</mi><mi>c</mi></mrow></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi>d</mi><mi>k</mi><mo>=</mo><mfrac><mrow><mi>d</mi><mi>ε</mi></mrow><mrow><mi mathvariant="normal">ℏ</mi><mi>c</mi></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    k=\frac{\varepsilon}{\hbar c},
+    \qquad
+    dk=\frac{d\varepsilon}{\hbar c}.
+</annotation></semantics></math></span></div>
+<p>Entonces,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>k</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>k</mi><mo>=</mo><mfrac><msup><mi>ε</mi><mn>2</mn></msup><mrow><msup><mi mathvariant="normal">ℏ</mi><mn>2</mn></msup><msup><mi>c</mi><mn>2</mn></msup></mrow></mfrac><mfrac><mrow><mi>d</mi><mi>ε</mi></mrow><mrow><mi mathvariant="normal">ℏ</mi><mi>c</mi></mrow></mfrac><mo>=</mo><mfrac><mrow><msup><mi>ε</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi></mrow><mrow><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    k^2\,dk
+    =
+    \frac{\varepsilon^2}{\hbar^2c^2}
+    \frac{d\varepsilon}{\hbar c}
+    =
+    \frac{\varepsilon^2\,d\varepsilon}{\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>Así, la densidad de estados queda incorporada en</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munder><mo>∑</mo><mover accent="true"><mi>k</mi><mo>⃗</mo></mover></munder><mo>⟶</mo><mfrac><mi>V</mi><mrow><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \sum_{\vec k}
+    \longrightarrow
+    \frac{V}{\pi^2\hbar^3c^3}
+    \int_0^\infty \varepsilon^2\,d\varepsilon.
+</annotation></semantics></math></span></div>
+<p>Sin embargo, usando la convención del solucionario, este mismo resultado se escribe como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    \frac{V}{2\pi^2\hbar^3c^3}
+    \int_0^\infty
+    \varepsilon^2 f(\varepsilon)\,d\varepsilon,
+</annotation></semantics></math></span></div>
+<p>donde el factor de degeneración puede estar absorbido en la constante prefactorial. En lo que sigue mantendremos la forma que conduce al resultado</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>ε</mi><mi>F</mi></msub><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>c</mi><msup><mrow><mo fence="true">(</mo><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><mfrac><mi>N</mi><mi>V</mi></mfrac><mo fence="true">)</mo></mrow><mrow><mn>1</mn><mi mathvariant="normal">/</mi><mn>3</mn></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon_F=\hbar c\left(6\pi^2\frac{N}{V}\right)^{1/3}.
+</annotation></semantics></math></span></div>
+<p>La distribución de Fermi-Dirac es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mn>1</mn><mrow><mi>exp</mi><mo>⁡</mo><mo stretchy="false">[</mo><mi>β</mi><mo stretchy="false">(</mo><mi>ε</mi><mo>−</mo><mi>μ</mi><mo stretchy="false">)</mo><mo stretchy="false">]</mo><mo>+</mo><mn>1</mn></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    f(\varepsilon)
+    =
+    \frac{1}{\exp[\beta(\varepsilon-\mu)]+1}.
+</annotation></semantics></math></span></div>
+<h3 id="paso-1">(a) Energía de Fermi</h3>
+<p>A temperatura cero,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.36em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>1</mn><mo separator="true">,</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn><mo>≤</mo><mi>ε</mi><mo>≤</mo><msub><mi>ε</mi><mi>F</mi></msub><mo separator="true">,</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mn>0</mn><mo separator="true">,</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>ε</mi><mo>&gt;</mo><msub><mi>ε</mi><mi>F</mi></msub><mi mathvariant="normal">.</mi></mrow></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+    f(\varepsilon)=
+    \begin{cases}
+    1, &amp; 0\leq \varepsilon\leq \varepsilon_F,\\
+    0, &amp; \varepsilon&gt;\varepsilon_F.
+    \end{cases}
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><msubsup><mo>∫</mo><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    \frac{V}{2\pi^2\hbar^3c^3}
+    \int_0^{\varepsilon_F}
+    \varepsilon^2\,d\varepsilon.
+</annotation></semantics></math></span></div>
+<p>Calculamos la integral:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>=</mo><msubsup><mrow><mo fence="true">[</mo><mfrac><msup><mi>ε</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo fence="true">]</mo></mrow><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><mo>=</mo><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \int_0^{\varepsilon_F}\varepsilon^2\,d\varepsilon
+    =
+    \left[
+    \frac{\varepsilon^3}{3}
+    \right]_0^{\varepsilon_F}
+    =
+    \frac{\varepsilon_F^3}{3}.
+</annotation></semantics></math></span></div>
+<p>Entonces,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mn>3</mn></mfrac><mo>=</mo><mfrac><mrow><mi>V</mi><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup></mrow><mrow><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    \frac{V}{2\pi^2\hbar^3c^3}
+    \frac{\varepsilon_F^3}{3}
+    =
+    \frac{V\varepsilon_F^3}{6\pi^2\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>Despejamos <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">\varepsilon_F</annotation></semantics></math></span>:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mo>=</mo><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup><mfrac><mi>N</mi><mi>V</mi></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon_F^3
+    =
+    6\pi^2\hbar^3c^3\frac{N}{V}.
+</annotation></semantics></math></span></div>
+<p>Por lo tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>ε</mi><mi>F</mi></msub><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>c</mi><msup><mrow><mo fence="true">(</mo><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><mfrac><mi>N</mi><mi>V</mi></mfrac><mo fence="true">)</mo></mrow><mrow><mn>1</mn><mi mathvariant="normal">/</mi><mn>3</mn></mrow></msup></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    \varepsilon_F
+    =
+    \hbar c
+    \left(
+        6\pi^2\frac{N}{V}
+    \right)^{1/3}
+    }.
+</annotation></semantics></math></span></div>
+<p>Definimos la temperatura de Fermi mediante</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>k</mi><mi>B</mi></msub><msub><mi>T</mi><mi>F</mi></msub><mo>=</mo><msub><mi>ε</mi><mi>F</mi></msub></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    k_B T_F=\varepsilon_F
+    }.
+</annotation></semantics></math></span></div>
+<h3 id="paso-2">(b) Energía total en el estado fundamental</h3>
+<p>La energía interna es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>ε</mi><mn>3</mn></msup><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    \frac{V}{2\pi^2\hbar^3c^3}
+    \int_0^\infty
+    \varepsilon^3 f(\varepsilon)\,d\varepsilon.
+</annotation></semantics></math></span></div>
+<p>A temperatura cero,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>U</mi><mn>0</mn></msub><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><msubsup><mo>∫</mo><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><msup><mi>ε</mi><mn>3</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U_0
+    =
+    \frac{V}{2\pi^2\hbar^3c^3}
+    \int_0^{\varepsilon_F}
+    \varepsilon^3\,d\varepsilon.
+</annotation></semantics></math></span></div>
+<p>La integral es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><msup><mi>ε</mi><mn>3</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>=</mo><msubsup><mrow><mo fence="true">[</mo><mfrac><msup><mi>ε</mi><mn>4</mn></msup><mn>4</mn></mfrac><mo fence="true">]</mo></mrow><mn>0</mn><msub><mi>ε</mi><mi>F</mi></msub></msubsup><mo>=</mo><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><mn>4</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \int_0^{\varepsilon_F}\varepsilon^3\,d\varepsilon
+    =
+    \left[
+    \frac{\varepsilon^4}{4}
+    \right]_0^{\varepsilon_F}
+    =
+    \frac{\varepsilon_F^4}{4}.
+</annotation></semantics></math></span></div>
+<p>Por lo tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>U</mi><mn>0</mn></msub><mo>=</mo><mfrac><mrow><mi>V</mi><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup></mrow><mrow><mn>8</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U_0
+    =
+    \frac{V\varepsilon_F^4}
+    {8\pi^2\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>Ahora usamos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mfrac><mrow><mi>V</mi><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup></mrow><mrow><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    \frac{V\varepsilon_F^3}
+    {6\pi^2\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>Multiplicando esta ecuación por <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ε</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">\varepsilon_F</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mo>=</mo><mfrac><mrow><mi>V</mi><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup></mrow><mrow><mn>6</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N\varepsilon_F
+    =
+    \frac{V\varepsilon_F^4}
+    {6\pi^2\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>Comparando con <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>U</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">U_0</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>U</mi><mn>0</mn></msub><mo>=</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U_0
+    =
+    \frac{3}{4}N\varepsilon_F.
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>U</mi><mn>0</mn></msub><mo>=</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    U_0=\frac{3}{4}N\varepsilon_F
+    }.
+</annotation></semantics></math></span></div>
+<h3 id="paso-3">(c) Calor específico para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>≪</mo><msub><mi>T</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">T\ll T_F</annotation></semantics></math></span></h3>
+<p>Para bajas temperaturas usamos la expansión de Sommerfeld. En el caso ultrarrelativista,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mi>A</mi><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mo separator="true">,</mo><mspace width="2em"/><mi>U</mi><mo>=</mo><mi>A</mi><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><msup><mi>ε</mi><mn>3</mn></msup><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    A\int_0^\infty \varepsilon^2 f(\varepsilon)\,d\varepsilon,
+    \qquad
+    U
+    =
+    A\int_0^\infty \varepsilon^3 f(\varepsilon)\,d\varepsilon,
+</annotation></semantics></math></span></div>
+<p>donde</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>A</mi><mo>=</mo><mfrac><mi>V</mi><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup><msup><mi mathvariant="normal">ℏ</mi><mn>3</mn></msup><msup><mi>c</mi><mn>3</mn></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    A=\frac{V}{2\pi^2\hbar^3c^3}.
+</annotation></semantics></math></span></div>
+<p>La expansión de Sommerfeld dice que, para una función suave <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\phi(\varepsilon)</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><mi mathvariant="normal">∞</mi></msubsup><mi>ϕ</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mi>f</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mi>μ</mi></msubsup><mi>ϕ</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>6</mn></mfrac><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><msup><mi>ϕ</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">(</mo><mi>μ</mi><mo stretchy="false">)</mo><mo>+</mo><mo>⋯</mo><mtext> </mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \int_0^\infty
+    \phi(\varepsilon)f(\varepsilon)\,d\varepsilon
+    =
+    \int_0^\mu \phi(\varepsilon)\,d\varepsilon
+    +
+    \frac{\pi^2}{6}(k_B T)^2\phi&#x27;(\mu)
+    +
+    \cdots.
+</annotation></semantics></math></span></div>
+<p>Primero aplicamos esto al número de partículas, con</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ϕ</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><msup><mi>ε</mi><mn>2</mn></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \phi(\varepsilon)=\varepsilon^2.
+</annotation></semantics></math></span></div>
+<p>Entonces</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>ϕ</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><mn>2</mn><mi>ε</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \phi&#x27;(\varepsilon)=2\varepsilon.
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mi>A</mi><mrow><mo fence="true">[</mo><msubsup><mo>∫</mo><mn>0</mn><mi>μ</mi></msubsup><msup><mi>ε</mi><mn>2</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>6</mn></mfrac><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo stretchy="false">(</mo><mn>2</mn><mi>μ</mi><mo stretchy="false">)</mo><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    A
+    \left[
+        \int_0^\mu \varepsilon^2\,d\varepsilon
+        +
+        \frac{\pi^2}{6}(k_B T)^2(2\mu)
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mi>A</mi><mrow><mo fence="true">[</mo><mfrac><msup><mi>μ</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><mi>μ</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N
+    =
+    A
+    \left[
+        \frac{\mu^3}{3}
+        +
+        \frac{\pi^2}{3}\mu(k_B T)^2
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Como <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span> es constante, esta expresión debe igualar su valor a <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">T=0</annotation></semantics></math></span>:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>N</mi><mo>=</mo><mi>A</mi><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    N=A\frac{\varepsilon_F^3}{3}.
+</annotation></semantics></math></span></div>
+<p>Entonces,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mn>3</mn></mfrac><mo>=</mo><mfrac><msup><mi>μ</mi><mn>3</mn></msup><mn>3</mn></mfrac><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><mi>μ</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \frac{\varepsilon_F^3}{3}
+    =
+    \frac{\mu^3}{3}
+    +
+    \frac{\pi^2}{3}\mu(k_B T)^2
+    +\cdots.
+</annotation></semantics></math></span></div>
+<p>Multiplicando por <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn></mrow><annotation encoding="application/x-tex">3</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mo>=</mo><msup><mi>μ</mi><mn>3</mn></msup><mo>+</mo><msup><mi>π</mi><mn>2</mn></msup><mi>μ</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon_F^3
+    =
+    \mu^3+\pi^2\mu(k_B T)^2+\cdots.
+</annotation></semantics></math></span></div>
+<p>Buscamos <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi></mrow><annotation encoding="application/x-tex">\mu</annotation></semantics></math></span> como expansión en potencias de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mi mathvariant="normal">/</mi><msub><mi>T</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">T/T_F</annotation></semantics></math></span>:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>μ</mi><mo>=</mo><msub><mi>ε</mi><mi>F</mi></msub><mrow><mo fence="true">[</mo><mn>1</mn><mo>−</mo><mi>a</mi><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \mu
+    =
+    \varepsilon_F
+    \left[
+        1-a\left(\frac{T}{T_F}\right)^2+\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Como <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>B</mi></msub><msub><mi>T</mi><mi>F</mi></msub><mo>=</mo><msub><mi>ε</mi><mi>F</mi></msub></mrow><annotation encoding="application/x-tex">k_B T_F=\varepsilon_F</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>=</mo><msubsup><mi>ε</mi><mi>F</mi><mn>2</mn></msubsup><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    (k_B T)^2
+    =
+    \varepsilon_F^2
+    \left(\frac{T}{T_F}\right)^2.
+</annotation></semantics></math></span></div>
+<p>Sustituyendo y conservando términos hasta orden <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>T</mi><mi mathvariant="normal">/</mi><msub><mi>T</mi><mi>F</mi></msub><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(T/T_F)^2</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>μ</mi><mn>3</mn></msup><mo>≃</mo><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mrow><mo fence="true">[</mo><mn>1</mn><mo>−</mo><mn>3</mn><mi>a</mi><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo fence="true">]</mo></mrow><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    \mu^3
+    \simeq
+    \varepsilon_F^3
+    \left[
+        1-3a\left(\frac{T}{T_F}\right)^2
+    \right],
+</annotation></semantics></math></span></div>
+<p>y</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>π</mi><mn>2</mn></msup><mi>μ</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>≃</mo><msup><mi>π</mi><mn>2</mn></msup><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \pi^2\mu(k_B T)^2
+    \simeq
+    \pi^2\varepsilon_F^3
+    \left(\frac{T}{T_F}\right)^2.
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mo>=</mo><msubsup><mi>ε</mi><mi>F</mi><mn>3</mn></msubsup><mrow><mo fence="true">[</mo><mn>1</mn><mo>−</mo><mn>3</mn><mi>a</mi><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><msup><mi>π</mi><mn>2</mn></msup><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \varepsilon_F^3
+    =
+    \varepsilon_F^3
+    \left[
+        1-3a\left(\frac{T}{T_F}\right)^2
+        +
+        \pi^2\left(\frac{T}{T_F}\right)^2
+    \right].
+</annotation></semantics></math></span></div>
+<p>De aquí,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo>−</mo><mn>3</mn><mi>a</mi><mo>+</mo><msup><mi>π</mi><mn>2</mn></msup><mo>=</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    -3a+\pi^2=0,
+</annotation></semantics></math></span></div>
+<p>por lo que</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>a</mi><mo>=</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    a=\frac{\pi^2}{3}.
+</annotation></semantics></math></span></div>
+<p>Entonces,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>μ</mi><mo>=</mo><msub><mi>ε</mi><mi>F</mi></msub><mrow><mo fence="true">[</mo><mn>1</mn><mo>−</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    \mu
+    =
+    \varepsilon_F
+    \left[
+        1-\frac{\pi^2}{3}
+        \left(\frac{T}{T_F}\right)^2
+        +\cdots
+    \right]
+    }.
+</annotation></semantics></math></span></div>
+<p>Ahora calculamos la energía interna. Usamos Sommerfeld con</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ϕ</mi><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><msup><mi>ε</mi><mn>3</mn></msup><mo separator="true">,</mo><mspace width="2em"/><msup><mi>ϕ</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo stretchy="false">(</mo><mi>ε</mi><mo stretchy="false">)</mo><mo>=</mo><mn>3</mn><msup><mi>ε</mi><mn>2</mn></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \phi(\varepsilon)=\varepsilon^3,
+    \qquad
+    \phi&#x27;(\varepsilon)=3\varepsilon^2.
+</annotation></semantics></math></span></div>
+<p>Entonces</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mi>A</mi><mrow><mo fence="true">[</mo><msubsup><mo>∫</mo><mn>0</mn><mi>μ</mi></msubsup><msup><mi>ε</mi><mn>3</mn></msup><mtext> </mtext><mi>d</mi><mi>ε</mi><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>6</mn></mfrac><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo stretchy="false">(</mo><mn>3</mn><msup><mi>μ</mi><mn>2</mn></msup><mo stretchy="false">)</mo><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    A
+    \left[
+        \int_0^\mu \varepsilon^3\,d\varepsilon
+        +
+        \frac{\pi^2}{6}(k_B T)^2(3\mu^2)
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Por lo tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mi>A</mi><mrow><mo fence="true">[</mo><mfrac><msup><mi>μ</mi><mn>4</mn></msup><mn>4</mn></mfrac><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>2</mn></mfrac><msup><mi>μ</mi><mn>2</mn></msup><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    A
+    \left[
+        \frac{\mu^4}{4}
+        +
+        \frac{\pi^2}{2}\mu^2(k_B T)^2
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Sustituimos la expansión de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>μ</mi></mrow><annotation encoding="application/x-tex">\mu</annotation></semantics></math></span>. Hasta orden <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>T</mi><mi mathvariant="normal">/</mi><msub><mi>T</mi><mi>F</mi></msub><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">(T/T_F)^2</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>μ</mi><mn>4</mn></msup><mo>≃</mo><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><mrow><mo fence="true">[</mo><mn>1</mn><mo>−</mo><mfrac><mrow><mn>4</mn><msup><mi>π</mi><mn>2</mn></msup></mrow><mn>3</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo fence="true">]</mo></mrow><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    \mu^4
+    \simeq
+    \varepsilon_F^4
+    \left[
+        1-\frac{4\pi^2}{3}
+        \left(\frac{T}{T_F}\right)^2
+    \right],
+</annotation></semantics></math></span></div>
+<p>y</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>μ</mi><mn>2</mn></msup><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup><mo>≃</mo><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \mu^2(k_B T)^2
+    \simeq
+    \varepsilon_F^4
+    \left(\frac{T}{T_F}\right)^2.
+</annotation></semantics></math></span></div>
+<p>Entonces,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mi>A</mi><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><mrow><mo fence="true">[</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>−</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>2</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    A\varepsilon_F^4
+    \left[
+        \frac{1}{4}
+        -
+        \frac{\pi^2}{3}
+        \left(\frac{T}{T_F}\right)^2
+        +
+        \frac{\pi^2}{2}
+        \left(\frac{T}{T_F}\right)^2
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Combinando coeficientes,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo>−</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>3</mn></mfrac><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>2</mn></mfrac><mo>=</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>6</mn></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    -\frac{\pi^2}{3}+\frac{\pi^2}{2}
+    =
+    \frac{\pi^2}{6}.
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mi>A</mi><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><mrow><mo fence="true">[</mo><mfrac><mn>1</mn><mn>4</mn></mfrac><mo>+</mo><mfrac><msup><mi>π</mi><mn>2</mn></msup><mn>6</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    A\varepsilon_F^4
+    \left[
+        \frac{1}{4}
+        +
+        \frac{\pi^2}{6}
+        \left(\frac{T}{T_F}\right)^2
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>U</mi><mn>0</mn></msub><mo>=</mo><mi>A</mi><mfrac><msubsup><mi>ε</mi><mi>F</mi><mn>4</mn></msubsup><mn>4</mn></mfrac><mo>=</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    U_0=A\frac{\varepsilon_F^4}{4}
+    =
+    \frac{3}{4}N\varepsilon_F,
+</annotation></semantics></math></span></div>
+<p>podemos escribir</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><msub><mi>U</mi><mn>0</mn></msub><mrow><mo fence="true">[</mo><mn>1</mn><mo>+</mo><mfrac><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup></mrow><mn>3</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    U
+    =
+    U_0
+    \left[
+        1+
+        \frac{2\pi^2}{3}
+        \left(\frac{T}{T_F}\right)^2
+        +\cdots
+    \right].
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>U</mi><mo>=</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mrow><mo fence="true">[</mo><mn>1</mn><mo>+</mo><mfrac><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup></mrow><mn>3</mn></mfrac><msup><mrow><mo fence="true">(</mo><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo fence="true">)</mo></mrow><mn>2</mn></msup><mo>+</mo><mo>⋯</mo><mtext> </mtext><mo fence="true">]</mo></mrow></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    U
+    =
+    \frac{3}{4}N\varepsilon_F
+    \left[
+        1+
+        \frac{2\pi^2}{3}
+        \left(\frac{T}{T_F}\right)^2
+        +\cdots
+    \right]
+    }.
+</annotation></semantics></math></span></div>
+<p>El calor específico a volumen constante es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mi>V</mi></msub><mo>=</mo><msub><mrow><mo fence="true">(</mo><mfrac><mrow><mi mathvariant="normal">∂</mi><mi>U</mi></mrow><mrow><mi mathvariant="normal">∂</mi><mi>T</mi></mrow></mfrac><mo fence="true">)</mo></mrow><mrow><mi>V</mi><mo separator="true">,</mo><mi>N</mi></mrow></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    C_V=
+    \left(\frac{\partial U}{\partial T}\right)_{V,N}.
+</annotation></semantics></math></span></div>
+<p>Derivando,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mi>V</mi></msub><mo>=</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mfrac><mrow><mn>2</mn><msup><mi>π</mi><mn>2</mn></msup></mrow><mn>3</mn></mfrac><mfrac><mrow><mn>2</mn><mi>T</mi></mrow><msubsup><mi>T</mi><mi>F</mi><mn>2</mn></msubsup></mfrac><mo>+</mo><mo>⋯</mo><mtext> </mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    C_V
+    =
+    \frac{3}{4}N\varepsilon_F
+    \frac{2\pi^2}{3}
+    \frac{2T}{T_F^2}
+    +\cdots.
+</annotation></semantics></math></span></div>
+<p>Simplificando,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>C</mi><mi>V</mi></msub><mo>=</mo><msup><mi>π</mi><mn>2</mn></msup><mi>N</mi><msub><mi>ε</mi><mi>F</mi></msub><mfrac><mi>T</mi><msubsup><mi>T</mi><mi>F</mi><mn>2</mn></msubsup></mfrac><mo>+</mo><mo>⋯</mo><mtext> </mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    C_V
+    =
+    \pi^2 N\varepsilon_F
+    \frac{T}{T_F^2}
+    +\cdots.
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>ε</mi><mi>F</mi></msub><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><msub><mi>T</mi><mi>F</mi></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+    \varepsilon_F=k_B T_F,
+</annotation></semantics></math></span></div>
+<p>obtenemos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>C</mi><mi>V</mi></msub><mo>=</mo><msup><mi>π</mi><mn>2</mn></msup><mi>N</mi><msub><mi>k</mi><mi>B</mi></msub><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo>+</mo><mo>⋯</mo></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    C_V
+    =
+    \pi^2 N k_B
+    \frac{T}{T_F}
+    +\cdots
+    }.
+</annotation></semantics></math></span></div>
+<p>Por partícula,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>c</mi><mi>V</mi></msub><mo>=</mo><mfrac><msub><mi>C</mi><mi>V</mi></msub><mi>N</mi></mfrac><mo>=</mo><msup><mi>π</mi><mn>2</mn></msup><msub><mi>k</mi><mi>B</mi></msub><mfrac><mi>T</mi><msub><mi>T</mi><mi>F</mi></msub></mfrac><mo>+</mo><mo>⋯</mo></mrow></mstyle></mstyle></mstyle></menclose><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+    \boxed{
+    c_V
+    =
+    \frac{C_V}{N}
+    =
+    \pi^2 k_B
+    \frac{T}{T_F}
+    +\cdots
+    }.
+</annotation></semantics></math></span></div>
+<p>No aparece un término constante en <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>V</mi></msub></mrow><annotation encoding="application/x-tex">C_V</annotation></semantics></math></span>: el calor específico se anula linealmente cuando <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">T\to 0</annotation></semantics></math></span>, como exige la tercera ley de la termodinámica.</p><aside class="nota-convencion" id="nota-coherencia" aria-label="Nota de coherencia del modelo"><h3>Nota de coherencia para la visualización</h3><p>El enunciado cuenta N electrones y la derivación inicial declara γ=2. Con N total, la densidad de estados es g(ε)=Vε²/(π²ℏ³c³) y εF=ℏc(3π²N/V)^(1/3). La parte posterior del solucionario usa V/(2π²ℏ³c³) y 6π²N/V: esas expresiones corresponden a γ=1 o a N por una sola orientación de espín. La solución anterior conserva exactamente ambas expresiones del archivo de trabajo.</p><p>El modelo comienza con γ=2 y N total. El control γ=1 compara una sola componente de espín con el mismo número N; para interpretar el solucionario dentro del gas de dos componentes, su N equivale a Ntotal/2 y su U a la energía de una componente. La fórmula general es εF=ℏc(6π²N/(γV))^(1/3). Los cocientes U₀/(NεF), μ/εF y CV/(NkB) conservan los resultados suministrados en ambas convenciones coherentes.</p><p>Esta nota adicional permite finalizar el modelo sin alterar el .tex. El conteo de espín y los resultados de baja temperatura se contrastaron con <a href="https://paradigms.oregonstate.edu/act/handout/3905" target="_blank" rel="noopener">Oregon State University</a> y la <a href="https://www.stonybrook.edu/commcms/grad-physics-astronomy/resources/_pdfs/comps-spring-2016.pdf#page=44" target="_blank" rel="noopener">solución docente de Stony Brook University, pp. 44–45</a>.</p></aside><footer class="lectura-footer"><span class="fuente">Problema 9.6 de Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001). Numeración según el archivo de trabajo y LETTER-CODES.txt; se conserva su adaptación en español.<br>Archivo de trabajo: <code>prob_S-9-6.tex</code>.</span><button class="boton principal" data-ir="3">Explorar los resultados →</button></footer></article></section>
+<section id="pagina-3" class="pagina laboratorio" role="tabpanel" aria-labelledby="tab-3" hidden>
+<div class="barra-viz"><div class="selector" id="resultados" aria-label="Resultado representado"><button type="button" data-resultado="fermi" aria-pressed="true">Fermi</button><button type="button" data-resultado="energia" aria-pressed="false">Energía</button><button type="button" data-resultado="quimico" aria-pressed="false">μ(T)</button><button type="button" data-resultado="calor" aria-pressed="false">Calor</button></div><nav class="acciones" aria-label="Herramientas de exploración"><button id="pausa" class="boton principal" aria-pressed="false">Explorar</button><button id="paso" class="boton">Paso</button><button id="reiniciar" class="boton">Reiniciar</button><button id="graficas" class="boton" aria-pressed="false">Gráficas</button><button id="pantalla-completa" class="boton" aria-label="Pantalla completa">Ampliar</button></nav></div>
+<div class="ecuacion cristal"><p class="formula" id="formula"></p><div class="numeros" id="numeros"></div></div>
+<div class="cuerpo-viz"><div class="escena" id="escena" tabindex="0" role="img" aria-label="Escena interactiva del modelo" aria-describedby="descripcion-escena"><svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg><div id="pie-escena"></div></div><aside id="panel-graficas" class="panel-graficas cristal" hidden><h2 id="titulo-grafica"></h2><svg id="grafica" class="grafica" role="img" aria-label="Gráfica del resultado seleccionado"></svg><div class="leyenda" id="leyenda"></div></aside></div>
+<div class="dock cristal"><div class="parametros"><div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="N" aria-pressed="false" id="etiqueta-N">Electrones · N</button><output id="salida-N" for="N">240 </output></div><input type="range" id="N" min="80" max="800" step="20" value="240" aria-labelledby="etiqueta-N"></div>
+<div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="V" aria-pressed="false" id="etiqueta-V">Volumen · V</button><output id="salida-V" for="V">4 ℓ₀³</output></div><input type="range" id="V" min="2" max="12" step="0.5" value="4" aria-labelledby="etiqueta-V"></div>
+<div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="tau" aria-pressed="false" id="etiqueta-tau">T / T_F</button><output id="salida-tau" for="tau">0.08 </output></div><input type="range" id="tau" min="0" max="0.15" step="0.005" value="0.08" aria-labelledby="etiqueta-tau"></div>
+<div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="gamma" aria-pressed="false" id="etiqueta-gamma">Espín · γ</button><output id="salida-gamma" for="gamma">2 </output></div><input type="range" id="gamma" min="1" max="2" step="1" value="2" aria-labelledby="etiqueta-gamma"></div></div><div class="dock-pie"><span id="concepto"></span><div class="herramientas"><button id="vista-inicial" class="enlace">Restablecer vista</button><button id="ayuda" class="enlace" aria-expanded="false" aria-controls="detalle">Modelo</button><span class="etiqueta-render" id="modo-render">2D</span></div></div></div>
+<aside class="detalle cristal" id="detalle" role="dialog" aria-labelledby="titulo-modelo" hidden><h2 id="titulo-modelo">Cómo leer el modelo</h2><button id="cerrar-detalle" class="boton cerrar" aria-label="Cerrar Modelo">×</button><p>Ejemplo ilustrativo de un gas ideal de electrones en el límite termodinámico, con ε=ℏck y energía de referencia E₀≫mc². Se define ℓ₀=ℏc/E₀; V se mide en ℓ₀³, k en ℓ₀⁻¹ y ε en E₀. TF=εF/kB y el control τ=T/TF conserva 0≤τ≤0,15. Los valores dimensionales de E₀ y ℓ₀ quedan por elegir para un gas concreto. La dispersión lineal es la aproximación ultrarrelativista; las partículas de momento muy pequeño aportan un peso de orden (mc²/εF)³ al conteo.</p><p>Fermi muestra el estado fundamental en el espacio de momentos. Tres círculos azules sitúan la esfera kF y una flecha lavanda mide su radio. Los 120 puntos de igual peso distribuyen radios como kF[(j+1/2)/120]^(1/3) y direcciones en la esfera; representan la ocupación continua y cada punto pesa N/120 electrones. Cada estado de momento admite γ orientaciones de espín. N o V cambian el radio como (N/V)^(1/3); γ=1 aumenta el radio por 2^(1/3) frente a γ=2 a igual N/V. La escala de dibujo es 0,12 unidades por kℓ₀. El control de temperatura se desactiva en esta vista de T=0.</p><p>Energía muestra columnas azules del integrando reducido 3q³f(q), q=ε/εF, y verdes de 3q³Θ(1−q) a T=0. Su área hasta infinito es U/(NεF) o 3/4. La ventana dibujada llega a q=1,8; las integrales numéricas incluyen la cola hasta más de 40kBT sobre μ. La altura común se ajusta al máximo de ambas series y el pie indica el factor. La separación de profundidad distingue las dos series. La abscisa usa 0,12 unidades por ε/E₀; sus marcas sitúan 0, εF y 1,8εF.</p><p>Potencial químico muestra la probabilidad f(ε) mediante columnas azules, con 3 unidades verticales por f=1. La línea lavanda sitúa μ numérico y la verde la expansión μ≈εF[1−π²τ²/3]; el contorno gris fija εF. El menor μ compensa el mayor número de estados disponibles a energías altas y conserva N. La gráfica permite comparar ambos valores a N,V y γ fijos.</p><p>Calor compara CV/(NkB)≈π²τ, curva azul, con la derivada numérica a N,V fijos, curva verde; la marca lavanda indica el estado seleccionado. Las abscisas de la escena amplían kBT/E₀ por un factor 18 y usan 2,16 unidades de dibujo por unidad energética y las alturas usan 2,2 unidades por CV/(NkB). El calor específico se anula linealmente cuando T→0. El gráfico usa τ para conservar la comparación entre densidades. Los resultados principales de μ, U y CV son expansiones de Sommerfeld hasta su primer término térmico; los valores numéricos de Fermi–Dirac, calculados con N constante, muestran su desviación finita.</p><p>Convención inicial γ=2 y N total, como declara el enunciado. γ=1 ofrece una comparación coherente de una componente con el mismo N. Para representar una componente del gas inicial debe usarse Ntotal/2 y duplicarse su energía al recuperar el total. La nota al final de Solución localiza el factor 2 discrepante de la fuente. Todas las curvas y columnas usan el mismo estado físico; el encuadre adapta el tamaño de la escena y las etiquetas conservan las unidades. Seleccionar símbolos o controles destaca sus radios, columnas o marcas.</p><p>La esfera de Fermi está montada sobre un soporte abierto, con tres aros finos que fijan kF. Energía y μ usan una mesa de lectura con respaldo y escalas sobre las mismas columnas originales. Calor convierte ese soporte en un trazador de las dos curvas. Se conservan todas las escalas de energía, temperatura y calor indicadas, los integrandos y las comparaciones de Sommerfeld con Fermi–Dirac.</p><p>Paso aumenta N en 20 en Fermi, o T/TF en 0,005 en las vistas térmicas; al alcanzar el máximo vuelve al mínimo. Explorar aplica ese paso cada 1,2 segundos reales. Este recorrido compara configuraciones o valores del parámetro indicado. Reiniciar recupera los parámetros iniciales, el primer resultado y la cámara; navegar conserva los parámetros y detiene el recorrido.</p><p>Arrastra para girar y usa la rueda o un gesto de dos dedos para acercar. Con la escena enfocada, las flechas giran y +/− ajustan el zoom. Restablecer vista conserva los parámetros; Reiniciar recupera parámetros, resultado inicial y estado pausado.</p><p>Three.js y OrbitControls 0.180.0 se cargan desde jsDelivr para dibujar la escena 3D; requieren conexión y WebGL 2. La alternativa 2D, las fórmulas y los cálculos están incluidos en este archivo y funcionan sin conexión. El respaldo conserva los controles y la misma escala física.</p><p id="estado-carga">Vista 2D preparada; el 3D se carga al abrir Visualización.</p><p class="fuente">Problema 9.6 de Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001). Numeración según el archivo de trabajo y LETTER-CODES.txt; se conserva su adaptación en español.<br>La numeración procede del código del archivo de trabajo. El enunciado y el desarrollo corresponden a su adaptación en español.</p></aside>
+<p id="descripcion-escena" class="sr-only"></p><p id="resumen-accesible" class="sr-only" aria-live="polite"></p>
+</section></main>
+<script id="fuente-original" type="application/json">{"archivo":"prob_S-9-6.tex","sha256":"3fe57b94e42062427a7642d3a2ae926e6881afe3286afc79a6dde4eff3ac6998","tex":"\\item \\textbf{Gas de electrones libres ultrarrelativista.}\n\n\\begin{tcolorbox}[colback=blue!2!white,colframe=blue!55!black,title={Enunciado}]\nConsidere un gas de \\(N\\) electrones libres en una región de volumen \\(V\\), en el régimen ultrarrelativista. El espectro de energía es\n\\[\n    \\varepsilon=\\sqrt{p^2c^2+m^2c^4}\\simeq pc,\n\\]\ndonde \\(\\vec p\\) es el momento lineal.\n\n\\begin{itemize}\n    \\item[(a)] Calcule la energía de Fermi de este sistema.\n    \\item[(b)] Calcule la energía total en el estado fundamental.\n    \\item[(c)] Calcule el calor específico a volumen constante en el límite \\(T\\ll T_F\\), expresando el resultado como una expansión en potencias de \\(T/T_F\\) hasta el primer término no nulo dependiente de la temperatura.\n\\end{itemize}\n\\end{tcolorbox}\n\n\\begin{comment}\nEn el régimen ultrarrelativista,\n\\[\n    \\varepsilon\\simeq pc.\n\\]\nComo \\(p=\\hbar k\\), también podemos escribir\n\\[\n    \\varepsilon(k)=\\hbar c k.\n\\]\n\nPara electrones libres, la degeneración de espín es\n\\[\n    \\gamma=2.\n\\]\nEn el límite termodinámico,\n\\[\n    \\sum_{\\vec k}\n    \\longrightarrow\n    \\gamma \\frac{V}{(2\\pi)^3}\\int d^3k.\n\\]\nUsando coordenadas esféricas en el espacio \\(\\vec k\\),\n\\[\n    d^3k=4\\pi k^2\\,dk.\n\\]\nPor lo tanto,\n\\[\n    \\sum_{\\vec k}\n    \\longrightarrow\n    2\\frac{V}{(2\\pi)^3}4\\pi\\int_0^\\infty k^2\\,dk\n    =\n    \\frac{V}{\\pi^2}\\int_0^\\infty k^2\\,dk.\n\\]\n\nComo\n\\[\n    \\varepsilon=\\hbar c k,\n\\]\ntenemos\n\\[\n    k=\\frac{\\varepsilon}{\\hbar c},\n    \\qquad\n    dk=\\frac{d\\varepsilon}{\\hbar c}.\n\\]\nEntonces,\n\\[\n    k^2\\,dk\n    =\n    \\frac{\\varepsilon^2}{\\hbar^2c^2}\n    \\frac{d\\varepsilon}{\\hbar c}\n    =\n    \\frac{\\varepsilon^2\\,d\\varepsilon}{\\hbar^3c^3}.\n\\]\nAsí, la densidad de estados queda incorporada en\n\\[\n    \\sum_{\\vec k}\n    \\longrightarrow\n    \\frac{V}{\\pi^2\\hbar^3c^3}\n    \\int_0^\\infty \\varepsilon^2\\,d\\varepsilon.\n\\]\n\nSin embargo, usando la convención del solucionario, este mismo resultado se escribe como\n\\[\n    N\n    =\n    \\frac{V}{2\\pi^2\\hbar^3c^3}\n    \\int_0^\\infty\n    \\varepsilon^2 f(\\varepsilon)\\,d\\varepsilon,\n\\]\ndonde el factor de degeneración puede estar absorbido en la constante prefactorial.\nEn lo que sigue mantendremos la forma que conduce al resultado\n\\[\n    \\varepsilon_F=\\hbar c\\left(6\\pi^2\\frac{N}{V}\\right)^{1/3}.\n\\]\n\nLa distribución de Fermi-Dirac es\n\\[\n    f(\\varepsilon)\n    =\n    \\frac{1}{\\exp[\\beta(\\varepsilon-\\mu)]+1}.\n\\]\n\n\\subsubsection*{(a) Energía de Fermi}\n\nA temperatura cero,\n\\[\n    f(\\varepsilon)=\n    \\begin{cases}\n    1, & 0\\leq \\varepsilon\\leq \\varepsilon_F,\\\\\n    0, & \\varepsilon>\\varepsilon_F.\n    \\end{cases}\n\\]\nPor tanto,\n\\[\n    N\n    =\n    \\frac{V}{2\\pi^2\\hbar^3c^3}\n    \\int_0^{\\varepsilon_F}\n    \\varepsilon^2\\,d\\varepsilon.\n\\]\nCalculamos la integral:\n\\[\n    \\int_0^{\\varepsilon_F}\\varepsilon^2\\,d\\varepsilon\n    =\n    \\left[\n    \\frac{\\varepsilon^3}{3}\n    \\right]_0^{\\varepsilon_F}\n    =\n    \\frac{\\varepsilon_F^3}{3}.\n\\]\nEntonces,\n\\[\n    N\n    =\n    \\frac{V}{2\\pi^2\\hbar^3c^3}\n    \\frac{\\varepsilon_F^3}{3}\n    =\n    \\frac{V\\varepsilon_F^3}{6\\pi^2\\hbar^3c^3}.\n\\]\nDespejamos \\(\\varepsilon_F\\):\n\\[\n    \\varepsilon_F^3\n    =\n    6\\pi^2\\hbar^3c^3\\frac{N}{V}.\n\\]\nPor lo tanto,\n\\[\n    \\boxed{\n    \\varepsilon_F\n    =\n    \\hbar c\n    \\left(\n        6\\pi^2\\frac{N}{V}\n    \\right)^{1/3}\n    }.\n\\]\n\nDefinimos la temperatura de Fermi mediante\n\\[\n    \\boxed{\n    k_B T_F=\\varepsilon_F\n    }.\n\\]\n\n\\subsubsection*{(b) Energía total en el estado fundamental}\n\nLa energía interna es\n\\[\n    U\n    =\n    \\frac{V}{2\\pi^2\\hbar^3c^3}\n    \\int_0^\\infty\n    \\varepsilon^3 f(\\varepsilon)\\,d\\varepsilon.\n\\]\nA temperatura cero,\n\\[\n    U_0\n    =\n    \\frac{V}{2\\pi^2\\hbar^3c^3}\n    \\int_0^{\\varepsilon_F}\n    \\varepsilon^3\\,d\\varepsilon.\n\\]\nLa integral es\n\\[\n    \\int_0^{\\varepsilon_F}\\varepsilon^3\\,d\\varepsilon\n    =\n    \\left[\n    \\frac{\\varepsilon^4}{4}\n    \\right]_0^{\\varepsilon_F}\n    =\n    \\frac{\\varepsilon_F^4}{4}.\n\\]\nPor lo tanto,\n\\[\n    U_0\n    =\n    \\frac{V\\varepsilon_F^4}\n    {8\\pi^2\\hbar^3c^3}.\n\\]\n\nAhora usamos\n\\[\n    N\n    =\n    \\frac{V\\varepsilon_F^3}\n    {6\\pi^2\\hbar^3c^3}.\n\\]\nMultiplicando esta ecuación por \\(\\varepsilon_F\\),\n\\[\n    N\\varepsilon_F\n    =\n    \\frac{V\\varepsilon_F^4}\n    {6\\pi^2\\hbar^3c^3}.\n\\]\nComparando con \\(U_0\\),\n\\[\n    U_0\n    =\n    \\frac{3}{4}N\\varepsilon_F.\n\\]\nAsí,\n\\[\n    \\boxed{\n    U_0=\\frac{3}{4}N\\varepsilon_F\n    }.\n\\]\n\n\\subsubsection*{(c) Calor específico para \\(T\\ll T_F\\)}\n\nPara bajas temperaturas usamos la expansión de Sommerfeld. En el caso ultrarrelativista,\n\\[\n    N\n    =\n    A\\int_0^\\infty \\varepsilon^2 f(\\varepsilon)\\,d\\varepsilon,\n    \\qquad\n    U\n    =\n    A\\int_0^\\infty \\varepsilon^3 f(\\varepsilon)\\,d\\varepsilon,\n\\]\ndonde\n\\[\n    A=\\frac{V}{2\\pi^2\\hbar^3c^3}.\n\\]\n\nLa expansión de Sommerfeld dice que, para una función suave \\(\\phi(\\varepsilon)\\),\n\\[\n    \\int_0^\\infty\n    \\phi(\\varepsilon)f(\\varepsilon)\\,d\\varepsilon\n    =\n    \\int_0^\\mu \\phi(\\varepsilon)\\,d\\varepsilon\n    +\n    \\frac{\\pi^2}{6}(k_B T)^2\\phi'(\\mu)\n    +\n    \\cdots.\n\\]\n\nPrimero aplicamos esto al número de partículas, con\n\\[\n    \\phi(\\varepsilon)=\\varepsilon^2.\n\\]\nEntonces\n\\[\n    \\phi'(\\varepsilon)=2\\varepsilon.\n\\]\nAsí,\n\\[\n    N\n    =\n    A\n    \\left[\n        \\int_0^\\mu \\varepsilon^2\\,d\\varepsilon\n        +\n        \\frac{\\pi^2}{6}(k_B T)^2(2\\mu)\n        +\\cdots\n    \\right].\n\\]\nPor tanto,\n\\[\n    N\n    =\n    A\n    \\left[\n        \\frac{\\mu^3}{3}\n        +\n        \\frac{\\pi^2}{3}\\mu(k_B T)^2\n        +\\cdots\n    \\right].\n\\]\n\nComo \\(N\\) es constante, esta expresión debe igualar su valor a \\(T=0\\):\n\\[\n    N=A\\frac{\\varepsilon_F^3}{3}.\n\\]\nEntonces,\n\\[\n    \\frac{\\varepsilon_F^3}{3}\n    =\n    \\frac{\\mu^3}{3}\n    +\n    \\frac{\\pi^2}{3}\\mu(k_B T)^2\n    +\\cdots.\n\\]\nMultiplicando por \\(3\\),\n\\[\n    \\varepsilon_F^3\n    =\n    \\mu^3+\\pi^2\\mu(k_B T)^2+\\cdots.\n\\]\n\nBuscamos \\(\\mu\\) como expansión en potencias de \\(T/T_F\\):\n\\[\n    \\mu\n    =\n    \\varepsilon_F\n    \\left[\n        1-a\\left(\\frac{T}{T_F}\\right)^2+\\cdots\n    \\right].\n\\]\nComo \\(k_B T_F=\\varepsilon_F\\),\n\\[\n    (k_B T)^2\n    =\n    \\varepsilon_F^2\n    \\left(\\frac{T}{T_F}\\right)^2.\n\\]\nSustituyendo y conservando términos hasta orden \\((T/T_F)^2\\),\n\\[\n    \\mu^3\n    \\simeq\n    \\varepsilon_F^3\n    \\left[\n        1-3a\\left(\\frac{T}{T_F}\\right)^2\n    \\right],\n\\]\ny\n\\[\n    \\pi^2\\mu(k_B T)^2\n    \\simeq\n    \\pi^2\\varepsilon_F^3\n    \\left(\\frac{T}{T_F}\\right)^2.\n\\]\nPor tanto,\n\\[\n    \\varepsilon_F^3\n    =\n    \\varepsilon_F^3\n    \\left[\n        1-3a\\left(\\frac{T}{T_F}\\right)^2\n        +\n        \\pi^2\\left(\\frac{T}{T_F}\\right)^2\n    \\right].\n\\]\nDe aquí,\n\\[\n    -3a+\\pi^2=0,\n\\]\npor lo que\n\\[\n    a=\\frac{\\pi^2}{3}.\n\\]\nEntonces,\n\\[\n    \\boxed{\n    \\mu\n    =\n    \\varepsilon_F\n    \\left[\n        1-\\frac{\\pi^2}{3}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\\cdots\n    \\right]\n    }.\n\\]\n\nAhora calculamos la energía interna. Usamos Sommerfeld con\n\\[\n    \\phi(\\varepsilon)=\\varepsilon^3,\n    \\qquad\n    \\phi'(\\varepsilon)=3\\varepsilon^2.\n\\]\nEntonces\n\\[\n    U\n    =\n    A\n    \\left[\n        \\int_0^\\mu \\varepsilon^3\\,d\\varepsilon\n        +\n        \\frac{\\pi^2}{6}(k_B T)^2(3\\mu^2)\n        +\\cdots\n    \\right].\n\\]\nPor lo tanto,\n\\[\n    U\n    =\n    A\n    \\left[\n        \\frac{\\mu^4}{4}\n        +\n        \\frac{\\pi^2}{2}\\mu^2(k_B T)^2\n        +\\cdots\n    \\right].\n\\]\n\nSustituimos la expansión de \\(\\mu\\). Hasta orden \\((T/T_F)^2\\),\n\\[\n    \\mu^4\n    \\simeq\n    \\varepsilon_F^4\n    \\left[\n        1-\\frac{4\\pi^2}{3}\n        \\left(\\frac{T}{T_F}\\right)^2\n    \\right],\n\\]\ny\n\\[\n    \\mu^2(k_B T)^2\n    \\simeq\n    \\varepsilon_F^4\n    \\left(\\frac{T}{T_F}\\right)^2.\n\\]\nEntonces,\n\\[\n    U\n    =\n    A\\varepsilon_F^4\n    \\left[\n        \\frac{1}{4}\n        -\n        \\frac{\\pi^2}{3}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\n        \\frac{\\pi^2}{2}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\\cdots\n    \\right].\n\\]\nCombinando coeficientes,\n\\[\n    -\\frac{\\pi^2}{3}+\\frac{\\pi^2}{2}\n    =\n    \\frac{\\pi^2}{6}.\n\\]\nAsí,\n\\[\n    U\n    =\n    A\\varepsilon_F^4\n    \\left[\n        \\frac{1}{4}\n        +\n        \\frac{\\pi^2}{6}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\\cdots\n    \\right].\n\\]\n\nComo\n\\[\n    U_0=A\\frac{\\varepsilon_F^4}{4}\n    =\n    \\frac{3}{4}N\\varepsilon_F,\n\\]\npodemos escribir\n\\[\n    U\n    =\n    U_0\n    \\left[\n        1+\n        \\frac{2\\pi^2}{3}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\\cdots\n    \\right].\n\\]\nPor tanto,\n\\[\n    \\boxed{\n    U\n    =\n    \\frac{3}{4}N\\varepsilon_F\n    \\left[\n        1+\n        \\frac{2\\pi^2}{3}\n        \\left(\\frac{T}{T_F}\\right)^2\n        +\\cdots\n    \\right]\n    }.\n\\]\n\nEl calor específico a volumen constante es\n\\[\n    C_V=\n    \\left(\\frac{\\partial U}{\\partial T}\\right)_{V,N}.\n\\]\nDerivando,\n\\[\n    C_V\n    =\n    \\frac{3}{4}N\\varepsilon_F\n    \\frac{2\\pi^2}{3}\n    \\frac{2T}{T_F^2}\n    +\\cdots.\n\\]\nSimplificando,\n\\[\n    C_V\n    =\n    \\pi^2 N\\varepsilon_F\n    \\frac{T}{T_F^2}\n    +\\cdots.\n\\]\nComo\n\\[\n    \\varepsilon_F=k_B T_F,\n\\]\nobtenemos\n\\[\n    \\boxed{\n    C_V\n    =\n    \\pi^2 N k_B\n    \\frac{T}{T_F}\n    +\\cdots\n    }.\n\\]\n\nPor partícula,\n\\[\n    \\boxed{\n    c_V\n    =\n    \\frac{C_V}{N}\n    =\n    \\pi^2 k_B\n    \\frac{T}{T_F}\n    +\\cdots\n    }.\n\\]\n\nNo aparece un término constante en \\(C_V\\): el calor específico se anula linealmente\ncuando \\(T\\to 0\\), como exige la tercera ley de la termodinámica.\n\\end{comment}\n"}</script>
+<script>
+(() => {
+'use strict';
+const configuracion={"code":"S-9-6","kind":"S-9-6","dominioCorto":true,"file":"prob_S-9-6.tex","area":"mecanica-estadistica","title":"Fermi ultrarrelativista y calor específico","unit":"Gas de Fermi ultrarrelativista a baja temperatura","tags":"fermiones, electrones, relatividad, Sommerfeld, espín","params":[["N","Electrones · N",80,800,20,240,""],["V","Volumen · V",2,12,0.5,4,"ℓ₀³"],["tau","T / T_F",0,0.15,0.005,0.08,""],["gamma","Espín · γ",1,2,1,2,""]],"results":[["fermi","Fermi","{εF} = ℏc[6π²{N}/({γ}{V})]¹ᐟ³","Dos orientaciones de espín duplican los estados disponibles por momento."],["energia","Energía","{U₀} = ¾NεF; {U} ≈ U₀[1+⅔π²{τ}²]","La energía térmica crece a orden (T/TF)² a N y V fijos."],["quimico","μ(T)","{μ} ≈ εF[1−⅓π²{τ}²]","El potencial químico disminuye para conservar N al aumentar T."],["calor","Calor","{CV} ≈ π²NkB{τ}","El calor específico crece linealmente desde cero."]],"simbolos":{"εF":"ef","γ":"gamma","U₀":"U","U":"U","μ":"mu","CV":"CV","τ":"tau"},"model":"\u003cp>Ejemplo ilustrativo de un gas ideal de electrones en el límite termodinámico, con ε=ℏck y energía de referencia E₀≫mc². Se define ℓ₀=ℏc/E₀; V se mide en ℓ₀³, k en ℓ₀⁻¹ y ε en E₀. TF=εF/kB y el control τ=T/TF conserva 0≤τ≤0,15. Los valores dimensionales de E₀ y ℓ₀ quedan por elegir para un gas concreto. La dispersión lineal es la aproximación ultrarrelativista; las partículas de momento muy pequeño aportan un peso de orden (mc²/εF)³ al conteo.\u003c/p>\u003cp>Fermi muestra el estado fundamental en el espacio de momentos. Tres círculos azules sitúan la esfera kF y una flecha lavanda mide su radio. Los 120 puntos de igual peso distribuyen radios como kF[(j+1/2)/120]^(1/3) y direcciones en la esfera; representan la ocupación continua y cada punto pesa N/120 electrones. Cada estado de momento admite γ orientaciones de espín. N o V cambian el radio como (N/V)^(1/3); γ=1 aumenta el radio por 2^(1/3) frente a γ=2 a igual N/V. La escala de dibujo es 0,12 unidades por kℓ₀. El control de temperatura se desactiva en esta vista de T=0.\u003c/p>\u003cp>Energía muestra columnas azules del integrando reducido 3q³f(q), q=ε/εF, y verdes de 3q³Θ(1−q) a T=0. Su área hasta infinito es U/(NεF) o 3/4. La ventana dibujada llega a q=1,8; las integrales numéricas incluyen la cola hasta más de 40kBT sobre μ. La altura común se ajusta al máximo de ambas series y el pie indica el factor. La separación de profundidad distingue las dos series. La abscisa usa 0,12 unidades por ε/E₀; sus marcas sitúan 0, εF y 1,8εF.\u003c/p>\u003cp>Potencial químico muestra la probabilidad f(ε) mediante columnas azules, con 3 unidades verticales por f=1. La línea lavanda sitúa μ numérico y la verde la expansión μ≈εF[1−π²τ²/3]; el contorno gris fija εF. El menor μ compensa el mayor número de estados disponibles a energías altas y conserva N. La gráfica permite comparar ambos valores a N,V y γ fijos.\u003c/p>\u003cp>Calor compara CV/(NkB)≈π²τ, curva azul, con la derivada numérica a N,V fijos, curva verde; la marca lavanda indica el estado seleccionado. Las abscisas de la escena amplían kBT/E₀ por un factor 18 y usan 2,16 unidades de dibujo por unidad energética y las alturas usan 2,2 unidades por CV/(NkB). El calor específico se anula linealmente cuando T→0. El gráfico usa τ para conservar la comparación entre densidades. Los resultados principales de μ, U y CV son expansiones de Sommerfeld hasta su primer término térmico; los valores numéricos de Fermi–Dirac, calculados con N constante, muestran su desviación finita.\u003c/p>\u003cp>Convención inicial γ=2 y N total, como declara el enunciado. γ=1 ofrece una comparación coherente de una componente con el mismo N. Para representar una componente del gas inicial debe usarse Ntotal/2 y duplicarse su energía al recuperar el total. La nota al final de Solución localiza el factor 2 discrepante de la fuente. Todas las curvas y columnas usan el mismo estado físico; el encuadre adapta el tamaño de la escena y las etiquetas conservan las unidades. Seleccionar símbolos o controles destaca sus radios, columnas o marcas.\u003c/p>\u003cp>La esfera de Fermi está montada sobre un soporte abierto, con tres aros finos que fijan kF. Energía y μ usan una mesa de lectura con respaldo y escalas sobre las mismas columnas originales. Calor convierte ese soporte en un trazador de las dos curvas. Se conservan todas las escalas de energía, temperatura y calor indicadas, los integrandos y las comparaciones de Sommerfeld con Fermi–Dirac.\u003c/p>","clarification":"\u003ch3>Nota de coherencia para la visualización\u003c/h3>\u003cp>El enunciado cuenta N electrones y la derivación inicial declara γ=2. Con N total, la densidad de estados es g(ε)=Vε²/(π²ℏ³c³) y εF=ℏc(3π²N/V)^(1/3). La parte posterior del solucionario usa V/(2π²ℏ³c³) y 6π²N/V: esas expresiones corresponden a γ=1 o a N por una sola orientación de espín. La solución anterior conserva exactamente ambas expresiones del archivo de trabajo.\u003c/p>\u003cp>El modelo comienza con γ=2 y N total. El control γ=1 compara una sola componente de espín con el mismo número N; para interpretar el solucionario dentro del gas de dos componentes, su N equivale a Ntotal/2 y su U a la energía de una componente. La fórmula general es εF=ℏc(6π²N/(γV))^(1/3). Los cocientes U₀/(NεF), μ/εF y CV/(NkB) conservan los resultados suministrados en ambas convenciones coherentes.\u003c/p>\u003cp>Esta nota adicional permite finalizar el modelo sin alterar el .tex. El conteo de espín y los resultados de baja temperatura se contrastaron con \u003ca href=\"https://paradigms.oregonstate.edu/act/handout/3905\" target=\"_blank\" rel=\"noopener\">Oregon State University\u003c/a> y la \u003ca href=\"https://www.stonybrook.edu/commcms/grad-physics-astronomy/resources/_pdfs/comps-spring-2016.pdf#page=44\" target=\"_blank\" rel=\"noopener\">solución docente de Stony Brook University, pp. 44–45\u003c/a>.\u003c/p>","pasoDescripcion":"Paso aumenta N en 20 en Fermi, o T/TF en 0,005 en las vistas térmicas; al alcanzar el máximo vuelve al mínimo"};
+function calcular(s){return ultraModelo(s);}
+function numerosModelo(d){if(estado.resultado==='fermi')return `<strong>εF=${fmt(d.ef)} E₀ · U₀=${fmt(d.U0)} E₀</strong><br>N=${estado.N} total · γ=${estado.gamma} · kF=${fmt(d.kF)} ℓ₀⁻¹<br>T=0 · conteo γVkF³/(6π²)=${fmt(estado.N)}`;if(estado.resultado==='quimico')return `<strong>μ/εF=${fmt(d.muAR,5)} (orden τ²)</strong><br>Numérico=${fmt(d.muR,5)} · kBT=${fmt(d.T)} E₀<br>Nintegral/N=${fmt(d.normalizacion,7)} · γ=${estado.gamma}`;if(estado.resultado==='calor')return `<strong>CV/NkB=${fmt(d.cvA,5)} (orden τ)</strong><br>Numérico=${fmt(d.cv,5)} · CV/kB=${fmt(d.CVA)}<br>TF=εF/kB · εF=${fmt(d.ef)} E₀ · γ=${estado.gamma}`;return `<strong>U/NεF=${fmt(d.uA,5)} (orden τ²)</strong><br>Numérico=${fmt(d.u,5)} · U₀/NεF=0,75<br>U=${fmt(d.UA)} E₀ · γ=${estado.gamma}`;}
+const $=id=>document.getElementById(id),SVG='http://www.w3.org/2000/svg';
+const color=nombre=>getComputedStyle(document.documentElement).getPropertyValue('--color-'+nombre).trim();
+const tonos={azul:color('onda'),verde:color('verde'),lavanda:color('punto'),neutro:color('texto-secundario'),borde:color('borde'),base:color('secundario'),claro:color('primario')};
+Object.assign(tonos,Object.fromEntries(['metal','metalClaro','metalOscuro','papel','caucho'].map(k=>[k,getComputedStyle(document.getElementById('pagina-3')).getPropertyValue('--anatomia-'+k).trim()])));
+const inicial=Object.fromEntries(configuracion.params.map(p=>[p[0],p[5]]));
+const estado={...inicial,pagina:1,resultado:configuracion.results[0][0],seleccion:'',pausado:true,graficas:false,tiempo:0,pasos:0,render:'2D'};
+let vista3D=null,promesa3D=null,marco=null,anterior=null,intervalo=0,sucio=true,anuncio=null,ancho=1,alto=1,escenaActual=null;
+const movimientoReducido=matchMedia('(prefers-reduced-motion: reduce)');
+const fmt=(x,d=3)=>!Number.isFinite(x)?(x===Infinity?'∞':x===-Infinity?'−∞':'singular'):Number(x).toLocaleString('es-CL',{maximumFractionDigits:d});
+const entero=x=>Math.round(x),fac=n=>{let r=1;for(let i=2;i<=n;i++)r*=i;return r;};
+function combinacion(n,r){if(r<0||r>n)return 0;r=Math.min(r,n-r);let q=1;for(let i=1;i<=r;i++)q=q*(n-r+i)/i;return Math.round(q);}
+function composicion(N,M,indice){const a=[];for(let j=0;j<N-1;j++){const restantes=N-j-1;for(let n=0;n<=M;n++){const cuentas=combinacion(M-n+restantes-1,restantes-1);if(indice<cuentas){a.push(n);M-=n;break;}indice-=cuentas;}}a.push(M);return a;}
+function subconjunto(V,N,indice){const a=[];let desde=0;for(let j=0;j<N;j++)for(let x=desde;x<V;x++){const cuenta=combinacion(V-x-1,N-j-1);if(indice<cuenta){a.push(x);desde=x+1;break;}indice-=cuenta;}return a;}
+function permutacion(N,indice){const libres=Array.from({length:N},(_,i)=>i),a=[];while(libres.length){const f=fac(libres.length-1),q=Math.floor(indice/f);a.push(libres.splice(q,1)[0]);indice%=f;}return a;}
+// Integración de Fermi–Dirac en q=ε/εF. La raíz conserva N en cada estado.
+const rejilla=(a,b,n=101)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+const serie=(nombre,tono,xs,f)=>({nombre,tono,datos:xs.map(x=>[x,f(x)])});
+const cacheTermico=new Map();
+function momentosFD(mu,tau){
+ const f=q=>{const x=(q-mu)/tau;return x>40?Math.exp(-x):x< -40?1:1/(1+Math.exp(x));};
+ const max=Math.max(2,mu+40*tau),cuts=[0,Math.max(0,mu-12*tau),Math.max(0,mu),Math.min(max,mu+12*tau),max].sort((a,b)=>a-b),sum=[0,0,0,0,0];
+ for(let j=0;j<cuts.length-1;j++){const a=cuts[j],b=cuts[j+1];if(b<=a)continue;const n=128,h=(b-a)/n;for(let i=0;i<=n;i++){const q=a+i*h,p=f(q),w=(i===0||i===n?1:i%2?4:2)*h/3,z=p*(1-p),q2=q*q;sum[0]+=w*q2*p;sum[1]+=w*q2*q*p;sum[2]+=w*q2*z;sum[3]+=w*q2*q*z;sum[4]+=w*q2*q*q*z;}}
+ return {I2:sum[0],I3:sum[1],J2:sum[2],J3:sum[3],J4:sum[4]};
+}
+function termicoFD(tau){
+ if(tau===0)return {mu:1,u:.75,cv:0,normalizacion:1};
+ const key=tau.toFixed(8);if(cacheTermico.has(key))return cacheTermico.get(key);
+ let lo=.5,hi=1.1;for(let i=0;i<48;i++){const m=(lo+hi)/2;if(3*momentosFD(m,tau).I2>1)hi=m;else lo=m;}
+ const mu=(lo+hi)/2,m=momentosFD(mu,tau),d={mu,u:3*m.I3,cv:3*(m.J4-m.J3*m.J3/m.J2)/(tau*tau),normalizacion:3*m.I2};
+ cacheTermico.set(key,d);return d;
+}
+function ultraModelo(s){
+ const n=s.N/s.V,ef=(6*Math.PI**2*n/s.gamma)**(1/3),t=termicoFD(s.tau),muA=1-Math.PI**2/3*s.tau**2,uA=.75+Math.PI**2/2*s.tau**2,cvA=Math.PI**2*s.tau;
+ const f=q=>s.tau===0?(q<1?1:q>1?0:.5):1/(1+Math.exp((q-t.mu)/s.tau));
+ return {n,ef,kF:ef,TF:ef,T:s.tau*ef,A:s.gamma*s.V/(2*Math.PI**2),mu:ef*t.mu,muA:ef*muA,muR:t.mu,muAR:muA,U0:.75*s.N*ef,U:s.N*ef*t.u,UA:s.N*ef*uA,u:t.u,uA,CV:s.N*t.cv,CVA:s.N*cvA,cv:t.cv,cvA,normalizacion:t.normalizacion,f};
+}
+
+function modelo(s=estado){return calcular(s);}
+function ajustar(){$('tau').disabled=estado.resultado==='fermi';$('etiqueta-tau').disabled=estado.resultado==='fermi';}
+function elemento(tipo,attrs={},contenido){const e=document.createElementNS(SVG,tipo);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));if(contenido!==undefined)e.textContent=contenido;return e;}
+function linea(svg,puntos,tono,grosor=1.3,guiones=''){svg.appendChild(elemento('polyline',{points:puntos.map(p=>p.join(',')).join(' '),fill:'none',stroke:tono,'stroke-width':grosor,'stroke-dasharray':guiones,'stroke-linecap':'round'}));}
+function texto(svg,x,y,contenido,tono=tonos.neutro,ancla='middle'){svg.appendChild(elemento('text',{x,y,fill:tono,'text-anchor':ancla},contenido));}
+// Geometría conceptual: las mismas primitivas alimentan Three.js y el respaldo SVG.
+function destacada(clave){return !estado.seleccion||!clave||clave.split(' ').includes(estado.seleccion);}
+function geometria(d){
+ const objetos=[],lineas=[],caras=[],etiquetas=[];
+ const esfera=(p,r,tono='azul',clave='',opacidad=1)=>objetos.push({tipo:'esfera',p,r,tono,clave,opacidad});
+ const caja=(p,tamano,tono='azul',clave='',opacidad=1)=>objetos.push({tipo:'caja',p,tamano,tono,clave,opacidad});
+ const trazo=(puntos,tono='neutro',clave='',opacidad=1)=>lineas.push({puntos,tono,clave,opacidad});
+ const cara=(puntos,tono='verde',opacidad=.3)=>caras.push({puntos,tono,opacidad});
+ const label=(p,texto,tono='neutro',ancla='middle')=>etiquetas.push({p,texto,tono,ancla});
+ const alambre=(centro,lado,tono='neutro',clave='')=>{for(let eje=0;eje<3;eje++)for(const a of [-1,1])for(const b of [-1,1]){const p=centro.map((x,j)=>x+(j===eje?-lado/2:j===(eje+1)%3?a:b)*lado/2),q=[...p];p[eje]=centro[eje]-lado/2;q[eje]=centro[eje]+lado/2;trazo([p,q],tono,clave);}};
+ const circulo=(centro,r,plano='xy',tono='azul',clave='')=>trazo(Array.from({length:65},(_,i)=>{const t=2*Math.PI*i/64,p=[...centro],a=plano==='yz'?1:0,b=plano==='xy'?1:2;p[a]+=r*Math.cos(t);p[b]+=r*Math.sin(t);return p;}),tono,clave);
+ const bola=(centro,r,tono='azul',clave='')=>{for(const plano of ['xy','xz','yz'])circulo(centro,r,plano,tono,clave);};
+ const flecha=(p,q,tono='lavanda',clave='')=>{trazo([p,q],tono,clave);const v=q.map((x,i)=>x-p[i]),len=Math.hypot(...v);if(len<1e-9)return;let u=[v[1],-v[0],0];if(Math.hypot(...u)<1e-9)u=[1,0,0];const n=Math.hypot(...u);u=u.map(x=>x/n*.12);trazo([q.map((x,i)=>x-v[i]/len*.25+u[i]),q,q.map((x,i)=>x-v[i]/len*.25-u[i])],tono,clave);};
+ const barras=(valores,nombres,claves,tonosBarra=['azul','verde','lavanda'])=>{const max=Math.max(.001,...valores),h=3.8/max;for(let i=0;i<valores.length;i++){const x=(i-(valores.length-1)/2)*1.4,y=valores[i]*h;caja([x,-1.9+y/2,0],[.75,Math.max(.005,y),.8],tonosBarra[i%tonosBarra.length],claves||'');label([x,-2.3,0],nombres[i]);label([x,-1.7+y,0],fmt(valores[i]),tonosBarra[i%tonosBarra.length]);}trazo([[-4.7,-1.9,0],[4.7,-1.9,0]]);};
+ let limites=[-5,5,-3,3,-3,3],pie='';
+ const key='N V gamma tau ef U mu CV',scale=.12,r=d.ef*scale;
+ if(estado.resultado==='fermi'){
+  bola([0,0,0],r,'azul','N V gamma ef');
+  for(let j=0;j<120;j++){const radius=r*Math.cbrt((j+.5)/120),angleIndex=(j*37)%120,z=1-2*(angleIndex+.5)/120,theta=angleIndex*2.3999632297,t=Math.sqrt(1-z*z);esfera([radius*t*Math.cos(theta),radius*z,radius*t*Math.sin(theta)],.045,'azul','N V gamma ef');}
+  flecha([0,0,0],[r,0,0],'lavanda','N V gamma ef');label([r*.55,.3,0],'kF='+fmt(d.kF)+' ℓ₀⁻¹','lavanda');label([0,r+.45,0],'T=0 · '+estado.gamma+' espines por k');label([0,-r-.4,0],'εF='+fmt(d.ef)+' E₀');
+  limites=[-r-.9,r+.9,-r-.9,r+.9,-r,r];pie='Esfera de Fermi · espacio k · 120 puntos de peso N/120';
+ }else if(estado.resultado==='calor'){
+  const pointsA=[],pointsE=[];for(let j=0;j<=60;j++){const tau=j*.15/60,m=termicoFD(tau),x=(tau-.075)*d.ef*scale*18;pointsA.push([x,-1.6+2.2*Math.PI**2*tau,0]);pointsE.push([x,-1.6+2.2*m.cv,.45]);}
+  trazo(pointsA,'azul',key);trazo(pointsE,'verde',key);const x=(estado.tau-.075)*d.ef*scale*18;trazo([[x,-1.6,0],[x,-1.6+2.2*d.cvA,0]],'lavanda',key);esfera([x,-1.6+2.2*d.cvA,0],.085,'lavanda',key);
+  trazo([[pointsA[0][0],-1.6,0],[pointsA.at(-1)[0],-1.6,0]],'neutro','N V gamma tau');label([pointsA[0][0],-1.95,0],'T=0');label([pointsA.at(-1)[0],-1.95,0],'0,15TF');label([0,2.15,0],'CV/NkB='+fmt(d.cvA)+' (orden τ)');
+  limites=[pointsA[0][0]-.5,pointsA.at(-1)[0]+.5,-2.4,2.6,-1,1];pie='Azul π²τ · verde Fermi–Dirac · lavanda estado actual · eje T ampliado ×18';
+ }else{
+  const energy=estado.resultado==='energia',xs=rejilla(0,1.8,37),max=energy?Math.max(...xs.map(q=>3*q**3*d.f(q)),3):1,h=3/max,x=q=>(q-.9)*d.ef*scale;
+  for(let j=0;j<xs.length;j++){const q=xs[j],value=energy?3*q**3*d.f(q):d.f(q),height=h*value; if(height>.002)caja([x(q),-1.5+height/2,.25],[d.ef*scale*1.8/40,height,.35],'azul',key);
+   if(energy&&q<1){const ground=h*3*q**3;caja([x(q),-1.5+ground/2,-.35],[d.ef*scale*1.8/40,ground,.3],'verde',key);}}
+  trazo([[x(0),-1.5,0],[x(1.8),-1.5,0]],'neutro',key);trazo([[x(1),-1.5,-.6],[x(1),1.8,-.6]],'borde','ef N V gamma');label([x(0),-1.85,0],'0');label([x(1),-1.85,0],'εF');label([x(1.8),-1.85,0],'1,8εF');
+  if(!energy){trazo([[x(d.muR),-1.5,.55],[x(d.muR),1.9,.55]],'lavanda','mu tau N V gamma');trazo([[x(d.muAR),-1.5,-.6],[x(d.muAR),1.9,-.6]],'verde','mu tau N V gamma');label([0,2.3,0],'μ/εF='+fmt(d.muR,5),'lavanda');pie='Ocupación f · azul 0≤f≤1 · lavanda μ numérico · verde μ de orden τ²';}
+  else{label([0,2.3,0],'Área azul='+fmt(d.u,5)+' · verde=3/4');pie='Integrando 3q³f · altura '+fmt(h)+' unidades por unidad · q=ε/εF';}
+  limites=[x(0)-.6,x(1.8)+.6,-2.35,2.8,-1,1];
+ }
+ return anatomiaPagina3({objetos,lineas,caras,etiquetas,limites,pie},d);
+}
+// Partes del montaje: el mismo sólido alimenta WebGL y SVG, con Y hacia arriba.
+function anatomiaPagina3(g,d){
+ const piezas=g.objetos;
+ const box=(p,tamano,tono='metal',clave='',nombre='soporte')=>piezas.push({tipo:'caja',p,tamano,tono,clave,opacidad:1,nombre});
+ const ball=(p,r,tono='metal',clave='',nombre='rótula')=>piezas.push({tipo:'esfera',p,r,tono,clave,opacidad:1,nombre});
+ const cylinder=(p,r,h,tono='metal',eje=[0,1,0],clave='',nombre='casquillo')=>piezas.push({tipo:'cilindro',p,r,h,eje,tono,clave,opacidad:1,nombre});
+ const ring=(p,r,tono='metalOscuro',eje=[0,1,0],clave='',nombre='aro')=>piezas.push({tipo:'anillo',p,r,eje,grosor:r*.012,tono,clave,opacidad:1,nombre});
+ const beam=(a,b,r,tono='metal',clave='',nombre='barra')=>{const v=b.map((x,i)=>x-a[i]),h=Math.hypot(...v);if(h>1e-8)cylinder(a.map((x,i)=>(x+b[i])/2),r,h,tono,v.map(x=>x/h),clave,nombre);};
+ const screw=(p,eje=[0,1,0])=>{cylinder(p,.038,.028,'metalOscuro',eje,'','tornillo');const a=p.map((x,i)=>x+eje[i]*.016);beam([a[0]-.023,a[1],a[2]],[a[0]+.023,a[1],a[2]],.004,'metalClaro','','ranura');};
+ const feet=(x,y,z,w,depth)=>{for(const a of [-1,1])for(const b of [-1,1]){const p=[x+a*(w/2-.18),y,z+b*(depth/2-.16)];cylinder(p,.11,.12,'caucho',[0,1,0],'','pie');cylinder([p[0],y+.075,p[2]],.13,.03,'metal',[0,1,0],'','brida');}};
+ const deck=(x,y,z,w,depth)=>{feet(x,y-.17,z,w,depth);box([x,y,z],[w,.16,depth],'metal','','bandeja');box([x,y+.09,z],[w-.10,.025,depth-.10],'papel','','superficie');for(const a of [-1,1])for(const b of [-1,1])screw([x+a*(w/2-.12),y+.12,z+b*(depth/2-.12)]);};
+ const ruler=(x,y,z,w,n=20)=>{box([x,y,z],[w,.045,.12],'metalClaro','','regla');for(let i=0;i<=n;i++){const xx=x-w/2+i*w/n;box([xx,y+.026,z+.06-(i%5===0?.065:.035)],[.008,.006,i%5===0?.13:.07],'metalOscuro','','graduación');}};
+ const rack=(x,y,z,w,h)=>{box([x,y-.10,z],[w,.14,.85],'metal','','base del expositor');feet(x,y-.24,z,w,.85);for(const side of [-1,1]){box([x+side*(w/2-.10),y+h/2,z-.36],[.12,h,.12],'metal','','montante');for(const yy of [y,y+h]){box([x+side*(w/2-.10),yy,z-.28],[.24,.14,.20],'metalClaro','','escuadra');screw([x+side*(w/2-.10),yy+.08,z-.28]);}}box([x,y+h,z-.36],[w,.10,.12],'metal','','travesaño');};
+ const histogram=(fixedHeight=0)=>{const bars=piezas.filter(o=>o.tipo==='caja'&&o.clave);if(!bars.length)return;const min=Math.min(...bars.map(o=>o.p[0]-o.tamano[0]/2)),max=Math.max(...bars.map(o=>o.p[0]+o.tamano[0]/2)),floor=Math.min(...bars.map(o=>o.p[1]-o.tamano[1]/2)),top=Math.max(floor+fixedHeight,...bars.map(o=>o.p[1]+o.tamano[1]/2));rack((min+max)/2,floor-.02,-.10,max-min+.75,top-floor+.30);for(const o of bars){box([o.p[0],floor-.01,o.p[2]],[o.tamano[0]+.08,.035,o.tamano[2]+.07],'metalClaro','','zapata del contador');box([o.p[0],o.p[1]+o.tamano[1]/2+.016,o.p[2]],[o.tamano[0]+.025,.025,o.tamano[2]+.025],o.tono,o.clave,'lectura superior');}box([min-.28,(floor+top)/2,-.25],[.19,top-floor+.04,.06],'metalClaro','','regla de lectura');for(let i=0;i<=10;i++){const yy=floor+(top-floor)*i/10;box([min-.28,yy,-.22],[i%5===0?.18:.09,.015,.04],'metalOscuro','','escala común');}g.limites[0]=Math.min(g.limites[0],min-.7);g.limites[1]=Math.max(g.limites[1],max+.7);g.limites[2]=Math.min(g.limites[2],floor-.6);};
+ 
+ for(let i=piezas.length-1;i>=0;i--)if(piezas[i].tipo==='caja'&&piezas[i].tamano.some(v=>v<=0))piezas.splice(i,1);
+ if(estado.resultado==='fermi'){
+  const r=d.ef*.12;g.lineas=g.lineas.filter(l=>!(l.puntos.length===65&&l.tono==='azul'));
+  for(const eje of [[0,0,1],[0,1,0],[1,0,0]])ring([0,0,0],r,'azul',eje,'N V gamma ef','esfera kF');
+  deck(0,-r-.21,0,2*r+.8,2*r+.8);box([0,-r-.07,0],[.20,.14,.20],'metalClaro','','silla radial');
+  for(const x of [-r,r]){box([x,(-r-.13)/2,0],[.075,r+.13,.075],'metal','','soporte de kF');box([x,0,0],[.15,.10,.14],'metalClaro','','anclaje del aro');}
+  ruler(0,-r-.07,r+.20,2*r,20);
+  for(const o of piezas)if(o.tipo==='esfera')o.nombre='ocupación de Fermi';
+ }else{
+  const calor=estado.resultado==='calor',W=d.ef*.12*(calor?2.7:1.8),floor=calor?-1.6:-1.5,top=calor?2.1:1.9;
+  const original=[...piezas];deck(0,floor-.104,0,W+.85,1.5);
+  for(const x of [-W/2-.23,W/2+.23]){box([x,(floor+top)/2,-.63],[.075,top-floor,.09],'metal','','montante térmico');box([x,top,-.63],[.16,.09,.15],'metalClaro','','cabeza del trazador');}
+  box([0,top,-.63],[W+.48,.09,.09],'metal','','travesaño térmico');
+  ruler(0,floor+.015,.61,W,18);
+  if(!calor){box([0,(floor+top)/2,-.66],[W+.38,top-floor,.025],'papel','','respaldo de integrandos');for(const o of original)o.nombre=o.tono==='azul'?'integrando térmico':'integrando fundamental';}
+  box([-W/2-.23,(floor+top)/2,-.58],[.12,top-floor,.045],'metalClaro','','regla térmica');
+  for(let j=0;j<=12;j++)box([-W/2-.21,floor+j*(top-floor)/12,-.548],[j%3===0?.13:.065,.014,.02],'metalOscuro','','marca térmica');
+  for(const o of original)if(o.tipo==='esfera')o.nombre='lectura de calor';
+ }
+
+ g.anatomia={version:1,piezas:piezas.length,solidos:piezas.filter(o=>o.nombre).length};
+ return g;
+}
+
+// El encuadre usa los sólidos realmente dibujados, también en el respaldo.
+function puntosAnatomia(g){
+ const points=[];for(const o of g.objetos){let half;if(o.tipo==='caja')half=o.tamano.map(x=>x/2);else if(o.tipo==='esfera')half=[o.r,o.r,o.r];else{const axis=o.eje||[0,1,0];half=axis.map(a=>o.tipo==='cilindro'?Math.abs(a)*o.h/2+o.r*Math.sqrt(Math.max(0,1-a*a)):o.r*(Math.sqrt(Math.max(0,1-a*a))+.012));}for(let n=0;n<8;n++)points.push(o.p.map((x,i)=>x+(n&(1<<i)?1:-1)*half[i]));}
+ for(const l of g.lineas)points.push(...l.puntos);for(const f of g.caras)points.push(...f.puntos);for(const t of g.etiquetas)points.push(t.p);return points;
+}
+let marcoAnatomia2D=null;
+function encuadreAnatomia2D(g){
+ if(marcoAnatomia2D&&marcoAnatomia2D.g===g&&marcoAnatomia2D.w===ancho&&marcoAnatomia2D.h===alto)return marcoAnatomia2D;
+ const e=configuracion.vistaElevada?.5:.16;let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+ for(const p of puntosAnatomia(g)){const x=p[0]+.18*p[2],y=p[1]-e*p[2];xmin=Math.min(xmin,x);xmax=Math.max(xmax,x);ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);}
+ const scale=Math.min(Math.max(1,ancho-30)/(xmax-xmin+.45),Math.max(1,alto-20)/(ymax-ymin+.45));
+ return marcoAnatomia2D={g,w:ancho,h:alto,cx:(xmin+xmax)/2,cy:(ymin+ymax)/2,escala:scale};
+}
+
+function espacio(g){const [xmin,xmax,ymin,ymax]=g.limites,cx=(xmin+xmax)/2,cy=(ymin+ymax)/2,W=xmax-xmin,H=ymax-ymin;return {cx,cy,W,H};}
+function proyectar(p){if(vista3D)return vista3D.proyectar(p);const f=encuadreAnatomia2D(escenaActual),e=configuracion.vistaElevada?.5:.16;return [ancho/2+(p[0]+.18*p[2]-f.cx)*f.escala,alto/2-(p[1]-e*p[2]-f.cy)*f.escala];}
+function respaldo(g){
+ const svg=$('alternativa');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+ const gs=encuadreAnatomia2D(g),escala=gs.escala;
+ const view=[-.18,configuracion.vistaElevada?.5:.16,1],dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),add=(a,b)=>a.map((v,i)=>v+b[i]),mul=(a,k)=>a.map(v=>v*k),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const tint=(c,k)=>{const rgb=c.match(/\w\w/g).map(v=>parseInt(v,16));return '#'+rgb.map(v=>Math.round(k<1?v*k:v+(255-v)*(k-1)).toString(16).padStart(2,'0')).join('');};
+ const faces=[];
+ const face=(points,fill,opacity=1,normal=null)=>{if(normal&&dot(normal,view)<=1e-8)return;faces.push({points,fill,opacity,depth:dot(points.reduce((a,p)=>add(a,mul(p,1/points.length)),[0,0,0]),view)});};
+ for(const c of g.caras)face(c.puntos,tonos[c.tono],c.opacidad);
+ const spheres=[];
+ for(const o of g.objetos){
+  const fill=tonos[o.tono],opacity=o.opacidad*(destacada(o.clave)?1:.35),p=o.p;
+  if(o.tipo==='esfera'){
+   spheres.push({sphere:o,fill,opacity});continue;
+  }
+  if(o.tipo==='caja'){
+   const v=[];for(let i=0;i<8;i++)v.push(p.map((x,j)=>x+(i&(1<<j)?1:-1)*o.tamano[j]/2));
+   for(const [ids,n,k] of [[[1,3,7,5],[1,0,0],.83],[[0,4,6,2],[-1,0,0],.69],[[2,6,7,3],[0,1,0],1.26],[[0,1,5,4],[0,-1,0],.62],[[4,5,7,6],[0,0,1],1],[[0,2,3,1],[0,0,-1],.72]])face(ids.map(i=>v[i]),tint(fill,k),opacity,n);
+   continue;
+  }
+  const axis=o.eje||[0,1,0],raw=cross(axis,Math.abs(axis[0])<.9?[1,0,0]:[0,0,1]),u=mul(raw,1/Math.hypot(...raw)),v=cross(axis,u),at=(r,t,h=0)=>add(p,add(mul(axis,h),add(mul(u,r*Math.cos(t)),mul(v,r*Math.sin(t))))),N=24;
+  if(o.tipo==='cilindro'){
+   for(let i=0;i<N;i++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,n=add(mul(u,Math.cos((a+b)/2)),mul(v,Math.sin((a+b)/2)));face([at(o.r,a,-o.h/2),at(o.r,b,-o.h/2),at(o.r,b,o.h/2),at(o.r,a,o.h/2)],tint(fill,.84+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+   for(const side of [-1,1])face(Array.from({length:N},(_,i)=>at(o.r,2*Math.PI*i/N,side*o.h/2)),tint(fill,side===1?1.20:.75),opacity,mul(axis,side));
+  }else if(o.tipo==='anillo'){
+   const point=(t,phi)=>at(o.r+(o.grosor??o.r*.012)*Math.cos(phi),t,(o.grosor??o.r*.012)*Math.sin(phi));
+   for(let i=0;i<N;i++)for(let j=0;j<8;j++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,c=j*Math.PI/4,d=(j+1)*Math.PI/4,n=add(mul(axis,Math.sin((c+d)/2)),add(mul(u,Math.cos((a+b)/2)*Math.cos((c+d)/2)),mul(v,Math.sin((a+b)/2)*Math.cos((c+d)/2))));face([point(a,c),point(b,c),point(b,d),point(a,d)],tint(fill,.88+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+  }
+ }
+ // Respaldo autónomo con profundidad por píxel: una bandeja grande nunca tapa
+ // las bolas que sostiene por culpa del centro usado para ordenar polígonos.
+ const ratio=Math.min(1.5,devicePixelRatio||1.5),W=Math.max(1,Math.ceil(ancho*ratio)),H=Math.max(1,Math.ceil(alto*ratio)),canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+ const ctx=canvas.getContext('2d'),im=ctx.createImageData(W,H),pixels=im.data,zbuf=new Float32Array(W*H);zbuf.fill(-Infinity);
+ const rgb=c=>c.match(/\w\w/g).map(v=>parseInt(v,16));
+ const write=(idx,z,c,a)=>{if(z<zbuf[idx]-1e-5)return;if(a>=.999){zbuf[idx]=z;pixels[idx*4]=c[0];pixels[idx*4+1]=c[1];pixels[idx*4+2]=c[2];pixels[idx*4+3]=255;}else{const aa=pixels[idx*4+3]/255,na=a+aa*(1-a);for(let j=0;j<3;j++)pixels[idx*4+j]=(c[j]*a+pixels[idx*4+j]*aa*(1-a))/na;pixels[idx*4+3]=na*255;}};
+ const tri=(points,c,alpha)=>{const p=points.map(q=>{const a=proyectar(q);return [a[0]*ratio,a[1]*ratio,dot(q,view)];}),[a,b,d]=p,den=(b[1]-d[1])*(a[0]-d[0])+(d[0]-b[0])*(a[1]-d[1]);if(Math.abs(den)<1e-9)return;
+  const xmin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[0])))),xmax=Math.min(W-1,Math.ceil(Math.max(...p.map(v=>v[0])))),ymin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[1])))),ymax=Math.min(H-1,Math.ceil(Math.max(...p.map(v=>v[1]))));
+  for(let y=ymin;y<=ymax;y++)for(let x=xmin;x<=xmax;x++){const aa=((b[1]-d[1])*(x+.5-d[0])+(d[0]-b[0])*(y+.5-d[1]))/den,bb=((d[1]-a[1])*(x+.5-d[0])+(a[0]-d[0])*(y+.5-d[1]))/den,cc=1-aa-bb;if(aa>=0&&bb>=0&&cc>=0)write(y*W+x,aa*a[2]+bb*b[2]+cc*d[2],c,alpha);}
+ };
+ const paintFace=f=>{const c=rgb(f.fill);for(let i=1;i<f.points.length-1;i++)tri([f.points[0],f.points[i],f.points[i+1]],c,f.opacity);};
+ const paintSphere=f=>{const o=f.sphere,c=rgb(f.fill),p=proyectar(o.p),vx=dot(view,view),len=Math.sqrt(vx),ex=o.r*Math.sqrt(1+.18**2)*escala*ratio,ey=o.r*Math.sqrt(1+view[1]**2)*escala*ratio;
+  for(let y=Math.max(0,Math.floor(p[1]*ratio-ey));y<=Math.min(H-1,Math.ceil(p[1]*ratio+ey));y++)for(let x=Math.max(0,Math.floor(p[0]*ratio-ex));x<=Math.min(W-1,Math.ceil(p[0]*ratio+ex));x++){
+   const origin=[(x+.5)/ratio/escala-ancho/2/escala+gs.cx,gs.cy-((y+.5)/ratio-alto/2)/escala,0],delta=o.p.map((v,i)=>v-origin[i]),along=dot(delta,view)/vx,perp=dot(delta,delta)-along*along*vx,inside=o.r*o.r-perp;if(inside<0)continue;
+   const t=along+Math.sqrt(inside)/len,normal=origin.map((v,i)=>(v+view[i]*t-o.p[i])/o.r),light=Math.max(0,dot(normal,[-.42,.77,.40])),shade=.72+.40*light,shine=18*Math.pow(Math.max(0,dot(normal,[-.3,.55,.78])),16);write(y*W+x,dot(o.p,view)+len*Math.sqrt(inside),c.map(v=>Math.min(255,v*shade+shine)),f.opacity);
+  }
+ };
+ for(const f of faces.filter(f=>f.opacity>=.999))paintFace(f);for(const f of spheres.filter(f=>f.opacity>=.999))paintSphere(f);
+ const transparent=[...faces.filter(f=>f.opacity<.999).map(f=>({...f,paint:paintFace})),...spheres.filter(f=>f.opacity<.999).map(f=>({...f,depth:dot(f.sphere.p,view),paint:paintSphere}))].sort((a,b)=>a.depth-b.depth);for(const f of transparent)f.paint(f);
+ ctx.putImageData(im,0,0);svg.append(elemento('image',{x:0,y:0,width:ancho,height:alto,href:canvas.toDataURL('image/png')}));
+ for(const l of g.lineas)linea(svg,l.puntos.map(proyectar),tonos[l.tono],l.tono==='neutro'||l.tono==='borde'?1:1.5);
+}
+
+function anotaciones(g){const svg=$('anotaciones');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+ const suelo=alto-8;const cajas=[];for(const t of g.etiquetas){const p=proyectar(t.p);const e=elemento('text',{x:Math.min(ancho-8,Math.max(8,p[0])),y:Math.min(suelo,Math.max(14,p[1])),fill:tonos[t.tono],'text-anchor':t.ancla},t.texto);svg.appendChild(e);let b=e.getBBox();
+  if(b.x<4)e.setAttribute('x',Number(e.getAttribute('x'))+4-b.x);if(b.x+b.width>ancho-4)e.setAttribute('x',Number(e.getAttribute('x'))-(b.x+b.width-ancho+4));
+  b=e.getBBox();let desplazamiento=0;while(cajas.some(q=>b.x<q.x+q.width+3&&b.x+b.width+3>q.x&&b.y<q.y+q.height+2&&b.y+b.height+2>q.y)&&desplazamiento<36){desplazamiento+=14;e.setAttribute('y',Math.min(suelo,Math.max(14,p[1])+desplazamiento));b=e.getBBox();}
+  if(cajas.some(q=>b.x<q.x+q.width+2&&b.x+b.width+2>q.x&&b.y<q.y+q.height+1&&b.y+b.height+1>q.y)){e.remove();}else cajas.push(b);
+ }
+}
+function datosGrafica(d){if(estado.resultado==='fermi'){const xs=rejilla(80/12,800/2);return {titulo:'Conteo de estados y degeneración de espín',x:'N/V · ℓ₀⁻³',y:'εF / E₀',series:[serie('γ=2, N total','azul',xs,n=>(3*Math.PI**2*n)**(1/3)),serie('γ=1, una componente','verde',xs,n=>(6*Math.PI**2*n)**(1/3))],cursor:d.n};}
+ const xs=rejilla(0,.15,61);if(estado.resultado==='quimico')return {titulo:'Potencial químico con N constante',decimalesX:3,x:'τ = T/TF',y:'μ / εF',rangoY:[.91,1.005],series:[serie('Orden τ²','verde',xs,t=>1-Math.PI**2*t*t/3),serie('Fermi–Dirac','lavanda',xs,t=>termicoFD(t).mu)],cursor:estado.tau};
+ if(estado.resultado==='energia')return {titulo:'Energía interna a N,V fijos',decimalesX:3,x:'τ = T/TF',y:'U / NεF',rangoY:[.74,.87],series:[serie('Orden τ²','azul',xs,t=>.75+Math.PI**2*t*t/2),serie('Fermi–Dirac','verde',xs,t=>termicoFD(t).u)],cursor:estado.tau};
+ return {titulo:'Calor específico a volumen constante',decimalesX:3,x:'τ = T/TF',y:'CV / NkB',series:[serie('Orden τ','azul',xs,t=>Math.PI**2*t),serie('Fermi–Dirac','verde',xs,t=>termicoFD(t).cv)],cursor:estado.tau};}
+function graficar(d){if(!estado.graficas)return;const svg=$('grafica'),r=svg.getBoundingClientRect(),w=Math.max(240,r.width),h=Math.max(110,r.height),g=datosGrafica(d);svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.replaceChildren();$('titulo-grafica').textContent=g.titulo;svg.setAttribute('aria-label',g.titulo+'; eje horizontal '+g.x+'; eje vertical '+g.y);
+ const l=50,ri=w-14,t=24,b=h-35,datos=g.series.flatMap(s=>s.datos),xmin=g.rangoX?.[0]??Math.min(...datos.map(p=>p[0])),xmax=g.rangoX?.[1]??Math.max(xmin+(configuracion.dominioCorto?1e-9:1),...datos.map(p=>p[0])),min=Math.min(0,...datos.map(p=>p[1])),max=Math.max(.01,...datos.map(p=>p[1])),ymin=g.rangoY?.[0]??(min<0?min*1.08:0),ymax=g.rangoY?.[1]??(max>0?max*1.12:max+Math.abs(max-min)*.12);
+ const sx=x=>l+(x-xmin)/(xmax-xmin)*(ri-l),sy=y=>b-(y-ymin)/(ymax-ymin)*(b-t);
+ svg.appendChild(elemento('rect',{x:l,y:t,width:ri-l,height:Math.max(1,b-t),fill:'none',stroke:tonos.borde,'data-chart-frame':''}));
+ for(let i=0;i<3;i++){const x=xmin+(xmax-xmin)*i/2,y=ymin+(ymax-ymin)*i/2;texto(svg,sx(x),h-18,fmt(x,g.decimalesX??1),tonos.neutro,i===0?'start':i===2?'end':'middle');texto(svg,l-6,sy(y)+4,fmt(y,2),tonos.neutro,'end');}
+ texto(svg,l,14,g.y,tonos.neutro,'start');texto(svg,ri,h-3,g.x,tonos.neutro,'end');
+ for(const serie of g.series){linea(svg,serie.datos.map(([x,y])=>[sx(x),sy(y)]),tonos[serie.tono],2);if(serie.datos.length<40)for(const [x,y] of serie.datos)svg.appendChild(elemento('circle',{cx:sx(x),cy:sy(y),r:2.3,fill:tonos[serie.tono]}));}
+ const cx=sx(g.cursor);linea(svg,[[cx,t],[cx,b]],tonos.lavanda,1,'4 4');
+ $('leyenda').replaceChildren();for(const serie of g.series){const span=document.createElement('span'),mark=document.createElement('i');mark.className='muestra-color';mark.style.background=tonos[serie.tono];span.append(mark,document.createTextNode(serie.nombre));$('leyenda').appendChild(span);}
+}
+function actualizar(){
+ ajustar();const d=modelo(),tipo=configuracion.kind,r=configuracion.results.find(r=>r[0]===estado.resultado);
+ $('formula').replaceChildren();for(const parte of r[2].split(/(\{[^}]+\})/g)){const m=parte.match(/^\{([^}]+)\}$/);if(m){const key=configuracion.simbolos[m[1]]||m[1];const boton=document.createElement('button');boton.className='simbolo';boton.dataset.simbolo=key;boton.textContent=m[1];boton.setAttribute('aria-label','Destacar '+m[1]);boton.setAttribute('aria-pressed',String(estado.seleccion===key));boton.classList.toggle('activo',estado.seleccion===key);boton.addEventListener('click',()=>seleccionar(key));$('formula').append(boton);}else $('formula').append(document.createTextNode(parte));}
+ let numeros=numerosModelo(d);
+ $('numeros').innerHTML=numeros;
+ for(const p of configuracion.params){const id=p[0],e=$(id);e.value=estado[id];e.style.setProperty('--progreso',((Number(e.value)-Number(e.min))/Math.max(1e-12,Number(e.max)-Number(e.min))*100)+'%');$('salida-'+id).textContent=fmt(id==='indice'?estado[id]+1:estado[id],p[4]<1?Math.min(4,Math.ceil(-Math.log10(p[4]))):0)+(p[6]?' '+p[6]:'');e.setAttribute('aria-valuetext',$('salida-'+id).textContent);}
+ document.querySelectorAll('[data-resultado]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.resultado===estado.resultado)));document.querySelectorAll('[data-seleccion]').forEach(b=>{b.classList.toggle('activo',b.dataset.seleccion===estado.seleccion);b.setAttribute('aria-pressed',String(b.dataset.seleccion===estado.seleccion));});
+ $('pausa').textContent=estado.pausado?'Explorar':'Pausa';$('pausa').setAttribute('aria-pressed',String(!estado.pausado));$('paso').setAttribute('aria-label',configuracion.pasoDescripcion);
+ $('graficas').setAttribute('aria-pressed',String(estado.graficas));$('panel-graficas').hidden=!estado.graficas;$('pagina-3').classList.toggle('con-graficas',estado.graficas);$('concepto').textContent=r[3];
+ $('descripcion-escena').textContent=r[1]+'. '+r[3]+' '+$('numeros').textContent;sucio=true;solicitar();
+}
+function seleccionar(key){const objetivo=configuracion.resultadosSeleccion?.[key];if(objetivo)estado.resultado=objetivo;estado.seleccion=estado.seleccion===key?'':key;actualizar();comunicar();}
+function comunicar(){clearTimeout(anuncio);anuncio=setTimeout(()=>{$('resumen-accesible').textContent=$('descripcion-escena').textContent;},220);}
+function avanzar(){if(estado.resultado==='fermi'){estado.N+=20;if(estado.N>800)estado.N=80;}else{estado.tau=Math.round((estado.tau+.005)*1000)/1000;if(estado.tau>.15)estado.tau=0;} estado.pasos++;sucio=true;}
+function cambiarPagina(n,enfocar=false){if(n!==3){estado.pausado=true;anterior=null;intervalo=0;if(marco!==null)cancelAnimationFrame(marco);marco=null;cerrarModelo();}estado.pagina=n;for(let j=1;j<=3;j++){$('pagina-'+j).hidden=n!==j;$('tab-'+j).setAttribute('aria-selected',String(n===j));$('tab-'+j).tabIndex=n===j?0:-1;}if(enfocar)$('tab-'+n).focus();if(n===3){actualizar();redimensionar();iniciar3D();}}
+function solicitar(){if(estado.pagina===3&&!document.hidden&&marco===null)marco=requestAnimationFrame(dibujar);}
+function dibujar(t){marco=null;if(estado.pagina!==3||document.hidden){anterior=null;return;}if(!estado.pausado&&anterior!==null){const dt=Math.min(.1,(t-anterior)/1000);intervalo+=dt;if(intervalo>=1.2){intervalo%=1.2;avanzar();actualizar();}}anterior=estado.pausado?null:t;
+ if(sucio){const d=modelo();escenaActual=geometria(d);if($('pie-escena').textContent!==escenaActual.pie){$('pie-escena').textContent=escenaActual.pie;redimensionar();}if(vista3D)vista3D.dibujar(escenaActual);else respaldo(escenaActual);anotaciones(escenaActual);graficar(d);$('pie-escena').textContent=escenaActual.pie;sucio=false;}if(!estado.pausado)solicitar();}
+function redimensionar(){if(estado.pagina!==3)return;const rect=$('escena').getBoundingClientRect(),reserva=Math.ceil($('pie-escena').offsetHeight)+12;$('escena').style.setProperty('--pie-alto',reserva+'px');ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height-reserva);if(vista3D&&rect.width&&rect.height)vista3D.redimensionar(ancho,alto);sucio=true;solicitar();}
+function cerrarModelo(){$('detalle').hidden=true;$('ayuda').setAttribute('aria-expanded','false');}
+async function iniciar3D(){
+ if(promesa3D)return promesa3D;
+ promesa3D=(async()=>{let renderizador=null,orbita=null;try{
+  const [THREE,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
+  const escena=new THREE.Scene(),camara=new THREE.OrthographicCamera(-6,6,4,-4,.1,100);camara.position.set(4,configuracion.vistaElevada?9:4,16);camara.lookAt(0,0,0);
+  renderizador=new THREE.WebGLRenderer({alpha:true,antialias:true});renderizador.setPixelRatio(Math.min(devicePixelRatio||1,2));renderizador.outputColorSpace=THREE.SRGBColorSpace;
+  const lienzo=renderizador.domElement;lienzo.id='lienzo';lienzo.setAttribute('aria-hidden','true');$('escena').prepend(lienzo);
+  orbita=new OrbitControls(camara,$('escena'));orbita.enablePan=false;orbita.enableDamping=false;orbita.minZoom=.7;orbita.maxZoom=1.7;orbita.minPolarAngle=.8;orbita.maxPolarAngle=1.8;orbita.minAzimuthAngle=-.65;orbita.maxAzimuthAngle=.65;orbita.update();orbita.saveState();orbita.addEventListener('change',()=>{sucio=true;solicitar();});
+  escena.add(new THREE.HemisphereLight(color('tarjeta'),color('primario'),2));const luz=new THREE.DirectionalLight(color('tarjeta'),2.1);luz.position.set(-4,8,12);escena.add(luz);
+  const esferas=[],cajas=[],cilindros=[],anillos=[],trazos=[],superficies=[],geometriaEsfera=new THREE.SphereGeometry(1,24,16),geometriaCilindro=new THREE.CylinderGeometry(1,1,1,32),geometriaAnillo=new THREE.TorusGeometry(1,.012,12,64),vector=new THREE.Vector3(),vertical=new THREE.Vector3(0,1,0);geometriaAnillo.rotateX(Math.PI/2);
+  const perfilCaja=new THREE.Shape();perfilCaja.moveTo(-.465,-.465);perfilCaja.lineTo(.465,-.465);perfilCaja.lineTo(.465,.465);perfilCaja.lineTo(-.465,.465);perfilCaja.closePath();const geometriaCaja=new THREE.ExtrudeGeometry(perfilCaja,{depth:.93,bevelEnabled:true,bevelThickness:.035,bevelSize:.035,bevelSegments:2,steps:1});geometriaCaja.translate(0,0,-.465);
+  let espacioAnterior='';
+  function encuadrar(g,forzar=false){const e=espacio(g),key=JSON.stringify(g.limites);if(key!==espacioAnterior||forzar){const delta=new THREE.Vector3(e.cx,e.cy,0).sub(orbita.target);camara.position.add(delta);orbita.target.set(e.cx,e.cy,0);orbita.update();espacioAnterior=key;}
+   camara.updateMatrixWorld(true);let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+   for(const p of puntosAnatomia(g)){vector.set(...p).applyMatrix4(camara.matrixWorldInverse);xmin=Math.min(xmin,vector.x);xmax=Math.max(xmax,vector.x);ymin=Math.min(ymin,vector.y);ymax=Math.max(ymax,vector.y);}
+   const aspect=ancho/Math.max(1,alto),padding=Math.max(.22,(ymax-ymin)*.08),H=Math.max(1,ymax-ymin+padding*2,(xmax-xmin+padding*2)/aspect),W=H*aspect,cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;
+   camara.left=cx-W/2;camara.right=cx+W/2;camara.top=cy+H/2;camara.bottom=cy-H/2;camara.updateProjectionMatrix();}
+  vista3D={redimensionar(w,h){renderizador.setSize(w,h,false);if(escenaActual)encuadrar(escenaActual,true);},proyectar(p){vector.set(...p).project(camara);return [(vector.x+1)*ancho/2,(1-vector.y)*alto/2];},reiniciar(){orbita.reset();espacioAnterior='';},camara,renderizador,
+   dibujar(g){
+    encuadrar(g);const pools={esfera:esferas,caja:cajas,cilindro:cilindros,anillo:anillos},geos={esfera:geometriaEsfera,caja:geometriaCaja,cilindro:geometriaCilindro,anillo:geometriaAnillo},counts={esfera:0,caja:0,cilindro:0,anillo:0};
+    for(const o of g.objetos){const pool=pools[o.tipo],index=counts[o.tipo]++;let m=pool[index];if(!m){m=new THREE.Mesh(geos[o.tipo],new THREE.MeshStandardMaterial({roughness:.5}));pool.push(m);escena.add(m);}m.visible=true;m.position.set(...o.p);m.quaternion.identity();if(o.eje)m.quaternion.setFromUnitVectors(vertical,vector.set(...o.eje).normalize());if(o.tipo==='esfera'||o.tipo==='anillo')m.scale.setScalar(o.r);else if(o.tipo==='cilindro')m.scale.set(o.r,o.h,o.r);else m.scale.set(...o.tamano);m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);m.material.transparent=m.material.opacity<1;m.material.depthWrite=m.material.opacity>.5;m.material.roughness=o.tono.startsWith('metal')?.36:.58;m.material.metalness=o.tono.startsWith('metal')?.32:0;}
+    for(const [tipo,pool] of Object.entries(pools))for(let i=counts[tipo];i<pool.length;i++)pool[i].visible=false;
+    for(let i=0;i<g.lineas.length;i++){const o=g.lineas[i];let m=trazos[i];if(!m){m=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({transparent:true}));m.frustumCulled=false;trazos.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);const len=o.puntos.length*3;let a=m.geometry.getAttribute('position');if(!a||a.array.length!==len){a=new THREE.BufferAttribute(new Float32Array(len),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.lineas.length;i<trazos.length;i++)trazos[i].visible=false;
+    for(let i=0;i<g.caras.length;i++){const o=g.caras[i];let m=superficies[i];if(!m){m=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({transparent:true,side:THREE.DoubleSide,depthWrite:false}));m.frustumCulled=false;superficies.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad;let a=m.geometry.getAttribute('position');if(!a){a=new THREE.BufferAttribute(new Float32Array(9),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.caras.length;i<superficies.length;i++)superficies[i].visible=false;renderizador.render(escena,camara);
+   }
+  };
+  estado.render='3D';$('modo-render').textContent='3D';$('alternativa').setAttribute('hidden','');$('estado-carga').textContent='Escena 3D activa. El respaldo conserva el modelo al perder WebGL.';
+  lienzo.addEventListener('webglcontextlost',e=>{e.preventDefault();vista3D=null;estado.render='2D';lienzo.hidden=true;orbita.dispose();$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='El contexto WebGL se perdió. La vista 2D mantiene los controles y cálculos.';redimensionar();});
+  $('escena').addEventListener('keydown',e=>{if(!vista3D||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-'].includes(e.key))return;e.preventDefault();const esf=new THREE.Spherical().setFromVector3(camara.position.clone().sub(orbita.target));if(e.key==='ArrowLeft')esf.theta=Math.max(-.65,esf.theta-.08);if(e.key==='ArrowRight')esf.theta=Math.min(.65,esf.theta+.08);if(e.key==='ArrowUp')esf.phi=Math.max(.8,esf.phi-.08);if(e.key==='ArrowDown')esf.phi=Math.min(1.8,esf.phi+.08);if(e.key==='+'||e.key==='=')camara.zoom=Math.min(1.7,camara.zoom*1.1);if(e.key==='-')camara.zoom=Math.max(.7,camara.zoom/1.1);camara.position.setFromSpherical(esf).add(orbita.target);camara.updateProjectionMatrix();orbita.update();sucio=true;solicitar();});
+  redimensionar();
+ }catch(error){if(orbita)orbita.dispose();if(renderizador){renderizador.domElement.remove();renderizador.dispose();}vista3D=null;estado.render='2D';$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='Vista 2D activa. El 3D requiere conexión para Three.js y soporte WebGL 2.';redimensionar();}})();return promesa3D;
+}
+document.querySelectorAll('[data-pagina]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.pagina))));document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.ir),true)));
+document.querySelectorAll('[data-explorar]').forEach(b=>b.addEventListener('click',()=>{estado.resultado=b.dataset.explorar;estado.seleccion='';cambiarPagina(3,true);}));
+document.querySelectorAll('[data-resultado]').forEach(b=>b.addEventListener('click',()=>{estado.resultado=b.dataset.resultado;estado.seleccion='';if('indice' in estado)estado.indice=0;actualizar();comunicar();}));
+document.querySelectorAll('[data-seleccion]').forEach(b=>b.addEventListener('click',()=>seleccionar(b.dataset.seleccion)));
+for(const p of configuracion.params)$(p[0]).addEventListener('input',()=>{estado[p[0]]=Number($(p[0]).value);estado.seleccion=p[0];estado.pausado=true;estado.tiempo=0;anterior=null;intervalo=0;if(p[0]!=='indice'&&'indice' in estado)estado.indice=0;actualizar();comunicar();});
+$('pausa').addEventListener('click',()=>{estado.pausado=!estado.pausado;anterior=null;intervalo=0;actualizar();});$('paso').addEventListener('click',()=>{estado.pausado=true;anterior=null;avanzar();actualizar();comunicar();});
+$('reiniciar').addEventListener('click',()=>{Object.assign(estado,inicial,{resultado:configuracion.results[0][0],seleccion:'',pausado:true,graficas:false,tiempo:0,pasos:0});anterior=null;intervalo=0;if(vista3D)vista3D.reiniciar();cerrarModelo();actualizar();redimensionar();});
+$('graficas').addEventListener('click',()=>{estado.graficas=!estado.graficas;actualizar();redimensionar();});$('vista-inicial').addEventListener('click',()=>{if(vista3D)vista3D.reiniciar();sucio=true;solicitar();});
+$('ayuda').addEventListener('click',()=>{const abrir=$('detalle').hidden;$('detalle').hidden=!abrir;$('ayuda').setAttribute('aria-expanded',String(abrir));if(abrir)$('cerrar-detalle').focus();});$('cerrar-detalle').addEventListener('click',()=>{cerrarModelo();$('ayuda').focus();});
+$('pantalla-completa').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($('app').requestFullscreen)await $('app').requestFullscreen();}catch{$('pantalla-completa').setAttribute('aria-label','La vista ocupa la ventana; pantalla completa no disponible');}});
+document.querySelector('.paginas').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const n=e.key==='Home'?1:e.key==='End'?3:(estado.pagina-1+(e.key==='ArrowRight'?1:2))%3+1;cambiarPagina(n,true);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('detalle').hidden){cerrarModelo();$('ayuda').focus();}});document.addEventListener('visibilitychange',()=>{anterior=null;intervalo=0;if(marco!==null)cancelAnimationFrame(marco);marco=null;if(!document.hidden){sucio=true;solicitar();}});movimientoReducido.addEventListener('change',()=>{if(movimientoReducido.matches){estado.pausado=true;anterior=null;actualizar();}});
+new ResizeObserver(redimensionar).observe($('escena'));new ResizeObserver(()=>{sucio=true;solicitar();}).observe($('grafica'));window.addEventListener('resize',redimensionar);
+window.problema={modelo:(par={})=>modelo({...estado,...par}),instantanea:()=>({...estado,datos:modelo(),camara:vista3D?{posicion:vista3D.camara.position.toArray(),zoom:vista3D.camara.zoom}:null}),geometria:()=>geometria(modelo()),configuracion,paso:()=>{avanzar();actualizar();},cambiar:(par)=>{Object.assign(estado,par);ajustar();actualizar();},cambiarPagina};
+actualizar();cambiarPagina(1);
+})();
+</script></body></html>
+<!-- anatomy-page3-v1 {"status":"verified","date":"2026-10-12T00:32:45.866667+00:00","sha256":"41be11af7de1bf082947d4a5d5914f4e2f8b2e3747f88106225a9127a9f80c2b"} -->

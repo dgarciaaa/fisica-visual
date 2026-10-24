@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Gas ideal interactivo: PV = nRT, partículas en un cilindro o una esfera y procesos isocórico, isobárico e isotérmico.">
+  <title>Gas ideal · Un estado, cuatro variables</title>
+  <style>
+    /* Paleta compartida con ondas-longitudinales-transversales.html. */
+    :root {
+      color-scheme: only light;
+      --color-fondo:#F7F8FC; --color-tarjeta:#FFFFFF; --color-primario:#A8C7FA;
+      --color-secundario:#B8E0D2; --color-acento:#CDB4DB; --color-texto:#273043;
+      --color-texto-secundario:#667085; --color-borde:#E4E7EC; --color-onda:#668EC6;
+      --color-longitudinal:#67998A; --color-punto:#9471AE; --color-seleccion:#EDF3FC;
+      --color-lavanda:#F1EBF5; --color-metal:#B8C3D0; --color-metal-claro:#E1E6ED;
+      --sombra:0 10px 32px rgba(39,48,67,.07); --radio-tarjeta:18px;
+    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; overflow:hidden; }
+    body { font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--color-texto); background:var(--color-fondo); }
+    button,input,select { font:inherit; color:inherit; }
+    button,select { cursor:pointer; }
+    button,input,select { -webkit-tap-highlight-color:transparent; }
+    :focus-visible { outline:3px solid var(--color-onda); outline-offset:3px; }
+    [hidden] { display:none !important; }
+    .laboratorio { height:100vh; height:100dvh; display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:14px; padding:22px 28px; overflow:hidden; background:radial-gradient(ellipse at 28% 36%,rgba(168,199,250,.14),transparent 65%),radial-gradient(ellipse at 86% 72%,rgba(205,180,219,.09),transparent 60%),var(--color-fondo); }
+    .cristal { background:rgba(255,255,255,.93); border:1px solid var(--color-borde); border-radius:var(--radio-tarjeta); box-shadow:var(--sombra); backdrop-filter:blur(14px); }
+    .cabecera { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:start; gap:12px 20px; }
+    .identidad h1 { margin:0 0 12px; font-size:clamp(1.25rem,2vw,1.55rem); font-weight:750; letter-spacing:-.035em; }
+    .identidad h1 span { font-size:.8rem; font-weight:500; letter-spacing:0; color:var(--color-texto-secundario); margin-left:10px; }
+    .selector { display:inline-flex; padding:4px; gap:3px; background:rgba(228,231,236,.68); border-radius:12px; }
+    .selector button { background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:36px; color:var(--color-texto-secundario); font-size:.84rem; font-weight:650; }
+    .selector button[aria-pressed="true"] { background:var(--color-tarjeta); color:var(--color-texto); box-shadow:0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display:flex; flex-wrap:wrap; gap:7px; justify-content:flex-end; padding-top:2px; }
+    .boton { border:1px solid var(--color-borde); background:var(--color-tarjeta); border-radius:11px; padding:9px 12px; min-height:40px; font-size:.82rem; font-weight:650; }
+    .boton:hover { background:var(--color-seleccion); }
+    .boton[aria-pressed="true"] { background:var(--color-lavanda); border-color:var(--color-acento); }
+    .principal,.principal[aria-pressed="true"] { background:var(--color-texto); border-color:var(--color-texto); color:var(--color-tarjeta); }
+    .ecuacion { width:max-content; max-width:min(560px,100%); padding:12px 18px; display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:8px 24px; }
+    .formula { font:italic 1.85rem Georgia,"Times New Roman",serif; white-space:nowrap; margin:0; }
+    .formula button { font:inherit; background:transparent; border:0; border-radius:5px; padding:0 4px; }
+    .formula button.activo { background:var(--color-seleccion); color:var(--color-onda); }
+    .formula sub { font-size:.55em; }
+    .fraccion { display:inline-flex; flex-direction:column; align-items:stretch; vertical-align:middle; text-align:center; line-height:1.05; }
+    .fraccion .numerador { border-bottom:1px solid currentColor; padding-bottom:3px; }
+    .fraccion .denominador { padding-top:3px; }
+    .resultados { display:flex; flex-direction:column; gap:5px; font-size:.8rem; font-variant-numeric:tabular-nums; }
+    .resultados strong { font-weight:650; }
+    .resultados sub { font-size:.8em; }
+    .resultados button { font:inherit; color:inherit; padding:0 2px; border:0; background:transparent; border-radius:4px; }
+    .resultados button.activo { background:var(--color-seleccion); }
+    #ley-proceso { color:var(--color-texto-secundario); }
+    #referencias { color:var(--color-texto-secundario); font-size:.73rem; }
+    #condicion { grid-column:1/-1; margin:0; max-width:440px; font-size:.8rem; color:var(--color-texto-secundario); line-height:1.4; }
+    .espacio { min-width:0; min-height:0; display:grid; grid-template-columns:minmax(0,1fr); gap:20px; }
+    .con-graficas .espacio { grid-template-columns:minmax(0,1fr) 340px; }
+    #area-escena { min-width:0; min-height:0; position:relative; overflow:hidden; border-radius:16px; touch-action:none; }
+    #lienzo { width:100%; height:100%; display:block; touch-action:none; cursor:grab; }
+    #lienzo:active { cursor:grabbing; }
+    .estado-escena { position:absolute; left:8px; right:8px; top:4px; display:flex; align-items:start; justify-content:space-between; gap:12px; color:var(--color-texto-secundario); font-size:.8rem; pointer-events:none; }
+    .estado-escena strong { font-weight:650; color:var(--color-texto); }
+    #tiempo { white-space:nowrap; font-variant-numeric:tabular-nums; }
+    .seguimiento { position:absolute; bottom:2px; left:0; right:0; margin:0; text-align:center; font-size:.76rem; color:var(--color-texto-secundario); pointer-events:none; }
+    .seguimiento strong { font-weight:650; color:var(--color-punto); }
+    .panel-graficas { min-width:0; min-height:0; padding:16px; display:flex; flex-direction:column; justify-content:center; }
+    .panel-graficas h2 { font-size:.9rem; margin:0 0 12px; font-weight:650; }
+    .selector-graficas { align-self:flex-start; margin-bottom:12px; }
+    .selector-graficas button { padding:5px 12px; min-height:32px; }
+    #grafica { display:block; width:100%; min-height:120px; flex:1; max-height:310px; }
+    #grafica text { font-family:Inter,system-ui,sans-serif; font-size:12px; fill:var(--color-texto-secundario); }
+    .leyenda { display:flex; gap:18px; flex-wrap:wrap; font-size:.76rem; margin-top:10px; }
+    .leyenda span { display:flex; align-items:center; gap:6px; }
+    .punto-leyenda { display:inline-block; width:9px; height:9px; background:var(--color-punto); border-radius:50%; }
+    .punto-leyenda.inicial { background:transparent; border:2px solid var(--color-onda); }
+    .nota-grafica { color:var(--color-texto-secundario); margin:10px 0 0; font-size:.76rem; }
+    .dock { width:min(1100px,100%); justify-self:center; padding:15px 20px 11px; }
+    .opciones { display:flex; justify-content:center; align-items:start; gap:18px; justify-self:center; padding-top:2px; }
+    .opciones label { display:flex; flex-direction:column; gap:6px; align-items:flex-start; font-size:.78rem; color:var(--color-texto-secundario); }
+    select { background:var(--color-fondo); border:1px solid var(--color-borde); border-radius:8px; padding:6px 9px; min-height:33px; font-size:.79rem; color:var(--color-texto); }
+    .parametros { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:24px; }
+    .parametro { min-width:0; }
+    .parametro-cabecera { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:6px; }
+    .parametro-cabecera button { font-weight:650; font-size:.81rem; border:0; border-radius:6px; background:transparent; padding:3px 5px; margin-left:-5px; text-align:left; }
+    .parametro-cabecera button.activo { background:var(--color-seleccion); }
+    .estado-control { font-size:.7rem; color:var(--color-texto-secundario); }
+    .calculada .estado-control { color:var(--color-punto); }
+    .valor-control { display:flex; align-items:baseline; gap:6px; margin-bottom:12px; font-size:.84rem; font-variant-numeric:tabular-nums; }
+    .numero { width:100%; min-width:0; font-size:1.06rem; font-weight:650; background:transparent; border:0; border-bottom:1px solid var(--color-borde); padding:2px 0; border-radius:0; appearance:textfield; }
+    .numero::-webkit-inner-spin-button { appearance:none; }
+    .numero:disabled { opacity:1; -webkit-text-fill-color:var(--color-texto); }
+    .valor-control span { min-width:25px; color:var(--color-texto-secundario); }
+    input[type="range"] { display:block; width:100%; margin:0; appearance:none; height:6px; border-radius:99px; background:linear-gradient(to right,var(--color-primario) var(--progreso,50%),var(--color-borde) var(--progreso,50%)); cursor:pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance:none; width:21px; height:21px; border:3px solid var(--color-tarjeta); border-radius:50%; background:var(--color-texto); box-shadow:0 2px 7px rgba(39,48,67,.16); }
+    input[type="range"]::-moz-range-thumb { width:15px; height:15px; border:3px solid var(--color-tarjeta); border-radius:50%; background:var(--color-texto); }
+    input[type="range"]:disabled { cursor:default; opacity:.53; }
+    .dock-pie { display:flex; justify-content:space-between; align-items:center; gap:15px; border-top:1px solid var(--color-borde); margin-top:15px; padding-top:9px; font-size:.76rem; color:var(--color-texto-secundario); }
+    #concepto { flex:1; }
+    .herramientas { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+    .enlace { border:0; background:transparent; padding:0; text-decoration:underline; text-underline-offset:3px; min-height:26px; font-size:inherit; }
+    .detalle { position:absolute; z-index:5; left:28px; bottom:232px; width:min(460px,calc(100% - 56px)); max-height:calc(100dvh - 280px); overflow:auto; padding:22px; font-size:.83rem; line-height:1.6; }
+    .detalle h2 { font-size:.96rem; margin:0 25px 9px 0; }
+    .detalle p { margin:9px 0; }
+    .detalle a { color:var(--color-onda); }
+    .detalle .cerrar { position:absolute; right:11px; top:8px; border:0; background:transparent; font-size:1.5rem; min-width:30px; min-height:30px; }
+    .sr-only { position:absolute; width:1px; height:1px; clip-path:inset(50%); overflow:hidden; white-space:nowrap; }
+    @media (max-width:1100px) {
+      .cabecera { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px 20px; }
+      .opciones { grid-column:1/-1; grid-row:2; padding:0; }
+      .acciones { grid-column:2; grid-row:1; padding:0; }
+      .con-graficas .espacio { grid-template-columns:minmax(0,1fr) 300px; }
+    }
+    @media (max-width:700px) {
+      .laboratorio { padding:12px 13px; gap:10px; }
+      .identidad { display:contents; }
+      .cabecera { grid-template-columns:1fr; gap:8px; }
+      .identidad h1 { margin:0; }
+      .identidad h1 { font-size:1.17rem; }
+      .identidad h1 span { font-size:.74rem; }
+      .modos { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); width:100%; grid-row:3; }
+      .modos button { padding:5px 2px; font-size:.74rem; min-height:33px; }
+      .acciones { grid-column:1; grid-row:2; flex-wrap:nowrap; gap:5px; }
+      .boton { font-size:.72rem; padding:6px 8px; min-height:33px; flex:1; }
+      #pantalla-completa { font-size:0; flex:0 0 33px; }
+      #pantalla-completa::after { content:"⛶"; font-size:1.1rem; }
+      .ecuacion { padding:9px 12px; gap:6px 14px; width:100%; }
+      .formula { font-size:1.6rem; }
+      .formula button { padding:0 2px; }
+      .resultados { font-size:.73rem; gap:4px; }
+      #referencias { font-size:.69rem; }
+      #condicion { font-size:.73rem; }
+      .espacio,.con-graficas .espacio { grid-template-columns:minmax(0,1fr); gap:0; }
+      .con-graficas #area-escena { display:none; }
+      .panel-graficas { padding:10px 12px; justify-content:flex-start; }
+      .panel-graficas h2 { position:absolute; width:1px; height:1px; clip-path:inset(50%); overflow:hidden; }
+      .selector-graficas { margin-bottom:4px; }
+      .selector-graficas button { min-height:27px; padding:3px 10px; font-size:.74rem; }
+      #grafica { max-height:none; min-height:0; }
+      .nota-grafica { display:none; }
+      .leyenda { margin-top:3px; font-size:.71rem; }
+      .dock { padding:11px 13px 8px; border-radius:16px; }
+      .opciones { grid-row:4; grid-column:1; gap:18px; }
+      .opciones label { gap:4px; font-size:.72rem; }
+      select { padding:4px 6px; font-size:.75rem; min-height:29px; }
+      .parametros { grid-template-columns:repeat(2,minmax(0,1fr)); gap:17px 20px; }
+      .parametro-cabecera { gap:4px; margin-bottom:3px; }
+      .parametro-cabecera button { font-size:.75rem; }
+      .estado-control { font-size:.7rem; }
+      .valor-control { font-size:.75rem; gap:4px; margin-bottom:8px; }
+      .numero { font-size:.92rem; padding:1px 0; }
+      .dock-pie { font-size:.7rem; gap:9px; margin-top:12px; padding-top:7px; align-items:start; }
+      .herramientas { gap:6px; flex-wrap:nowrap; }
+      #vista-inicial { font-size:0; }
+      #vista-inicial::after { content:"Vista"; font-size:.7rem; }
+      #concepto { line-height:1.4; }
+      .estado-escena { font-size:.73rem; left:4px; right:4px; top:0; }
+      .seguimiento { font-size:.7rem; bottom:0; }
+      .detalle { left:13px; bottom:272px; width:calc(100% - 26px); max-height:calc(100dvh - 300px); padding:18px; font-size:.8rem; }
+    }
+    @media (max-width:370px) {
+      .identidad h1 span { display:none; }
+      .ecuacion { gap:9px; padding-inline:10px; }
+      .formula { font-size:1.45rem; }
+      .resultados { font-size:.69rem; }
+      .boton { padding-inline:5px; }
+      .opciones label { font-size:.69rem; }
+      .parametros { column-gap:14px; }
+      .parametro-cabecera { flex-wrap:wrap; min-height:32px; align-content:start; gap:0; }
+      .parametro-cabecera button { white-space:nowrap; }
+      .estado-control { width:100%; }
+      .panel-graficas .leyenda { display:none; }
+      .con-graficas #igualdad,.con-graficas #referencias { display:none; }
+      .con-graficas .formula { font-size:1.25rem; }
+      .con-graficas .fraccion { flex-direction:row; line-height:normal; }
+      .con-graficas .fraccion .numerador { border:0; padding:0; }
+      .con-graficas .fraccion .denominador { padding:0; }
+      .con-graficas .fraccion .denominador::before { content:"/"; padding-inline:2px; }
+    }
+    @media (max-height:720px) and (min-width:701px) {
+      .laboratorio { padding:13px 22px; gap:9px; }
+      .identidad h1 { margin-bottom:7px; font-size:1.25rem; }
+      .ecuacion { padding:8px 15px; }
+      .formula { font-size:1.6rem; }
+      .dock { padding:10px 17px 8px; }
+      .dock-pie { margin-top:11px; padding-top:6px; }
+      .detalle { bottom:210px; max-height:calc(100dvh - 240px); }
+    }
+    @media (max-height:650px) and (max-width:700px) {
+      .laboratorio { gap:6px; padding-block:8px; }
+      .cabecera { gap:5px; }
+      .identidad h1 { font-size:1rem; }
+      .ecuacion { padding-block:6px; }
+      .dock { padding-block:8px; }
+      .parametros { row-gap:12px; }
+      .seguimiento { display:none; }
+      .nota-grafica { display:none; }
+    }
+    @media (pointer:coarse) {
+      input[type="range"] { height:10px; }
+      input[type="range"]::-webkit-slider-thumb { width:25px; height:25px; }
+      .numero { font-size:16px; }
+    }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1>Gas ideal <span>Un estado, cuatro variables</span></h1>
+        <nav class="selector modos" aria-label="Estado y procesos del gas">
+          <button type="button" data-modo="general" aria-pressed="true">Estado</button>
+          <button type="button" data-modo="isocorico" aria-pressed="false">Isocórico</button>
+          <button type="button" data-modo="isobarico" aria-pressed="false">Isobárico</button>
+          <button type="button" data-modo="isotermico" aria-pressed="false">Isotérmico</button>
+        </nav>
+      </div>
+      <div class="opciones" aria-label="Recipiente y variable calculada">
+        <label for="geometria">Recipiente <select id="geometria"><option value="cilindro">Cilindro con pistón</option><option value="esfera">Esfera</option></select></label>
+        <label for="dependiente">Calcular <select id="dependiente" aria-label="Variable calculada por la relación del proceso"><option value="P">Presión P</option><option value="V">Volumen V</option><option value="T">Temperatura T</option><option value="n">Cantidad n</option></select></label>
+      </div>
+      <nav class="acciones" aria-label="Herramientas de la simulación">
+        <button type="button" class="boton principal" id="pausa" aria-pressed="false">Pausa</button>
+        <button type="button" class="boton" id="paso">Paso</button>
+        <button type="button" class="boton" id="reiniciar">Reiniciar</button>
+        <button type="button" class="boton" id="graficas" aria-pressed="false">Gráficas</button>
+        <button type="button" class="boton" id="pantalla-completa" aria-label="Pantalla completa">Pantalla completa</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" id="ecuacion" aria-label="Ecuación de estado del gas ideal">
+      <p class="formula" id="formula"></p>
+      <div class="resultados"><strong id="igualdad">PV = nRT</strong><span id="ley-proceso">P = nRT / V</span><span id="referencias" hidden>i: inicial · f: final</span></div>
+      <p id="condicion" hidden></p>
+    </section>
+    <section class="espacio" aria-label="Recipiente y gráficas">
+      <div id="area-escena">
+        <canvas id="lienzo" tabindex="0" role="img" aria-label="Gas ideal en un cilindro transparente con pistón móvil" aria-describedby="descripcion-escena">Partículas de gas en un recipiente; los controles modifican presión, volumen, temperatura y cantidad de sustancia.</canvas>
+        <div class="estado-escena"><span id="estado-montaje"><strong>Cilindro sellado</strong> · pistón móvil</span><output id="tiempo">t = 0,00 ms</output></div>
+        <p class="seguimiento"><strong>Partícula observada</strong> · <span id="rapidez">vᵣₘₛ = 517 m/s</span></p>
+      </div>
+      <aside class="panel-graficas cristal" id="panel-graficas" hidden aria-label="Relaciones entre variables del mismo gas">
+        <h2 id="titulo-grafica">Relación presión–volumen</h2>
+        <div class="selector selector-graficas" aria-label="Ejes de la gráfica"><button type="button" data-grafica="PV" aria-pressed="true">P–V</button><button type="button" data-grafica="PT" aria-pressed="false">P–T</button><button type="button" data-grafica="VT" aria-pressed="false">V–T</button></div>
+        <svg id="grafica" role="img" aria-label="Gráfica del estado del gas"></svg>
+        <div class="leyenda"><span id="leyenda-inicial"><i class="punto-leyenda inicial" aria-hidden="true"></i>Inicial · i</span><span><i class="punto-leyenda" aria-hidden="true"></i><span id="leyenda-final">Estado actual</span></span></div>
+        <p class="nota-grafica" id="nota-grafica">Curva a n y T constantes.</p>
+      </aside>
+    </section>
+    <section class="dock cristal" aria-label="Cantidades macroscópicas y montaje">
+      <div class="parametros">
+        <div class="parametro" id="grupo-P"><div class="parametro-cabecera"><button type="button" data-parametro="P" id="etiqueta-P">Presión P</button><span class="estado-control" id="estado-P">calculada</span></div><div class="valor-control"><input class="numero" id="numero-P" aria-labelledby="etiqueta-P" aria-describedby="unidad-P estado-P" type="number" step="any"><span id="unidad-P">kPa</span></div><input id="P" type="range" step="any" aria-labelledby="etiqueta-P" aria-describedby="estado-P"></div>
+        <div class="parametro" id="grupo-V"><div class="parametro-cabecera"><button type="button" data-parametro="V" id="etiqueta-V">Volumen V</button><span class="estado-control" id="estado-V">ajustable</span></div><div class="valor-control"><input class="numero" id="numero-V" aria-labelledby="etiqueta-V" aria-describedby="unidad-V estado-V" type="number" step="any"><span id="unidad-V">L</span></div><input id="V" type="range" step="any" aria-labelledby="etiqueta-V" aria-describedby="estado-V"></div>
+        <div class="parametro" id="grupo-T"><div class="parametro-cabecera"><button type="button" data-parametro="T" id="etiqueta-T">Temperatura T</button><span class="estado-control" id="estado-T">ajustable</span></div><div class="valor-control"><input class="numero" id="numero-T" aria-labelledby="etiqueta-T" aria-describedby="unidad-T estado-T" type="number" step="any"><span id="unidad-T">K</span></div><input id="T" type="range" step="any" aria-labelledby="etiqueta-T" aria-describedby="estado-T"></div>
+        <div class="parametro" id="grupo-n"><div class="parametro-cabecera"><button type="button" data-parametro="n" id="etiqueta-n">Cantidad n</button><span class="estado-control" id="estado-n">ajustable</span></div><div class="valor-control"><input class="numero" id="numero-n" aria-labelledby="etiqueta-n" aria-describedby="unidad-n estado-n" type="number" step="any"><span id="unidad-n">mol</span></div><input id="n" type="range" step="any" aria-labelledby="etiqueta-n" aria-describedby="estado-n"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">V · el pistón cambia el espacio disponible.</span><div class="herramientas"><button class="enlace" id="vista-inicial" type="button">Restablecer vista</button><button class="enlace" id="ayuda" type="button" aria-controls="detalle" aria-expanded="false">Modelo</button></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden aria-labelledby="titulo-modelo">
+      <button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar Modelo">×</button>
+      <h2 id="titulo-modelo">Del estado al movimiento</h2>
+      <p><strong>PV = nRT.</strong> P es presión absoluta; V se calcula en m³ (1 L = 0,001 m³); T está en kelvin; n en mol. R = 8,31446261815324 J/(mol·K). En «Estado» eliges una variable calculada y ajustas las otras tres. Cambiar n compara distintas cantidades de gas.</p>
+      <p><strong>Procesos de un gas sellado.</strong> La cantidad de gas se conserva. El subíndice <em>i</em> identifica el estado al entrar al proceso; <em>f</em> identifica el estado final elegido con los controles. Isocórico: el recipiente no cambia de forma ni de volumen, P<sub>i</sub>/T<sub>i</sub> = P<sub>f</sub>/T<sub>f</sub> y V<sub>i</sub> = V<sub>f</sub>. Isobárico: la presión exterior se mantiene, V<sub>i</sub>/T<sub>i</sub> = V<sub>f</sub>/T<sub>f</sub> y P<sub>i</sub> = P<sub>f</sub>. Isotérmico: el gas conserva su temperatura, P<sub>i</sub>V<sub>i</sub> = P<sub>f</sub>V<sub>f</sub> y T<sub>i</sub> = T<sub>f</sub>. Puedes intercambiar cuál de las otras dos variables se calcula. Volver a «Estado» libera los controles. Reiniciar conserva el proceso y la geometría, y recupera n = 1 mol, T = 300 K, V = 25 L.</p>
+      <p><strong>Recipientes.</strong> El cilindro tiene radio interior a = 0,140 m y sección A = πa². Su cuerpo y la pared izquierda permanecen inmóviles. El pistón se desplaza dentro del cuerpo: acercarlo a la pared izquierda comprime el gas; alejarlo lo expande. La longitud de la cámara de gas es ℓ = V/A, y solo esta cámara contiene partículas. El espacio detrás del pistón comunica con el exterior. En el proceso isocórico el pistón queda bloqueado. La esfera cumple V = 4πr³/3: su pared se dilata de forma idealizada cuando cambia V. Es una envolvente flexible ideal, sin tensión superficial, que se vuelve rígida en el proceso isocórico. En el proceso isobárico, un pistón ideal sin masa o una envolvente sin tensión equilibran P con una presión exterior constante Pₑₓₜ. Las paredes bloqueadas pueden sostener una diferencia de presiones.</p>
+      <p><strong>Partículas.</strong> Cada punto es una muestra visual, no una molécula a escala: se dibujan aproximadamente 160 puntos por mol (N = nNₐ, Nₐ = 6,02214076 × 10²³ mol⁻¹). Los colores solo distinguen puntos. El punto con halo conserva su identidad. Las velocidades iniciales tienen componentes gaussianas; al cambiar T se multiplican por √(T<sub>f</sub>/T<sub>i</sub>). Se utiliza una masa molar ilustrativa M = 0,028 kg/mol y vᵣₘₛ = √(3RT/M). Hay movimiento en las tres dimensiones, proyección ortográfica y rebotes elásticos contra las paredes; se omiten las colisiones entre puntos.</p>
+      <p><strong>Equilibrio y escalas.</strong> Los controles recorren estados de equilibrio; P se obtiene de la ecuación, no de contar los pocos impactos dibujados. Al cambiar V, las posiciones se redistribuyen proporcionalmente en la cámara del gas; no se integran el trabajo del pistón ni el intercambio de calor. Al mover el pistón se conserva el encuadre del cuerpo del cilindro. La esfera ajusta el encuadre en expansiones grandes. Las etiquetas indican las dimensiones reales. El gas ideal ignora el tamaño molecular y las atracciones; los extremos de los controles no garantizan que un gas real sea ideal.</p>
+      <p><strong>Tiempo.</strong> La agitación se reproduce 2.500 veces más lenta: 1 s de pantalla representa 0,4 ms microscópicos. Paso pausa y avanza 20 μs (0,02 ms). Pausa congela partículas e impactos. Ajustar parámetros en pausa actualiza el estado y la geometría. La gráfica muestra estados termodinámicos, no la trayectoria temporal de las partículas.</p>
+      <p><strong>Vista sin conexión.</strong> El volumen y las partículas se dibujan con Canvas, sin bibliotecas externas ni WebGL. Arrastra para girar, usa la rueda para acercar; con el lienzo enfocado, las flechas giran y +/− cambian el zoom. «Restablecer vista» recupera la cámara. La preferencia de movimiento reducido inicia en pausa.</p>
+      <p>Fuentes: <a href="https://physics.nist.gov/cgi-bin/cuu/Value?r%7Csearch_for=R" target="_blank" rel="noopener noreferrer">NIST · constante de los gases</a>; <a href="https://openstax.org/books/university-physics-volume-2/pages/2-1-molecular-model-of-an-ideal-gas" target="_blank" rel="noopener noreferrer">OpenStax · gas ideal</a>; <a href="https://openstax.org/books/university-physics-volume-2/pages/3-4-thermodynamic-processes" target="_blank" rel="noopener noreferrer">OpenStax · procesos termodinámicos</a>.</p>
+    </aside>
+    <p class="sr-only" id="descripcion-escena"></p><p class="sr-only" id="resumen-accesible" aria-live="polite"></p><p class="sr-only" id="validacion" role="alert"></p>
+  </main>
+  <script>
+    (() => {
+      "use strict";
+      // 1. Modelo físico. Todas las cantidades internas están en SI.
+      const $ = id => document.getElementById(id);
+      const R = 8.31446261815324, NA = 6.02214076e23, MASA_MOLAR = .028;
+      const RADIO_CILINDRO = .140, AREA = Math.PI * RADIO_CILINDRO ** 2;
+      const LENTITUD = 2500, PASO = .00002, PUNTOS_POR_MOL = 160;
+      const INICIAL = { P:R*300/.025, V:.025, T:300, n:1 };
+      const LIMITES = { P:[10000,3000000], V:[.005,.06], T:[100,1200], n:[.1,3] };
+      const LONGITUD_TUBO = LIMITES.V[1]/AREA;
+      const FACTOR = { P:1000, V:.001, T:1, n:1 };
+      const DECIMALES = { P:2, V:2, T:1, n:3 };
+      const NOMBRES = { P:"Presión P", V:"Volumen V", T:"Temperatura T", n:"Cantidad n" };
+      const MODOS = {
+        general:{fijas:[],calculables:["P","V","T","n"],dependiente:"P",grafica:"PV"},
+        isocorico:{fijas:["V","n"],calculables:["P","T"],dependiente:"P",grafica:"PT"},
+        isobarico:{fijas:["P","n"],calculables:["V","T"],dependiente:"V",grafica:"VT"},
+        isotermico:{fijas:["T","n"],calculables:["P","V"],dependiente:"P",grafica:"PV"}
+      };
+      const reducido = matchMedia("(prefers-reduced-motion: reduce)");
+      const estado = { ...INICIAL, modo:"general", geometria:"cilindro", dependiente:"P", parametro:"V", tiempo:0, pausado:reducido.matches, graficas:false, grafica:"PV", referencia:{...INICIAL} };
+      const camara = { giro:-.32, inclinacion:.12, zoom:1 };
+      const lienzo = $("lienzo"), contexto = lienzo.getContext("2d");
+      const tema = getComputedStyle(document.documentElement);
+      const color = nombre => tema.getPropertyValue("--color-"+nombre).trim();
+      const colores = Object.fromEntries(["tarjeta","fondo","texto","texto-secundario","borde","onda","primario","longitudinal","secundario","punto","acento","metal","metal-claro"].map(k=>[k,color(k)]));
+      const numero = (v,d=2) => new Intl.NumberFormat("es-CL",{maximumFractionDigits:d,minimumFractionDigits:d}).format(v);
+      const limitar = (v,a,b) => Math.max(a,Math.min(b,v));
+      let ancho=1, alto=1, escala=1, centroX=0, centroY=0;
+      let fotograma=null, anterior=null, anuncio=null, arrastre=null;
+      let particulas=[], impactos=[];
+      function calcular(s=estado) {
+        const k=s.dependiente;
+        if(k==="P") s.P=s.n*R*s.T/s.V;
+        if(k==="V") s.V=s.n*R*s.T/s.P;
+        if(k==="T") s.T=s.P*s.V/(s.n*R);
+        if(k==="n") s.n=s.P*s.V/(R*s.T);
+      }
+      function intervalo(k) {
+        const [min,max]=LIMITES[k], d=estado.dependiente;
+        if(k===d || MODOS[estado.modo].fijas.includes(k)) return [min,max];
+        // En PV = nRT, variables del mismo lado son inversamente proporcionales.
+        const exponente=("PV".includes(k) === "PV".includes(d)) ? -1 : 1;
+        const a=estado[k]*(LIMITES[d][0]/estado[d])**exponente;
+        const b=estado[k]*(LIMITES[d][1]/estado[d])**exponente;
+        return [Math.max(min,Math.min(a,b)),Math.min(max,Math.max(a,b))];
+      }
+      function dimensiones() { return { longitud:estado.V/AREA, radio:Math.cbrt(3*estado.V/(4*Math.PI)), cilindro:RADIO_CILINDRO, longitudTubo:LONGITUD_TUBO, paredIzquierda:-LONGITUD_TUBO/2, posicionPiston:-LONGITUD_TUBO/2+estado.V/AREA }; }
+      function rapidez() { return Math.sqrt(3*R*estado.T/MASA_MOLAR); }
+      function aleatorio(semilla) { let s=semilla>>>0; return () => { s=(Math.imul(s,1664525)+1013904223)>>>0; return (s+.5)/4294967296; }; }
+      function crearParticula(id) {
+        const rnd=aleatorio(81367+id*977), normal=()=>Math.sqrt(-2*Math.log(rnd()))*Math.cos(2*Math.PI*rnd());
+        const p={id,x:0,y:0,z:0,vx:normal(),vy:normal(),vz:normal()};
+        ubicar(p); return p;
+      }
+      function ubicar(p) {
+        const rnd=aleatorio(76397+p.id*181+ (estado.geometria==="esfera"?100003:0)), d=dimensiones();
+        if(estado.geometria==="cilindro") {
+          const rho=Math.sqrt(rnd())*d.cilindro*.995, angulo=rnd()*Math.PI*2;
+          p.x=(rnd()-.5)*d.longitud*.995; p.y=rho*Math.cos(angulo); p.z=rho*Math.sin(angulo);
+        } else {
+          const coseno=2*rnd()-1, angulo=rnd()*Math.PI*2, rho=Math.cbrt(rnd())*d.radio*.995;
+          p.x=rho*Math.sqrt(1-coseno*coseno)*Math.cos(angulo); p.y=rho*coseno; p.z=rho*Math.sqrt(1-coseno*coseno)*Math.sin(angulo);
+        }
+      }
+      function cantidadParticulas() {
+        const cantidad=Math.round(estado.n*PUNTOS_POR_MOL);
+        while(particulas.length<cantidad) particulas.push(crearParticula(particulas.length));
+        particulas.length=cantidad;
+      }
+      function redistribuir(volumenAnterior) {
+        const factor=estado.V/volumenAnterior;
+        for(const p of particulas) {
+          if(estado.geometria==="cilindro") p.x*=factor;
+          else { const q=Math.cbrt(factor); p.x*=q; p.y*=q; p.z*=q; }
+        }
+        impactos=[];
+      }
+      // Eventos de colisión continuos: un rebote no cambia |v|.
+      function avanzarParticula(p,dt) {
+        const d=dimensiones(), coef=Math.sqrt(R*estado.T/MASA_MOLAR);
+        let restante=dt;
+        for(let iter=0;iter<24 && restante>1e-12;iter++) {
+          const vx=p.vx*coef,vy=p.vy*coef,vz=p.vz*coef;
+          let choque=Infinity, normal=null;
+          if(estado.geometria==="cilindro") {
+            if(Math.abs(vx)>1e-12) { const t=((vx>0?1:-1)*d.longitud/2-p.x)/vx; if(t>=-1e-12) {choque=Math.max(0,t);normal=[Math.sign(vx),0,0];} }
+            const a=vy*vy+vz*vz,b=p.y*vy+p.z*vz,c=p.y*p.y+p.z*p.z-d.cilindro*d.cilindro;
+            if(a>1e-15) { const t=(-b+Math.sqrt(Math.max(0,b*b-a*c)))/a; if(t>=-1e-12 && t<choque) {choque=Math.max(0,t);normal=[0,(p.y+vy*choque)/d.cilindro,(p.z+vz*choque)/d.cilindro];} }
+          } else {
+            const a=vx*vx+vy*vy+vz*vz,b=p.x*vx+p.y*vy+p.z*vz,c=p.x*p.x+p.y*p.y+p.z*p.z-d.radio*d.radio;
+            const t=(-b+Math.sqrt(Math.max(0,b*b-a*c)))/a;
+            choque=Math.max(0,t);normal=[(p.x+vx*choque)/d.radio,(p.y+vy*choque)/d.radio,(p.z+vz*choque)/d.radio];
+          }
+          const h=Math.min(restante,choque);
+          p.x+=vx*h; p.y+=vy*h; p.z+=vz*h; restante-=h;
+          if(choque>h || !normal) break;
+          if(impactos.length<80) impactos.push({x:p.x,y:p.y,z:p.z,t:estado.tiempo+dt-restante,id:p.id});
+          const norma=Math.hypot(...normal); normal=normal.map(v=>v/norma);
+          const producto=p.vx*normal[0]+p.vy*normal[1]+p.vz*normal[2];
+          p.vx-=2*producto*normal[0];p.vy-=2*producto*normal[1];p.vz-=2*producto*normal[2];
+          p.x-=normal[0]*1e-11;p.y-=normal[1]*1e-11;p.z-=normal[2]*1e-11;
+        }
+      }
+      function avanzar(dt) {
+        impactos=impactos.filter(p=>estado.tiempo-p.t<.00013);
+        for(const p of particulas) avanzarParticula(p,dt);
+        estado.tiempo+=dt;
+      }
+      // 2. Vista tridimensional por proyección Canvas, autónoma y sin WebGL.
+      function proyectar(x,y,z) {
+        // El modelo de colisiones usa coordenadas centradas en la cámara de gas.
+        // Esta traslación ancla su pared izquierda al cuerpo inmóvil del cilindro.
+        if(estado.geometria==="cilindro") x+=(estado.V/AREA-LONGITUD_TUBO)/2;
+        const cg=Math.cos(camara.giro),sg=Math.sin(camara.giro),ci=Math.cos(camara.inclinacion),si=Math.sin(camara.inclinacion);
+        const xx=x*cg+z*sg,zz=-x*sg+z*cg,yy=y*ci-zz*si;
+        return [centroX+xx*escala,centroY-yy*escala,y*si+zz*ci];
+      }
+      function linea(puntos,tono,grosor=1,opacidad=1,cerrar=false,relleno=null) {
+        contexto.save();contexto.globalAlpha=opacidad;contexto.beginPath();
+        puntos.forEach((p,i)=>i?contexto.lineTo(p[0],p[1]):contexto.moveTo(p[0],p[1]));
+        if(cerrar) contexto.closePath();
+        if(relleno) {contexto.fillStyle=relleno;contexto.fill();}
+        if(tono) {contexto.strokeStyle=tono;contexto.lineWidth=grosor;contexto.stroke();}
+        contexto.restore();
+      }
+      function etiqueta(x,y,t,tono=colores.texto,alineacion="center",fondo=false) {
+        contexto.save();contexto.textAlign=alineacion;contexto.font=`500 ${ancho<500?12:14}px Inter,system-ui,sans-serif`;
+        if(fondo) {const w=contexto.measureText(t).width;contexto.globalAlpha=.92;contexto.fillStyle=colores.fondo;contexto.fillRect(x-w/2-4,y-14,w+8,19);contexto.globalAlpha=1;}
+        contexto.fillStyle=tono;contexto.fillText(t,x,y);contexto.restore();
+      }
+      function flecha(a,b,tono,grosor=1.4) {
+        linea([a,b],tono,grosor);const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),tam=6;
+        linea([[b[0]-tam*Math.cos(ang-.5),b[1]-tam*Math.sin(ang-.5)],b,[b[0]-tam*Math.cos(ang+.5),b[1]-tam*Math.sin(ang+.5)]],tono,grosor);
+      }
+      function anillo(x,r,inicio=0,fin=Math.PI*2) { return Array.from({length:81},(_,i)=>{const a=inicio+(fin-inicio)*i/80;return proyectar(x,r*Math.cos(a),r*Math.sin(a));}); }
+      function encuadrar() {
+        const d=dimensiones(), margenX=ancho<500?12:40, margenY=alto<150?16:alto<230?28:40;
+        const anchoBase=Math.abs(Math.cos(camara.giro))*(LONGITUD_TUBO+.11)+2*RADIO_CILINDRO*Math.abs(Math.sin(camara.giro));
+        const altoBase=2*RADIO_CILINDRO*Math.abs(Math.cos(camara.inclinacion))+(LONGITUD_TUBO+.11)*Math.abs(Math.sin(camara.giro)*Math.sin(camara.inclinacion))+2*RADIO_CILINDRO*Math.abs(Math.cos(camara.giro)*Math.sin(camara.inclinacion));
+        const sx=(ancho-2*margenX)/anchoBase;
+        const sy=(alto-2*margenY)/altoBase;
+        if(estado.geometria==="cilindro") {
+          escala=Math.max(1,Math.min(sx,sy))*camara.zoom;
+        } else {
+          const rBase=Math.cbrt(3*INICIAL.V/(4*Math.PI));
+          escala=Math.max(1,Math.min((ancho-2*margenX)/(2*rBase),(alto-2*margenY)/(2*rBase),(ancho-2*margenX)/(2*d.radio),(alto-2*margenY)/(2*d.radio)))*camara.zoom;
+        }
+        centroX=ancho/2-(estado.geometria==="cilindro"?.035*escala:0);centroY=alto/2+5;
+      }
+      function dibujarCilindro(frente) {
+        const d=dimensiones(), l=d.longitud/2,r=d.cilindro, extremo=-l+LONGITUD_TUBO;
+        if(!frente) {
+          // Superficie continua de cristal; el sombreado permite leer la profundidad.
+          const caras=[];
+          for(let i=0;i<64;i++) {const a=i*Math.PI*2/64,b=(i+1)*Math.PI*2/64,ps=[proyectar(-l,r*Math.cos(a),r*Math.sin(a)),proyectar(extremo,r*Math.cos(a),r*Math.sin(a)),proyectar(extremo,r*Math.cos(b),r*Math.sin(b)),proyectar(-l,r*Math.cos(b),r*Math.sin(b))];caras.push({ps,z:ps.reduce((s,p)=>s+p[2],0)/4});}
+          caras.sort((a,b)=>a.z-b.z).forEach(c=>linea(c.ps,null,0,.045,true,colores.onda));
+          linea(anillo(-l,r),colores.onda,2,.65,true,colores.tarjeta);
+          // Pistón y vástago, fuera del volumen ocupado por el gas.
+          linea([proyectar(l,0,0),proyectar(extremo+.11,0,0)],colores.metal,9);
+          linea([proyectar(l,0,0),proyectar(extremo+.11,0,0)],colores["metal-claro"],4);
+          linea(anillo(l+.012,r),colores.metal,2,1,true,colores["metal-claro"]);
+          linea(anillo(l,r),colores.onda,2,.9,true,colores.metal);
+        } else {
+          const tangencia=Math.atan2(-Math.cos(camara.giro)*Math.sin(camara.inclinacion),Math.cos(camara.inclinacion));
+          for(const a of [tangencia,tangencia+Math.PI]) linea([proyectar(-l,r*Math.cos(a),r*Math.sin(a)),proyectar(extremo,r*Math.cos(a),r*Math.sin(a))],colores.onda,1.5,.55);
+          linea(anillo(-l,r),colores.onda,2,.6);
+          linea(anillo(extremo,r),colores.onda,1.5,.35);
+          linea(anillo(l,r),colores.onda,2,.75);
+          const a=-.15,b=1.2;
+          linea(anillo(-l,r*.96,a,b),colores.tarjeta,2.5,.8);
+          linea([proyectar(-l,r*.9,0),proyectar(extremo,r*.9,0)],colores.tarjeta,2,.9);
+        }
+      }
+      function dibujarEsfera(frente) {
+        const d=dimensiones(),p=proyectar(0,0,0),radio=d.radio*escala;
+        contexto.save();contexto.beginPath();contexto.arc(p[0],p[1],radio,0,Math.PI*2);
+        if(!frente) {
+          const g=contexto.createRadialGradient(p[0]-radio*.3,p[1]-radio*.35,radio*.1,p[0],p[1],radio);
+          g.addColorStop(0,colores.tarjeta);g.addColorStop(.8,colores.primario);g.addColorStop(1,colores.onda);
+          contexto.globalAlpha=.16;contexto.fillStyle=g;contexto.fill();
+          contexto.globalAlpha=.25;contexto.strokeStyle=colores.onda;contexto.lineWidth=8;contexto.stroke();
+        } else {
+          contexto.globalAlpha=.65;contexto.strokeStyle=colores.onda;contexto.lineWidth=2;contexto.stroke();
+          contexto.beginPath();contexto.arc(p[0],p[1],radio*.976,Math.PI*1.05,Math.PI*1.55);contexto.strokeStyle=colores.tarjeta;contexto.lineWidth=3;contexto.globalAlpha=.95;contexto.stroke();
+        }
+        contexto.restore();
+        if(!frente) { const puntos=Array.from({length:81},(_,i)=>proyectar(d.radio*Math.cos(i*Math.PI*2/80),0,d.radio*Math.sin(i*Math.PI*2/80)));linea(puntos,colores.onda,1,.15); }
+      }
+      function dibujarParticulas() {
+        const tonos=[colores.onda,colores.longitudinal,colores.punto],d=dimensiones();
+        const puntos=particulas.map(p=>({p,q:proyectar(p.x,p.y,p.z)})).sort((a,b)=>a.q[2]-b.q[2]);
+        for(const {p,q} of puntos) {
+          const destacado=p.id===0,prof=limitar(.5+q[2]/(estado.geometria==="esfera"?2*d.radio:Math.max(d.longitud,2*d.cilindro)),0,1);
+          const r=(ancho<450?1.7:3.4)+prof*(ancho<450?.8:1.3);
+          contexto.save();contexto.globalAlpha=.52+.46*prof;
+          if(destacado) {contexto.beginPath();contexto.arc(q[0],q[1],r+5,0,Math.PI*2);contexto.strokeStyle=colores.punto;contexto.lineWidth=1.2;contexto.globalAlpha=.85;contexto.stroke();}
+          contexto.beginPath();contexto.arc(q[0],q[1],r,0,Math.PI*2);contexto.fillStyle=destacado?colores.punto:tonos[p.id%3];contexto.fill();
+          contexto.beginPath();contexto.arc(q[0]-r*.23,q[1]-r*.28,r*.27,0,Math.PI*2);contexto.fillStyle=colores.tarjeta;contexto.globalAlpha=.5;contexto.fill();contexto.restore();
+        }
+        for(const p of impactos) {
+          const edad=(estado.tiempo-p.t)/.00013;
+          if(edad<0 || edad>1) continue;
+          const q=proyectar(p.x,p.y,p.z);contexto.save();contexto.globalAlpha=(1-edad)*.5;contexto.strokeStyle=p.id===0?colores.punto:colores.onda;contexto.lineWidth=1.3;contexto.beginPath();contexto.arc(q[0],q[1],3+edad*6,0,Math.PI*2);contexto.stroke();contexto.restore();
+        }
+      }
+      function dibujarAnotaciones() {
+        const d=dimensiones(), k=estado.parametro, p=particulas[0];
+        if(k==="V") {
+          if(estado.geometria==="cilindro") {
+            const a=proyectar(-d.longitud/2,d.cilindro+.025,0),b=proyectar(d.longitud/2,d.cilindro+.025,0);
+            linea([a,b],colores["texto-secundario"]);for(const q of [a,b]) linea([[q[0],q[1]-4],[q[0],q[1]+4]],colores["texto-secundario"]);
+            etiqueta((a[0]+b[0])/2,Math.max(37,Math.min(a[1],b[1])-9),`ℓ = ${numero(d.longitud,3)} m`,colores.texto,"center",alto<180);
+            if(alto>=230) etiqueta(proyectar(0,0,0)[0],Math.min(alto-23,centroY+d.cilindro*escala+26),`V = Aℓ = ${numero(estado.V,4)} m³`);
+          } else {
+            const a=proyectar(0,0,0),b=[a[0]+d.radio*escala,a[1]];linea([a,b],colores["texto-secundario"]);etiqueta((a[0]+b[0])/2,a[1]-12,`r = ${numero(d.radio,3)} m`,colores.texto,"center",true);
+            if(alto>=230) etiqueta(centroX,Math.min(alto-23,centroY+d.radio*escala+27),`V = 4πr³/3 = ${numero(estado.V,4)} m³`);
+          }
+        }
+        if(k==="P") {
+          const exterior=estado.modo==="isobarico";
+          if(estado.geometria==="cilindro") {
+            const longitud=.03+.055*limitar(Math.log(estado.P/10000)/Math.log(300),0,1);
+            for(const y of [-.075,0,.075]) {
+              const a=proyectar(d.longitud/2+(exterior?.025:-.025),y,0),b=proyectar(d.longitud/2+.025+longitud,y,0);
+              flecha(exterior?b:a,exterior?a:b,colores.onda,1.8);
+            }
+          } else {
+            const p0=proyectar(0,0,0),r=d.radio*escala;
+            for(const a of [0,Math.PI/2,Math.PI,3*Math.PI/2]) {
+              const p1=[p0[0]+(r+(exterior?25:-20))*Math.cos(a),p0[1]+(r+(exterior?25:-20))*Math.sin(a)];
+              const p2=[p0[0]+(r+4)*Math.cos(a),p0[1]+(r+4)*Math.sin(a)];flecha(p1,p2,colores.onda,1.8);
+            }
+          }
+          etiqueta(estado.geometria==="cilindro"?proyectar(0,0,0)[0]:centroX,Math.max(37,centroY-(estado.geometria==="cilindro"?d.cilindro:d.radio)*escala-21),`${exterior?"P = Pₑₓₜ":"P"} = ${numero(estado.P/1000,1)} kPa`);
+        }
+        if(k==="T" && p) {
+          const a=proyectar(p.x,p.y,p.z),v=Math.sqrt(R*estado.T/MASA_MOLAR),intervaloVisual=.00012;
+          const b=proyectar(p.x+p.vx*v*intervaloVisual,p.y+p.vy*v*intervaloVisual,p.z+p.vz*v*intervaloVisual);
+          b[0]=limitar(b[0],15,ancho-15);b[1]=limitar(b[1],42,alto-24);flecha(a,b,colores.punto,2);
+          etiqueta(centroX,40,`T = ${numero(estado.T,0)} K · vᵣₘₛ ∝ √T`);
+        }
+        if(k==="n") {etiqueta(centroX,40,`${numero(estado.n,2)} mol · ${particulas.length} puntos de muestra`);etiqueta(centroX,Math.min(alto-23,alto-30),`N = ${numero(estado.n*NA/1e23,2)} × 10²³ moléculas`);}
+      }
+      function renderizar() {
+        if(ancho<2 || alto<2) return;
+        contexto.clearRect(0,0,ancho,alto);encuadrar();
+        if(estado.geometria==="cilindro") dibujarCilindro(false);else dibujarEsfera(false);
+        dibujarParticulas();
+        if(estado.geometria==="cilindro") dibujarCilindro(true);else dibujarEsfera(true);
+        dibujarAnotaciones();$("tiempo").value=`t = ${numero(estado.tiempo*1000)} ms`;
+      }
+      // 3. Gráficas de los mismos estados de equilibrio, no de las partículas.
+      const NS="http://www.w3.org/2000/svg";
+      function svgElemento(tipo,attrs,texto) {const e=document.createElementNS(NS,tipo);for(const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);if(texto!==undefined)e.textContent=texto;return e;}
+      function estadosCurva() {
+        const resultado=[],s={...estado};
+        if(estado.modo==="general") {
+          // Secciones de la ecuación con n fijo y otra variable fija.
+          for(let i=0;i<=100;i++) {const q=i/100;
+            if(estado.grafica==="PV") {s.V=LIMITES.V[0]+q*(LIMITES.V[1]-LIMITES.V[0]);s.P=estado.n*R*estado.T/s.V;}
+            if(estado.grafica==="PT") {s.T=LIMITES.T[0]+q*(LIMITES.T[1]-LIMITES.T[0]);s.P=estado.n*R*s.T/estado.V;}
+            if(estado.grafica==="VT") {s.T=LIMITES.T[0]+q*(LIMITES.T[1]-LIMITES.T[0]);s.V=estado.n*R*s.T/estado.P;}
+            resultado.push({...s});
+          }
+        } else {
+          const conductor=estado.modo==="isocorico"?"T":"V";
+          s.dependiente=estado.modo==="isobarico"?"T":"P";
+          const e=("PV".includes(conductor)=== "PV".includes(s.dependiente))?-1:1;
+          const a=estado[conductor]*(LIMITES[s.dependiente][0]/estado[s.dependiente])**e,b=estado[conductor]*(LIMITES[s.dependiente][1]/estado[s.dependiente])**e;
+          const lo=Math.max(LIMITES[conductor][0],Math.min(a,b)),hi=Math.min(LIMITES[conductor][1],Math.max(a,b));
+          for(let i=0;i<=100;i++) {s[conductor]=lo+(hi-lo)*i/100;calcular(s);resultado.push({...s});}
+        }
+        return resultado;
+      }
+      function dibujarGrafica() {
+        if(!estado.graficas) return;
+        const svg=$("grafica"),r=svg.getBoundingClientRect(),w=Math.max(180,r.width),h=Math.max(90,r.height);
+        svg.setAttribute("viewBox",`0 0 ${w} ${h}`);svg.replaceChildren();
+        const [ky,kx]=estado.grafica.split(""),unidad={P:"kPa",V:"L",T:"K"};
+        const curva=estadosCurva(),todos=[...curva,estado,...(estado.modo==="general"?[]:[estado.referencia])];
+        function dominio(k) {const v=todos.map(p=>p[k]/FACTOR[k]);let min=Math.min(...v),max=Math.max(...v);const pad=(max-min || max*.4)*.08;return [Math.max(0,min-pad),max+pad];}
+        const dx=dominio(kx),dy=dominio(ky),izq=62,der=w-18,arr=30,ab=h-42;
+        const sx=v=>izq+(v/FACTOR[kx]-dx[0])/(dx[1]-dx[0])*(der-izq),sy=v=>ab-(v/FACTOR[ky]-dy[0])/(dy[1]-dy[0])*(ab-arr);
+        const agregar=(tipo,a,t)=>svg.appendChild(svgElemento(tipo,a,t));
+        agregar("title",{},`${NOMBRES[ky]} frente a ${NOMBRES[kx]}`);
+        agregar("rect",{x:izq,y:arr,width:der-izq,height:Math.max(1,ab-arr),fill:"none",stroke:colores.borde});
+        for(let i=0;i<4;i++) {
+          const q=i/3,x=izq+q*(der-izq),vx=dx[0]+q*(dx[1]-dx[0]);
+          agregar("line",{x1:x,y1:arr,x2:x,y2:ab,stroke:colores.borde,"stroke-opacity":.55});
+          agregar("text",{x,y:ab+20,"text-anchor":"middle","data-axis-tick":"x"},numero(vx,vx>99?0:1));
+        }
+        const marcasY=Math.max(2,Math.min(4,Math.floor((ab-arr)/24)+1));
+        for(let i=0;i<marcasY;i++) {
+          const q=i/(marcasY-1),y=ab-q*(ab-arr),vy=dy[0]+q*(dy[1]-dy[0]);
+          agregar("line",{x1:izq,y1:y,x2:der,y2:y,stroke:colores.borde,"stroke-opacity":.55});
+          agregar("text",{x:izq-8,y:y+4,"text-anchor":"end","data-axis-tick":"y"},numero(vy,vy>99?0:1));
+        }
+        agregar("text",{x:izq,y:16,"text-anchor":"start",class:"axis-title","data-axis":"y"},`${ky} (${unidad[ky]})`);
+        agregar("text",{x:der,y:h-3,"text-anchor":"end",class:"axis-title","data-axis":"x"},`${kx} (${unidad[kx]})`);
+        agregar("polyline",{points:curva.map(p=>`${sx(p[kx])},${sy(p[ky])}`).join(" "),fill:"none",stroke:colores.onda,"stroke-width":2,"stroke-linejoin":"round"});
+        if(estado.modo!=="general") {const a=estado.referencia;agregar("circle",{cx:sx(a[kx]),cy:sy(a[ky]),r:6,fill:colores.tarjeta,stroke:colores.onda,"stroke-width":2});}
+        const marca=agregar("circle",{cx:sx(estado[kx]),cy:sy(estado[ky]),r:5,fill:colores.punto,stroke:colores.tarjeta,"stroke-width":1.5});
+        marca.appendChild(svgElemento("title",{},`${kx} = ${numero(estado[kx]/FACTOR[kx])} ${unidad[kx]}; ${ky} = ${numero(estado[ky]/FACTOR[ky])} ${unidad[ky]}`));
+        $("titulo-grafica").textContent=({PV:"Relación presión–volumen",PT:"Relación presión–temperatura",VT:"Relación volumen–temperatura"})[estado.grafica];
+        $("leyenda-inicial").hidden=estado.modo==="general";
+        $("leyenda-final").textContent=estado.modo==="general"?"Estado actual":"Final · f";
+        $("nota-grafica").textContent=estado.modo==="general"?({PV:"Sección de PV = nRT a n y T constantes.",PT:"Sección de PV = nRT a n y V constantes.",VT:"Sección de PV = nRT a n y P constantes."})[estado.grafica]:({isocorico:"El recipiente conserva su forma y su volumen.",isobarico:"La presión exterior permanece constante.",isotermico:"El gas conserva la misma temperatura."})[estado.modo];
+      }
+      // 4. Controles: solo cambian variables independientes y luego resuelven PV=nRT.
+      function condicionProceso() {
+        return ({
+          isocorico:"El recipiente conserva su forma y volumen.",
+          isobarico:"La presión exterior se mantiene constante.",
+          isotermico:"El gas mantiene la misma temperatura."
+        })[estado.modo] || "";
+      }
+      function variable(k,sufijo="") {
+        const nombre=sufijo==="i"?" inicial":sufijo==="f"?" final":"";
+        return `<button type="button" data-parametro="${k}" aria-label="Mostrar ${NOMBRES[k]}${nombre}">${k}${sufijo?`<sub>${sufijo}</sub>`:""}</button>`;
+      }
+      function actualizarEcuacion() {
+        const m=estado.modo, i=estado.referencia, f=estado;
+        const fraccion=(a,b,s)=>`<span class="fraccion"><span class="numerador">${variable(a,s)}</span><span class="denominador">${variable(b,s)}</span></span>`;
+        // Conservar los botones y su foco cuando solo cambian valores o selección.
+        if($("formula").dataset.proceso!==m) {
+          $("formula").innerHTML=({
+            general:`${variable("P")}${variable("V")} = ${variable("n")}R${variable("T")}`,
+            isocorico:`${fraccion("P","T","i")} = ${fraccion("P","T","f")}`,
+            isobarico:`${fraccion("V","T","i")} = ${fraccion("V","T","f")}`,
+            isotermico:`${variable("P","i")}${variable("V","i")} = ${variable("P","f")}${variable("V","f")}`
+          })[m];
+          $("formula").dataset.proceso=m;
+        }
+        const despejes={P:"P = nRT / V",V:"V = nRT / P",T:"T = PV / (nR)",n:"n = PV / (RT)"};
+        let relacion;
+        if(m==="general") {
+          $("igualdad").textContent=`PV = nRT = ${numero(f.P*f.V,1)} J`;
+          relacion=despejes[f.dependiente];
+        } else {
+          const ratio=m==="isocorico"?s=>s.P/s.T:m==="isobarico"?s=>s.V/s.T*1000:s=>s.P*s.V;
+          const dec=m==="isocorico"?2:m==="isobarico"?4:1;
+          const unidad=m==="isocorico"?"Pa/K":m==="isobarico"?"L/K":"J";
+          $("igualdad").textContent=`${numero(ratio(i),dec)} = ${numero(ratio(f),dec)} ${unidad}`;
+          const k=m==="isocorico"?"V":m==="isobarico"?"P":"T";
+          const unidadConservada=k==="V"?"L":k==="P"?"kPa":"K";
+          relacion=`${variable(k,"i")} = ${variable(k,"f")} = ${numero(f[k]/FACTOR[k],k==="T"?1:2)} ${unidadConservada}`;
+        }
+        if($("ley-proceso").dataset.contenido!==relacion) {$("ley-proceso").innerHTML=relacion;$("ley-proceso").dataset.contenido=relacion;}
+        $("referencias").hidden=m==="general";$("condicion").hidden=m==="general";
+        $("condicion").textContent=condicionProceso();
+        $("ecuacion").setAttribute("aria-label",m==="general"?"Ecuación de estado del gas ideal":`Relación ${m==="isocorico"?"isocórica":m==="isobarico"?"isobárica":"isotérmica"} entre los estados inicial i y final f`);
+      }
+      function interfaz() {
+        actualizarEcuacion();
+        const fijas=MODOS[estado.modo].fijas;
+        for(const k of ["P","V","T","n"]) {
+          const fijo=fijas.includes(k),calculada=k===estado.dependiente,inhabilitado=fijo||calculada;
+          const entrada=$(k),num=$("numero-"+k),[min,max]=intervalo(k),valor=estado[k]/FACTOR[k];
+          entrada.min=min/FACTOR[k];entrada.max=max/FACTOR[k];entrada.value=valor;entrada.disabled=inhabilitado;
+          entrada.style.setProperty("--progreso",`${limitar((estado[k]-min)/(max-min)*100,0,100)}%`);
+          entrada.setAttribute("aria-valuetext",`${numero(valor,DECIMALES[k])} ${$("unidad-"+k).textContent}`);
+          num.min=entrada.min;num.max=entrada.max;num.value=String(Number(valor.toFixed(DECIMALES[k])));num.disabled=inhabilitado;
+          $("estado-"+k).textContent=fijo?"sin cambio":calculada?"calculada":"ajustable";
+          $("grupo-"+k).classList.toggle("calculada",calculada);
+        }
+        $("pausa").textContent=estado.pausado?"Reproducir":"Pausa";$("pausa").setAttribute("aria-pressed",String(estado.pausado));
+        document.querySelectorAll("[data-modo]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.modo===estado.modo)));
+        document.querySelectorAll("[data-parametro]").forEach(b=>{b.classList.toggle("activo",b.dataset.parametro===estado.parametro);b.setAttribute("aria-pressed",String(b.dataset.parametro===estado.parametro));});
+        document.querySelectorAll("[data-grafica]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.grafica===estado.grafica)));
+        $("geometria").value=estado.geometria;$("dependiente").value=estado.dependiente;
+        const isocorico=estado.modo==="isocorico";
+        $("estado-montaje").innerHTML=estado.geometria==="cilindro"?`<strong>Cilindro sellado</strong> · ${isocorico?"pistón bloqueado":"pistón móvil"}`:`<strong>Esfera ${isocorico?"rígida":"flexible"}</strong> · ${isocorico?"pared inmóvil":"pared dilatable"}`;
+        $("rapidez").textContent=`vᵣₘₛ = ${numero(rapidez(),0)} m/s`;
+        $("concepto").textContent=({P:estado.modo==="isobarico"?"P · la presión exterior se mantiene durante el movimiento.":"P · los choques transfieren impulso a las paredes.",V:isocorico?"V · el recipiente conserva su forma y su volumen.":estado.geometria==="cilindro"?"V · el pistón cambia el espacio disponible.":"V · el radio cambia como la raíz cúbica del volumen.",T:estado.modo==="isotermico"?"T · el gas conserva la misma temperatura.":"T · mayor temperatura, mayor rapidez de las partículas.",n:estado.modo==="general"?"n · mayor cantidad, más partículas en el mismo espacio.":"n · se conserva la cantidad de gas del recipiente sellado."})[estado.parametro];
+        $("descripcion-escena").textContent=`Gas ideal en ${estado.geometria}. Presión absoluta ${numero(estado.P/1000)} kPa; volumen ${numero(estado.V*1000)} L; temperatura ${numero(estado.T,1)} K; cantidad ${numero(estado.n,3)} mol. Proceso ${estado.modo}. ${condicionProceso()} Las partículas rebotan elásticamente en las paredes. ${estado.pausado?"Movimiento en pausa.":"Movimiento activo."}`;
+        lienzo.setAttribute("aria-label",`Gas ideal en ${estado.geometria} con partículas en tres dimensiones`);
+        clearTimeout(anuncio);anuncio=setTimeout(()=>{$("resumen-accesible").textContent=$("descripcion-escena").textContent;},250);
+      }
+      function configurarDependiente() {
+        $("dependiente").replaceChildren(...MODOS[estado.modo].calculables.map(k=>{const op=document.createElement("option");op.value=k;op.textContent=NOMBRES[k];return op;}));
+      }
+      function cambiar(k,valor) {
+        if(k===estado.dependiente || MODOS[estado.modo].fijas.includes(k)) return;
+        const [min,max]=intervalo(k),antes=estado.V;
+        if(!Number.isFinite(valor)) {interfaz();return;}
+        estado[k]=limitar(valor,min,max);calcular();redistribuir(antes);cantidadParticulas();estado.parametro=k;
+        if(valor<min || valor>max) {$("validacion").textContent=`${NOMBRES[k]} ajustada al intervalo permitido: ${numero(min/FACTOR[k])} a ${numero(max/FACTOR[k])}.`;}
+        else $("validacion").textContent="";
+        interfaz();dibujarGrafica();pedirFotograma();
+      }
+      function redimensionar() {
+        const r=$("area-escena").getBoundingClientRect();
+        if(r.width>0 && r.height>0) {ancho=r.width;alto=r.height;const dpr=Math.min(devicePixelRatio||1,2);lienzo.width=Math.round(ancho*dpr);lienzo.height=Math.round(alto*dpr);contexto.setTransform(dpr,0,0,dpr,0,0);}
+        dibujarGrafica();pedirFotograma();
+      }
+      function pedirFotograma() {if(fotograma===null && !document.hidden)fotograma=requestAnimationFrame(animar);}
+      function animar(t) {
+        fotograma=null;
+        if(!estado.pausado && anterior!==null) avanzar(Math.min((t-anterior)/1000,.08)/LENTITUD);
+        anterior=estado.pausado?null:t;renderizar();if(!estado.pausado)pedirFotograma();
+      }
+      for(const k of ["P","V","T","n"]) {
+        $(k).addEventListener("input",()=>cambiar(k,Number($(k).value)*FACTOR[k]));
+        $("numero-"+k).addEventListener("change",()=>cambiar(k,Number($("numero-"+k).value)*FACTOR[k]));
+      }
+      $("laboratorio").addEventListener("click",e=>{const b=e.target.closest("[data-parametro]");if(!b)return;estado.parametro=b.dataset.parametro;interfaz();pedirFotograma();});
+      document.querySelectorAll("[data-modo]").forEach(b=>b.addEventListener("click",()=>{
+        if(estado.modo===b.dataset.modo)return;
+        estado.modo=b.dataset.modo;estado.referencia={P:estado.P,V:estado.V,T:estado.T,n:estado.n};
+        estado.dependiente=MODOS[estado.modo].dependiente;estado.grafica=MODOS[estado.modo].grafica;
+        estado.parametro=estado.modo==="isocorico"?"T":"V";configurarDependiente();interfaz();dibujarGrafica();pedirFotograma();
+      }));
+      $("dependiente").addEventListener("change",()=>{estado.dependiente=$("dependiente").value;interfaz();dibujarGrafica();pedirFotograma();});
+      $("geometria").addEventListener("change",()=>{estado.geometria=$("geometria").value;particulas.forEach(ubicar);impactos=[];interfaz();pedirFotograma();});
+      $("pausa").addEventListener("click",()=>{estado.pausado=!estado.pausado;anterior=null;interfaz();pedirFotograma();});
+      $("paso").addEventListener("click",()=>{estado.pausado=true;anterior=null;avanzar(PASO);interfaz();pedirFotograma();});
+      $("graficas").addEventListener("click",()=>{estado.graficas=!estado.graficas;$("panel-graficas").hidden=!estado.graficas;$("laboratorio").classList.toggle("con-graficas",estado.graficas);$("graficas").setAttribute("aria-pressed",String(estado.graficas));redimensionar();});
+      document.querySelectorAll("[data-grafica]").forEach(b=>b.addEventListener("click",()=>{estado.grafica=b.dataset.grafica;interfaz();dibujarGrafica();}));
+      $("reiniciar").addEventListener("click",()=>{
+        Object.assign(estado,INICIAL,{referencia:{...INICIAL},tiempo:0,dependiente:MODOS[estado.modo].dependiente,parametro:estado.modo==="isocorico"?"T":"V",grafica:MODOS[estado.modo].grafica,pausado:reducido.matches});
+        Object.assign(camara,{giro:-.32,inclinacion:.12,zoom:1});particulas=[];impactos=[];cantidadParticulas();anterior=null;configurarDependiente();interfaz();redimensionar();
+      });
+      $("vista-inicial").addEventListener("click",()=>{Object.assign(camara,{giro:-.32,inclinacion:.12,zoom:1});pedirFotograma();});
+      $("pantalla-completa").addEventListener("click",async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($("laboratorio").requestFullscreen)await $("laboratorio").requestFullscreen();}catch{$("resumen-accesible").textContent="El navegador no permite pantalla completa; la escena ocupa toda la ventana.";}});
+      function ayuda(mostrar) {$("detalle").hidden=!mostrar;$("ayuda").setAttribute("aria-expanded",String(mostrar));if(mostrar)$("cerrar-detalle").focus();else $("ayuda").focus();}
+      $("ayuda").addEventListener("click",()=>ayuda($("detalle").hidden));$("cerrar-detalle").addEventListener("click",()=>ayuda(false));
+      document.addEventListener("keydown",e=>{if(e.key==="Escape" && !$("detalle").hidden)ayuda(false);});
+      lienzo.addEventListener("pointerdown",e=>{arrastre={x:e.clientX,y:e.clientY,giro:camara.giro,inclinacion:camara.inclinacion};lienzo.setPointerCapture(e.pointerId);});
+      lienzo.addEventListener("pointermove",e=>{if(!arrastre)return;camara.giro=limitar(arrastre.giro+(e.clientX-arrastre.x)*.006,-.85,.85);camara.inclinacion=limitar(arrastre.inclinacion+(e.clientY-arrastre.y)*.004,-.4,.4);pedirFotograma();});
+      for(const evento of ["pointerup","pointercancel","lostpointercapture"])lienzo.addEventListener(evento,()=>{arrastre=null;});
+      lienzo.addEventListener("wheel",e=>{e.preventDefault();camara.zoom=limitar(camara.zoom*Math.exp(-e.deltaY*.001),.7,1.15);pedirFotograma();},{passive:false});
+      lienzo.addEventListener("keydown",e=>{if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","+","=","-"].includes(e.key))return;e.preventDefault();if(e.key==="ArrowLeft")camara.giro=limitar(camara.giro-.1,-.85,.85);if(e.key==="ArrowRight")camara.giro=limitar(camara.giro+.1,-.85,.85);if(e.key==="ArrowUp")camara.inclinacion=limitar(camara.inclinacion-.08,-.4,.4);if(e.key==="ArrowDown")camara.inclinacion=limitar(camara.inclinacion+.08,-.4,.4);if(e.key==="+" || e.key==="=")camara.zoom=limitar(camara.zoom*1.08,.7,1.15);if(e.key==="-")camara.zoom=limitar(camara.zoom/1.08,.7,1.15);pedirFotograma();});
+      document.addEventListener("visibilitychange",()=>{if(fotograma!==null)cancelAnimationFrame(fotograma);fotograma=null;anterior=null;if(!document.hidden)pedirFotograma();});
+      reducido.addEventListener("change",()=>{if(reducido.matches)estado.pausado=true;anterior=null;interfaz();pedirFotograma();});
+      new ResizeObserver(redimensionar).observe($("espacio")||document.querySelector(".espacio"));
+      window.addEventListener("resize",redimensionar);
+      // Lectura del estado para comprobar unidades, conservación y límites.
+      window.gasIdeal={instantanea:()=>({...estado,camara:{...camara},particulas:particulas.map(p=>({...p})),dimensiones:dimensiones(),rapidez:rapidez(),montaje:estado.geometria==="cilindro"?{paredIzquierda:proyectar(-estado.V/(2*AREA),0,0),piston:proyectar(estado.V/(2*AREA),0,0),extremo:proyectar(-estado.V/(2*AREA)+LONGITUD_TUBO,0,0)}:null}),avanzar};
+      cantidadParticulas();configurarDependiente();interfaz();redimensionar();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio del oscilador armónico cuántico en una dimensión: estados propios, niveles de energía, función de onda, probabilidad y mediciones.">
+  <title>Oscilador armónico cuántico · Schrödinger en 1D</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --color-fondo: #F7F8FC; --color-tarjeta: #FFFFFF;
+      --color-primario: #A8C7FA; --color-secundario: #B8E0D2; --color-acento: #CDB4DB;
+      --color-texto: #273043; --color-texto-secundario: #667085; --color-borde: #E4E7EC;
+      --color-onda: #668EC6; --color-densidad: #67998A; --color-punto: #9471AE;
+      --color-guia: #C0C7D2; --sombra: 0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--color-texto); background: var(--color-fondo); }
+    button, input { font: inherit; }
+    button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .laboratorio { height: 100vh; height: 100dvh; width: 100%; padding: 22px 28px; display: grid; grid-template-rows: auto auto minmax(0,1fr) auto; gap: 14px; position: relative; overflow: hidden; background: radial-gradient(ellipse at 25% 28%, rgba(168,199,250,.16), transparent 65%), radial-gradient(ellipse at 90% 70%, rgba(205,180,219,.12), transparent 60%), var(--color-fondo); }
+    .cristal { background: rgba(255,255,255,.93); border: 1px solid var(--color-borde); box-shadow: var(--sombra); backdrop-filter: blur(14px); border-radius: 18px; }
+    .cabecera { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .identidad h1 { margin: 0 0 9px; font-size: clamp(1.08rem, 2vw, 1.5rem); letter-spacing: -.035em; font-weight: 750; }
+    .selector { display: inline-flex; padding: 4px; border-radius: 12px; background: rgba(228,231,236,.65); gap: 3px; }
+    .selector button { border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: 9px; padding: 8px 13px; font-size: .83rem; font-weight: 650; min-height: 36px; }
+    .selector button[aria-pressed="true"] { color: var(--color-texto); background: var(--color-tarjeta); box-shadow: 0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .boton { border: 1px solid var(--color-borde); background: var(--color-tarjeta); color: var(--color-texto); padding: 9px 12px; border-radius: 11px; min-height: 40px; font-size: .82rem; font-weight: 650; }
+    .boton:hover { background: var(--color-fondo); }
+    .boton[aria-pressed="true"] { background: rgba(205,180,219,.28); border-color: var(--color-acento); }
+    .principal, .principal[aria-pressed="true"] { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .principal:hover { background: var(--color-texto-secundario); }
+    .ecuacion { justify-self: start; padding: 12px 19px; max-width: 100%; }
+    .ecuacion-cabecera { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: .7rem; color: var(--color-texto-secundario); margin-bottom: 4px; }
+    .formula { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.16rem, 2vw, 1.5rem); }
+    .formula .operador { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .fraccion { display: inline-flex; vertical-align: middle; align-items: center; flex-direction: column; line-height: 1.15; font-size: .85em; margin: 0 3px; }
+    .fraccion > :first-child { border-bottom: 1px solid currentColor; padding: 0 3px 2px; }
+    .fraccion > :last-child { padding: 2px 3px 0; }
+    .formula button, .relaciones button, .solucion button { font: inherit; border: 0; border-radius: 5px; background: transparent; padding: 1px 3px; color: inherit; }
+    button.activo { background: rgba(168,199,250,.25); color: var(--color-texto); }
+    .relaciones { margin-top: 7px; display: flex; align-items: center; gap: 6px 18px; flex-wrap: wrap; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); }
+    .relaciones strong { color: var(--color-texto); font-weight: 650; }
+    .solucion { font-family: Georgia, "Times New Roman", serif; margin-top: 7px; font-size: .96rem; }
+    .espacio { display: grid; grid-template-columns: minmax(0,1fr); gap: 22px; min-height: 0; }
+    .laboratorio.con-graficas .espacio { grid-template-columns: minmax(0,1fr) 340px; }
+    .escena { display: grid; grid-template-rows: auto minmax(0,1fr) auto; min-height: 0; min-width: 0; }
+    .escena-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .79rem; color: var(--color-texto-secundario); }
+    .escena-cabecera strong { color: var(--color-texto); font-weight: 650; }
+    .tiempo { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    #area-oscilador { min-height: 0; position: relative; }
+    canvas { width: 100%; height: 100%; display: block; }
+    .escena-pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .76rem; color: var(--color-texto-secundario); min-height: 38px; }
+    .escena-pie .boton { min-height: 34px; padding: 7px 11px; font-size: .76rem; }
+    #mediciones-info { min-width: 0; }
+    .panel-graficas { padding: 13px 15px 10px; min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) minmax(0,1fr) auto; gap: 11px; }
+    .panel-graficas section { display: grid; grid-template-rows: auto auto minmax(0,1fr); min-height: 0; }
+    .panel-graficas h2 { margin: 0 0 4px; font-size: .84rem; font-weight: 650; }
+    .leyenda { display: flex; align-items: center; flex-wrap: wrap; gap: 11px; color: var(--color-texto-secundario); font-size: .72rem; min-height: 18px; }
+    .leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+    .muestra { width: 16px; height: 2px; background: var(--color-onda); }
+    .muestra.imaginaria { background: repeating-linear-gradient(to right,var(--color-punto) 0 4px,transparent 4px 6px); }
+    .muestra.densidad { background: var(--color-densidad); }
+    .grafica { position: relative; min-height: 80px; }
+    .selector-graficas { display: none; }
+    .grafica-lectura { font-size: .73rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .dock { padding: 16px 20px 11px; width: min(1100px,100%); justify-self: center; }
+    .parametros { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 27px; }
+    .parametro { min-width: 0; }
+    .parametro-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+    .parametro-cabecera button { font-size: .81rem; font-weight: 650; padding: 3px 5px; margin-left: -5px; color: var(--color-texto-secundario); border: 0; background: transparent; border-radius: 6px; text-align: left; }
+    .parametro-cabecera button.activo { color: var(--color-texto); background: rgba(168,199,250,.25); }
+    output { font-size: .8rem; font-variant-numeric: tabular-nums; }
+    .parametro output { white-space: nowrap; font-weight: 650; }
+    input[type="range"] { width: 100%; display: block; appearance: none; height: 6px; border-radius: 99px; margin: 0; background: linear-gradient(to right,var(--color-primario) var(--progreso,50%),#EBEEF3 var(--progreso,50%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 21px; height: 21px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); box-shadow: 0 2px 7px rgba(39,48,67,.2); }
+    input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); }
+    .dock-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; border-top: 1px solid var(--color-borde); padding-top: 9px; font-size: .76rem; color: var(--color-texto-secundario); }
+    #concepto { max-width: 760px; }
+    .herramientas { display: flex; gap: 13px; flex-shrink: 0; align-items: center; }
+    .enlace { border: 0; padding: 2px 0; background: transparent; color: inherit; font: inherit; min-height: 26px; text-decoration: underline; text-underline-offset: 3px; }
+    .detalle { position: absolute; z-index: 6; left: 28px; bottom: 159px; width: min(480px,calc(100% - 56px)); max-height: calc(100dvh - 195px); overflow: auto; padding: 18px 20px; font-size: .84rem; line-height: 1.6; }
+    .detalle h2 { font-size: 1rem; margin: 0 28px 8px 0; }
+    .detalle h3 { font-size: .84rem; margin: 14px 0 4px; }
+    .detalle p { margin: 6px 0; }
+    .detalle a { color: var(--color-onda); }
+    .cerrar { position: absolute; top: 7px; right: 9px; background: transparent; border: 0; min-height: 32px; min-width: 32px; font-size: 1.3rem; color: var(--color-texto-secundario); }
+    .tooltip { position: absolute; z-index: 4; pointer-events: none; max-width: calc(100% - 20px); background: var(--color-tarjeta); border: 1px solid var(--color-borde); box-shadow: var(--sombra); padding: 8px 11px; border-radius: 9px; font-size: .76rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    @media (max-width: 1000px) {
+      .laboratorio { padding: 16px 18px; gap: 11px; }
+      .cabecera { align-items: flex-start; }
+      .acciones { max-width: 350px; }
+      .laboratorio.con-graficas .espacio { grid-template-columns: minmax(0,1fr) 300px; gap: 15px; }
+      .parametros { gap: 16px; }
+    }
+    @media (max-width: 700px) {
+      .laboratorio { padding: 12px 13px; gap: 10px; }
+      .cabecera { flex-direction: column; gap: 8px; }
+      .identidad { width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+      .identidad h1 { margin: 0; font-size: 1.06rem; }
+      .selector button { padding: 6px 8px; font-size: .75rem; min-height: 32px; }
+      .acciones { width: 100%; max-width: none; justify-content: flex-start; gap: 6px; }
+      .acciones .boton { font-size: .75rem; min-height: 34px; padding: 7px 8px; }
+      .ecuacion { width: 100%; padding: 10px 12px; border-radius: 15px; }
+      .ecuacion-cabecera { font-size: .67rem; }
+      .formula { font-size: 1.07rem; gap: 2px; }
+      .formula .operador { gap: 1px; }
+      .relaciones { font-size: .74rem; gap: 5px 9px; }
+      .solucion { font-size: .84rem; margin-top: 5px; }
+      .escena-cabecera { font-size: .72rem; gap: 6px; }
+      .escena-pie { font-size: .71rem; min-height: 35px; }
+      .escena-pie .boton { font-size: .71rem; padding: 6px 9px; }
+      .laboratorio.con-graficas .espacio { grid-template-columns: minmax(0,1fr); }
+      .laboratorio.con-graficas .escena { display: none; }
+      .panel-graficas { grid-template-rows: auto minmax(0,1fr) auto; padding: 10px 12px; gap: 5px; }
+      .selector-graficas { display: inline-flex; justify-self: start; }
+      .panel-graficas[data-grafica="densidad"] #onda-panel, .panel-graficas[data-grafica="onda"] #densidad-panel { display: none; }
+      .laboratorio.con-graficas .solucion { display: none; }
+      .dock { padding: 13px 15px 9px; border-radius: 16px; }
+      .parametros { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px 18px; }
+      .parametro-cabecera { margin-bottom: 9px; }
+      .parametro-cabecera button, .parametro output { font-size: .76rem; }
+      .dock-pie { flex-wrap: wrap; margin-top: 13px; font-size: .72rem; gap: 4px; }
+      .herramientas { width: 100%; justify-content: flex-end; }
+      .detalle { left: 13px; bottom: 225px; width: calc(100% - 26px); max-height: calc(100dvh - 250px); }
+    }
+    @media (max-width: 370px) {
+      .identidad h1 { font-size: 1rem; }
+      .identidad .selector { width: max-content; }
+      .formula { font-size: .94rem; }
+      .ecuacion { padding: 9px 10px; }
+      .relaciones { font-size: .7rem; }
+      .solucion { display: none; }
+      .escena-cabecera { font-size: .7rem; }
+      .parametro-cabecera button, .parametro output { font-size: .72rem; }
+      .etiqueta-larga { display: none; }
+    }
+    @media (max-height: 710px) and (min-width: 701px) {
+      .laboratorio { padding-top: 12px; padding-bottom: 12px; gap: 9px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .ecuacion { padding: 9px 16px; }
+      .solucion { display: none; }
+      .dock { padding: 12px 17px 9px; }
+      .panel-graficas { gap: 5px; }
+    }
+    @media (max-width: 700px) and (max-height: 720px) {
+      .laboratorio { gap: 7px; }
+      .ecuacion-cabecera { display: none; }
+      .solucion { display: none; }
+      .dock { padding: 11px 13px 7px; }
+      .parametros { gap: 17px; }
+      .dock-pie { margin-top: 11px; }
+    }
+    @media (pointer: coarse) { .acciones .boton, .selector button, .enlace { min-height: 40px; } }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1>Oscilador armónico cuántico</h1>
+        <div class="selector" aria-label="Preparación de la partícula">
+          <button type="button" data-modo="propio" aria-pressed="true">Estado propio</button>
+          <button type="button" data-modo="superposicion" aria-pressed="false">Superposición</button>
+        </div>
+      </div>
+      <nav class="acciones" aria-label="Herramientas de reproducción">
+        <button class="boton principal" id="pausa" type="button" aria-pressed="false">Pausa</button>
+        <button class="boton" id="paso" type="button">Paso</button>
+        <button class="boton" id="graficas" type="button" aria-pressed="false" aria-controls="panel-graficas">Gráficas</button>
+        <button class="boton" id="reiniciar" type="button">Reiniciar</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" aria-label="Ecuación de Schrödinger y energía del estado">
+      <div class="ecuacion-cabecera"><span>SCHRÖDINGER · UNA DIMENSIÓN</span><span>Unidades reducidas · ℏ = 1</span></div>
+      <div class="formula" aria-label="i h barra derivada de Psi respecto al tiempo igual al Hamiltoniano aplicado a Psi">
+        <span class="operador">iℏ<span class="fraccion"><span>∂Ψ</span><span>∂<button data-parametro="fase" type="button" aria-label="Seleccionar tiempo">t</button></span></span>=</span>
+        <span class="operador">[ −<span class="fraccion"><span>ℏ²</span><span>2<button data-parametro="masa" type="button" aria-label="Seleccionar masa">m</button></span></span><span class="fraccion"><span>∂²</span><span>∂x²</span></span>+ ½<button data-parametro="masa" type="button" aria-label="Seleccionar masa del potencial">m</button><button data-parametro="omega" type="button" aria-label="Seleccionar frecuencia angular">ω</button>²x² ] Ψ</span>
+      </div>
+      <div class="relaciones"><span>E<sub><button data-parametro="n" type="button" aria-label="Seleccionar número cuántico">n</button></sub> = ℏω(n + ½) = <strong id="energia">0,50 Eᵣ</strong></span><span>ΔE = ℏω = <strong id="salto">1,00 Eᵣ</strong></span><span id="media-energia" hidden>⟨E⟩ = <strong id="energia-media"></strong></span></div>
+      <div class="solucion" id="solucion">Ψ₀(x,t) = φ₀(x) e<sup>−iE₀t/ℏ</sup></div>
+    </section>
+    <div class="espacio">
+      <section class="escena" aria-label="Partícula en una trampa armónica">
+        <div class="escena-cabecera"><span id="estado-etiqueta"><strong>n = 0</strong> · estado fundamental</span><output class="tiempo" id="tiempo">t = 0,00 tᵣ</output></div>
+        <div id="area-oscilador"><canvas id="escena" role="img" aria-describedby="descripcion-escena" aria-label="Potencial parabólico, niveles discretos y nube de probabilidad de una partícula"></canvas><div class="tooltip" id="tooltip" role="tooltip" hidden></div></div>
+        <div class="escena-pie"><span id="mediciones-info">Una partícula · posibles posiciones de detección</span><button class="boton" id="medir" type="button">80 mediciones</button></div>
+      </section>
+      <aside class="panel-graficas cristal" id="panel-graficas" hidden data-grafica="densidad" aria-label="Gráficas sincronizadas de función de onda y probabilidad">
+        <div class="selector selector-graficas" aria-label="Gráfica visible"><button type="button" data-grafica="densidad" aria-pressed="true">Probabilidad</button><button type="button" data-grafica="onda" aria-pressed="false">Onda Ψ</button></div>
+        <section id="onda-panel"><h2>Función de onda Ψ(x,t)</h2><div class="leyenda"><span><i class="muestra" aria-hidden="true"></i>Parte real</span><span><i class="muestra imaginaria" aria-hidden="true"></i>Parte imaginaria</span></div><div class="grafica"><canvas id="grafica-onda" role="img" aria-label="Partes real e imaginaria de la función de onda frente a la posición"></canvas></div></section>
+        <section id="densidad-panel"><h2>Densidad de probabilidad |Ψ|²</h2><div class="leyenda"><span><i class="muestra densidad" aria-hidden="true"></i>Probabilidad por unidad de longitud</span></div><div class="grafica"><canvas id="grafica-densidad" role="img" aria-label="Densidad de probabilidad de la posición, con nodos y regiones más allá de los límites clásicos"></canvas></div></section>
+        <div class="grafica-lectura"><span>∫ |Ψ|² dx = 1</span><span id="posicion-media">⟨x⟩ = 0,00 Lᵣ</span></div>
+      </aside>
+    </div>
+    <section class="dock cristal" aria-label="Parámetros del oscilador armónico">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><button data-parametro="n" id="etiqueta-n" type="button">Número n</button><output for="n" id="salida-n">0</output></div><input id="n" type="range" min="0" max="12" step="1" value="0" aria-labelledby="etiqueta-n"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button data-parametro="omega" id="etiqueta-omega" type="button" aria-label="Frecuencia angular omega"><span class="etiqueta-larga">Frecuencia </span>ω</button><output for="omega" id="salida-omega">1,00 ωᵣ</output></div><input id="omega" type="range" min="0.5" max="2" step="0.05" value="1" aria-labelledby="etiqueta-omega"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button data-parametro="masa" id="etiqueta-masa" type="button">Masa m</button><output for="masa" id="salida-masa">1,00 mᵣ</output></div><input id="masa" type="range" min="0.5" max="3" step="0.05" value="1" aria-labelledby="etiqueta-masa"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button data-parametro="fase" id="etiqueta-fase" type="button" aria-label="Tiempo expresado como omega t"><span class="etiqueta-larga">Tiempo · </span>ωt</button><output for="fase" id="salida-fase">0,00 rad</output></div><input id="fase" type="range" min="0" max="12.566370614359172" step="0.01" value="0" aria-labelledby="etiqueta-fase"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">n · 0 nodos; energía mínima distinta de cero.</span><div class="herramientas"><button class="enlace" id="pantalla-completa" type="button">Pantalla completa</button><button class="enlace" id="ayuda" type="button" aria-expanded="false" aria-controls="detalle">Modelo</button></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden aria-label="Interpretación y supuestos del modelo">
+      <button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar el modelo">×</button>
+      <h2>Una partícula, muchas posiciones posibles</h2>
+      <p>La banda luminosa representa la densidad |Ψ(x,t)|² de <strong>una sola partícula</strong> confinada por una fuerza restauradora F = −mω²x. Puede modelar un ion cerca del mínimo de una trampa o una vibración molecular cerca del equilibrio.</p>
+      <p>«80 mediciones» genera resultados independientes de 80 copias preparadas en el mismo estado y al mismo tiempo. Los puntos son detecciones, no 80 partículas simultáneas ni una trayectoria. Quedan fijos como registro; al cambiar el estado o el tiempo se retira ese registro. La medición no se incorpora como colapso de la evolución.</p>
+      <h3>Estados propios y niveles</h3>
+      <p>[−ℏ²/(2m) d²/dx² + ½mω²x²] φₙ = Eₙφₙ. Sus soluciones normalizadas son φₙ(x) = Hₙ(x/ℓ) exp[−x²/(2ℓ²)] / √(2ⁿ n! √π ℓ), con ℓ = √(ℏ/mω). Hₙ es el polinomio de Hermite de grado n; φₙ tiene n nodos.</p>
+      <p>Eₙ = ℏω(n + ½). A ω fija, la masa cambia la anchura de φₙ pero no los niveles. El estado fundamental tiene energía ℏω/2. Las curvas de Re Ψ se desplazan sobre su nivel y su altura se amplía con una escala ilustrativa adaptada al espacio disponible, para distinguir los lóbulos incluso con n grande. Esta escala permanece fija durante la evolución de un mismo estado; esa altura <strong>no es energía ni una oscilación material</strong>. Las gráficas laterales conservan los valores de la función de onda normalizada.</p>
+      <h3>Por qué la nube puede permanecer quieta</h3>
+      <p>En un estado propio Ψₙ = φₙ exp(−iEₙt/ℏ): cambian las partes real e imaginaria, pero |Ψₙ|² = |φₙ|² permanece fija. En «Superposición» se prepara [Ψₙ + Ψₙ₊₁]/√2. La interferencia cambia la nube con período T = 2π/ω. Una medición de energía devuelve Eₙ o Eₙ₊₁ con probabilidad ½; el valor ⟨E⟩ es un promedio, no otro nivel permitido.</p>
+      <p>Los límites clásicos ±x꜀ satisfacen V(x꜀) = Eₙ. Las colas cuánticas pueden extenderse más allá. En superposición se marcan los límites asociados a cada componente; no se asigna al estado una energía única. ⟨x⟩ es la posición media, no la ubicación de la partícula.</p>
+      <h3>Escalas y reproducción</h3>
+      <p>Unidades reducidas: m = mᵣ·m̂, ω = ωᵣ·ω̂, Lᵣ = √(ℏ/mᵣωᵣ), Eᵣ = ℏωᵣ y tᵣ = 1/ωᵣ. Los ejes muestran múltiplos de esas referencias. ℏ es constante; se usa ℏ = 1 en los cálculos reducidos. El encuadre amplía sus ejes cuando hacen falta rangos mayores.</p>
+      <p>La reproducción usa 1 tᵣ por segundo de pantalla. «Paso» pausa y avanza T/24. El deslizador de tiempo elige ωt entre 0 y 4π y pausa. Su recorrido se repite cada 4π durante la reproducción, mientras el contador t sigue avanzando. «Reiniciar» conserva el modo y devuelve n, m, ω y t a sus valores iniciales. El estado se recalcula al mover un parámetro; ese cambio no modela una transición física ni un protocolo de modificación de la trampa.</p>
+      <p>La trampa es ideal, unidimensional y sin interacción con otras partículas. Las soluciones son analíticas; la escena y las gráficas funcionan sin conexión.</p>
+      <h3>Fuentes</h3>
+      <p><a href="https://pressbooks.online.ucf.edu/osuniversityphysics3/chapter/the-quantum-harmonic-oscillator/" target="_blank" rel="noopener">OpenStax / UCF · El oscilador armónico cuántico</a><br><a href="https://ocw.mit.edu/courses/5-61-physical-chemistry-fall-2017/202e82ab933bcef7bbe4051030e902a1_MIT5_61F17_lec11_supp.pdf" target="_blank" rel="noopener">MIT OCW · Estados no estacionarios y superposición</a></p>
+    </aside>
+    <p class="sr-only" id="descripcion-escena">La partícula está confinada por un potencial parabólico. La nube muestra posibles posiciones, los niveles muestran energías discretas y la función de onda del estado n tiene n nodos.</p>
+    <p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script>
+    "use strict";
+    // Modelo físico en unidades reducidas; ℏ = 1, sin integración temporal numérica.
+    const $ = nombre => document.getElementById(nombre);
+    const inicial = { n: 0, omega: 1, masa: 1 };
+    const movimientoReducido = matchMedia("(prefers-reduced-motion: reduce)");
+    const estado = { ...inicial, tiempo: 0, modo: "propio", parametro: "n", pausado: movimientoReducido.matches, graficas: false, grafica: "densidad", mediciones: [] };
+    const numero = (valor, decimales = 2) => new Intl.NumberFormat("es-CL", {minimumFractionDigits: decimales, maximumFractionDigits: decimales}).format(Math.abs(valor)<1e-9?0:valor);
+    const subindice = valor => String(valor).replace(/\d/g, digito => "₀₁₂₃₄₅₆₇₈₉"[Number(digito)]);
+    const tema = getComputedStyle(document.documentElement);
+    const color = nombre => tema.getPropertyValue("--color-" + nombre).trim();
+    let fotograma = null, tiempoAnterior = null, anuncio = null, geometria = null;
+
+    function funcionPropia(n, x, longitud) {
+      const q = x / longitud;
+      let anterior = Math.exp(-q*q/2) / Math.pow(Math.PI,.25) / Math.sqrt(longitud);
+      if (n === 0) return anterior;
+      let actual = Math.SQRT2*q*anterior;
+      for (let k=2; k<=n; k++) {
+        const siguiente = Math.sqrt(2/k)*q*actual - Math.sqrt((k-1)/k)*anterior;
+        anterior = actual; actual = siguiente;
+      }
+      return actual;
+    }
+    function datos() {
+      const longitud = 1/Math.sqrt(estado.masa*estado.omega);
+      const energia = estado.omega*(estado.n+.5);
+      const superpuesto = estado.modo === "superposicion";
+      const energiaMedia = energia + (superpuesto?estado.omega/2:0);
+      const posicionMedia = superpuesto?longitud*Math.sqrt((estado.n+1)/2)*Math.cos(estado.omega*estado.tiempo):0;
+      const segundoMomento = longitud*longitud*(estado.n+(superpuesto?1:.5));
+      const desviacion = Math.sqrt(Math.max(0,segundoMomento-posicionMedia*posicionMedia));
+      const limite = longitud*Math.sqrt(2*estado.n+1);
+      const limiteSuperior = longitud*Math.sqrt(2*estado.n+3);
+      const dominioX = Math.max(4,Math.ceil((longitud*(Math.sqrt(2*(estado.n+(superpuesto?1:0))+1)+3.5))/2)*2);
+      const dominioE = Math.max(6,Math.ceil((energia+(superpuesto?2:1.5)*estado.omega)/2)*2);
+      return { longitud, energia, energiaMedia, posicionMedia, desviacion, limite, limiteSuperior, dominioX, dominioE, superpuesto, periodo:2*Math.PI/estado.omega };
+    }
+    function amplitud(x, d, tiempo=estado.tiempo) {
+      const primera = funcionPropia(estado.n,x,d.longitud);
+      const fase = d.energia*tiempo;
+      let real = primera*Math.cos(fase), imaginaria = -primera*Math.sin(fase);
+      if (d.superpuesto) {
+        const segunda = funcionPropia(estado.n+1,x,d.longitud), faseSuperior = (d.energia+estado.omega)*tiempo;
+        real = (real+segunda*Math.cos(faseSuperior))/Math.SQRT2;
+        imaginaria = (imaginaria-segunda*Math.sin(faseSuperior))/Math.SQRT2;
+      }
+      return { real, imaginaria, densidad: real*real+imaginaria*imaginaria };
+    }
+    function muestrear(d, cantidad=720, tiempo=estado.tiempo) {
+      return Array.from({length:cantidad+1},(_,i)=>{const x=d.dominioX*(2*i/cantidad-1);return {x,...amplitud(x,d,tiempo)};});
+    }
+    function nodos(n, longitud) {
+      const resultado=[], alcance=Math.sqrt(2*n+1)*longitud, pasos=2400;
+      if (!n) return resultado;
+      let izquierda=-alcance, valorAnterior=funcionPropia(n,izquierda,longitud);
+      for (let i=1;i<=pasos;i++) {
+        const derecha=-alcance+2*alcance*i/pasos, valor=funcionPropia(n,derecha,longitud);
+        if (valor*valorAnterior<0 || valor===0) {
+          let a=izquierda,b=derecha;
+          for (let k=0;k<35;k++) {const medio=(a+b)/2;if(funcionPropia(n,a,longitud)*funcionPropia(n,medio,longitud)<=0)b=medio;else a=medio;}
+          const raiz=(a+b)/2;
+          if (!resultado.length || Math.abs(raiz-resultado[resultado.length-1])>1e-5) resultado.push(raiz);
+        }
+        izquierda=derecha;valorAnterior=valor;
+      }
+      return resultado;
+    }
+    let claveNodos="", nodosActuales=[];
+    function obtenerNodos(d) {
+      const clave=estado.n+":"+d.longitud;
+      if(clave!==claveNodos){nodosActuales=nodos(estado.n,d.longitud);claveNodos=clave;}
+      return nodosActuales;
+    }
+
+    // Dibujo: todos los elementos usan el mismo modelo y la misma escala x.
+    function prepararCanvas(elemento) {
+      const rect=elemento.getBoundingClientRect(), ancho=Math.max(1,rect.width), alto=Math.max(1,rect.height), densidad=Math.min(devicePixelRatio||1,2);
+      if(elemento.width!==Math.round(ancho*densidad)||elemento.height!==Math.round(alto*densidad)){elemento.width=Math.round(ancho*densidad);elemento.height=Math.round(alto*densidad);}
+      const contexto=elemento.getContext("2d");contexto.setTransform(densidad,0,0,densidad,0,0);contexto.clearRect(0,0,ancho,alto);contexto.lineCap="round";
+      return {contexto,ancho,alto};
+    }
+    function texto(c,x,y,contenido,tono="texto-secundario",ancla="center",tamano=12) {c.font=`${tamano}px Inter, system-ui, sans-serif`;c.fillStyle=color(tono);c.textAlign=ancla;c.textBaseline="middle";c.fillText(contenido,x,y);}
+    function linea(c,x1,y1,x2,y2,tono="guia",grosor=1,guiones=[]) {c.beginPath();c.strokeStyle=color(tono);c.lineWidth=grosor;c.setLineDash(guiones);c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.setLineDash([]);}
+    function curva(c,puntos,tono,grosor=2,guiones=[]) {c.beginPath();c.strokeStyle=color(tono);c.lineWidth=grosor;c.setLineDash(guiones);puntos.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();c.setLineDash([]);}
+    function circulo(c,x,y,radio,tono) {c.beginPath();c.fillStyle=color(tono);c.arc(x,y,radio,0,2*Math.PI);c.fill();}
+    function flechaDoble(c,x1,y1,x2,y2,tono="texto-secundario") {
+      linea(c,x1,y1,x2,y2,tono,1.2);const a=Math.atan2(y2-y1,x2-x1),r=4;
+      for(const [x,y,s] of [[x1,y1,1],[x2,y2,-1]]){linea(c,x,y,x+s*r*Math.cos(a-.6),y+s*r*Math.sin(a-.6),tono);linea(c,x,y,x+s*r*Math.cos(a+.6),y+s*r*Math.sin(a+.6),tono);}
+    }
+    function marcas(maximo,cantidad=4) {const bruto=2*maximo/cantidad,potencia=10**Math.floor(Math.log10(bruto)),paso=[1,2,2.5,5,10].find(v=>v*potencia>=bruto)*potencia;const valores=[];for(let valor=Math.ceil(-maximo/paso)*paso;valor<=maximo+1e-9;valor+=paso)valores.push(valor);return valores;}
+    function dibujarEscena(d,muestras) {
+      const {contexto:c,ancho:w,alto:h}=prepararCanvas($("escena"));
+      if(w<20||h<40)return;
+      const compacto=h<260, izquierda=w<400?42:60, derecha=w<400?48:78, superior=24;
+      const espacioNube=compacto?83:116, inferior=h-espacioNube, x=v=>izquierda+(v+d.dominioX)/(2*d.dominioX)*(w-izquierda-derecha);
+      const alturaPotencial=inferior-superior;
+      const niveles=d.superpuesto?[estado.n,estado.n+1]:[estado.n];
+      // Ampliación de dibujo independiente del espaciado entre energías y de la fase.
+      const escalaAmplitudVisual=Math.max(0,Math.min(85,Math.max(44,alturaPotencial*.28),alturaPotencial*.55))*Math.sqrt(d.longitud);
+      const amplitudMaxima=Math.max(...niveles.map(nivel=>Math.max(...muestras.map(p=>Math.abs(funcionPropia(nivel,p.x,d.longitud))))))*escalaAmplitudVisual*(d.superpuesto?1/Math.SQRT2:1);
+      const margenInferior=amplitudMaxima+5, fraccionSuperior=(d.dominioE-estado.omega*(niveles[niveles.length-1]+.5))/d.dominioE;
+      const margenSuperior=Math.max(0,(amplitudMaxima+24-fraccionSuperior*(alturaPotencial-margenInferior))/(1-fraccionSuperior));
+      const y=v=>inferior-margenInferior-v/d.dominioE*(alturaPotencial-margenInferior-margenSuperior);
+      geometria={x,izquierda,derecha,ancho:w,alto:h,dominioX:d.dominioX};
+      const pasoE=alturaPotencial<110?Math.ceil(d.dominioE/2):alturaPotencial<180?Math.ceil(d.dominioE/3):d.dominioE>15?4:d.dominioE>8?2:1;
+      texto(c,izquierda,10,"E / Eᵣ","texto-secundario","left",11);
+      for(let e=0;e<d.dominioE;e+=pasoE){texto(c,izquierda-10,y(e),numero(e,0),"texto-secundario","right",11);linea(c,izquierda-4,y(e),izquierda,y(e));}
+      linea(c,izquierda,superior,izquierda,inferior);linea(c,izquierda,inferior,w-derecha,inferior);
+      c.save();c.beginPath();c.rect(izquierda,superior,w-izquierda-derecha,inferior-superior);c.clip();
+      const total=Math.min(14,Math.floor(d.dominioE/estado.omega+.5));
+      for(let nivel=0;nivel<total;nivel++) {
+        const energia=estado.omega*(nivel+.5),limite=d.longitud*Math.sqrt(2*nivel+1),seleccionado=nivel===estado.n||(d.superpuesto&&nivel===estado.n+1);
+        linea(c,x(-limite),y(energia),x(limite),y(energia),seleccionado?"onda":"guia",seleccionado?1.8:1,seleccionado?[]:[3,4]);
+      }
+      const potencial=muestras.map(p=>[x(p.x),y(.5*estado.masa*estado.omega**2*p.x*p.x)]);
+      curva(c,potencial,estado.parametro==="omega"?"onda":"texto-secundario",1.8);
+      for(const nivel of niveles){
+        const e=estado.omega*(nivel+.5),puntos=muestras.map(p=>[x(p.x),y(e)-funcionPropia(nivel,p.x,d.longitud)*Math.cos(e*estado.tiempo)*(d.superpuesto?1/Math.SQRT2:1)*escalaAmplitudVisual]);
+        c.save();c.globalAlpha=.17;c.fillStyle=color(nivel===estado.n?"onda":"punto");c.beginPath();c.moveTo(puntos[0][0],y(e));puntos.forEach(p=>c.lineTo(...p));c.lineTo(puntos[puntos.length-1][0],y(e));c.closePath();c.fill();c.restore();
+        curva(c,puntos,nivel===estado.n?"onda":"punto",2.8);
+      }
+      if(!d.superpuesto&&estado.parametro==="n")for(const nodo of obtenerNodos(d)){circulo(c,x(nodo),y(d.energia),3.4,"punto");}
+      c.restore();
+      for(let nivel=0;nivel<total;nivel++){
+        const e=estado.omega*(nivel+.5),seleccionado=nivel===estado.n||(d.superpuesto&&nivel===estado.n+1);
+        if(seleccionado||((inferior-superior)/total>=18&&nivel%2===0))texto(c,w-derecha+8,y(e),"n = "+nivel+(d.superpuesto&&seleccionado?" · ½":""),seleccionado?"texto":"texto-secundario","left",11);
+      }
+      if(estado.parametro==="omega"&&inferior-superior>95){const xx=w-derecha-12,ea=estado.omega*.5,eb=estado.omega*1.5;flechaDoble(c,xx,y(ea),xx,y(eb),"onda");texto(c,xx-8,(y(ea)+y(eb))/2,"ΔE","texto","right",11);}
+      const cantidadTicks=w<400?3:6;
+      for(const valor of marcas(d.dominioX,cantidadTicks)){linea(c,x(valor),inferior,x(valor),inferior+4);texto(c,x(valor),inferior+15,numero(valor,0),"texto-secundario","center",11);}
+      texto(c,w-derecha,inferior+31,"x / Lᵣ","texto-secundario","right",11);
+      if(w>450)texto(c,izquierda,superior+5,"V(x) = ½mω²x²","texto-secundario","left",12);
+      const etiqueta=(d.superpuesto?"Re Ψₙ y Re Ψₙ₊₁ · sobre sus niveles":"Re Ψ"+subindice(estado.n)+" · sobre E"+subindice(estado.n))+(w>850?" · amplitud ampliada":"");
+      texto(c,(izquierda+w-derecha)/2,superior+5,etiqueta,"texto","center",w<400?11:12);
+
+      // El espesor es esquemático: toda la variable de posición es horizontal (1D).
+      const nubeY=inferior+(compacto?45:55),nubeAlto=compacto?20:30,maxDensidad=Math.max(...muestras.map(p=>p.densidad));
+      const bandas=Math.max(1,Math.round(w-izquierda-derecha)),dx=2*d.dominioX/bandas;
+      const gradiente=c.createLinearGradient(0,nubeY-nubeAlto,0,nubeY+nubeAlto),base=color("onda");
+      gradiente.addColorStop(0,base+"00");gradiente.addColorStop(.35,base+"82");gradiente.addColorStop(.5,base+"D7");gradiente.addColorStop(.65,base+"82");gradiente.addColorStop(1,base+"00");
+      c.fillStyle=gradiente;
+      for(let i=0;i<bandas;i++){
+        const q=-d.dominioX+(i+.5)*dx,prob=amplitud(q,d).densidad/maxDensidad;
+        if(prob<.0001)continue;
+        const pixelInicial=Math.round(x(q-dx/2)),pixelFinal=Math.round(x(q+dx/2));
+        c.globalAlpha=prob;c.fillRect(pixelInicial,nubeY-nubeAlto,pixelFinal-pixelInicial,2*nubeAlto);
+      }
+      c.globalAlpha=1;
+      linea(c,izquierda,nubeY,w-derecha,nubeY,"guia",.7);
+      for(const limite of d.superpuesto?[d.limite,d.limiteSuperior]:[d.limite])for(const signo of [-1,1]){linea(c,x(signo*limite),nubeY-nubeAlto-3,x(signo*limite),nubeY+nubeAlto+3,"guia",1,[3,3]);}
+      texto(c,w-derecha+6,nubeY,"|Ψ|²","texto","left",12);
+      if(estado.parametro==="n"&&!d.superpuesto)for(const nodo of obtenerNodos(d)){linea(c,x(nodo),nubeY-6,x(nodo),nubeY+6,"punto",1.5);}
+      if(estado.parametro==="masa") {const a=x(d.posicionMedia-d.desviacion),b=x(d.posicionMedia+d.desviacion);flechaDoble(c,a,nubeY+nubeAlto+7,b,nubeY+nubeAlto+7,"texto-secundario");texto(c,(a+b)/2,nubeY+nubeAlto+21,"2σₓ = "+numero(2*d.desviacion)+" Lᵣ","texto","center",11);}
+      else if(!compacto)texto(c,(izquierda+w-derecha)/2,h-11,"Nube de una partícula · más intensidad = mayor probabilidad","texto-secundario","center",11);
+      if(d.superpuesto){const xx=x(d.posicionMedia);circulo(c,xx,nubeY,4.5,"punto");texto(c,xx,nubeY-nubeAlto-13,"⟨x⟩","texto","center",11);}
+      for(const medicion of estado.mediciones)circulo(c,x(medicion.x),nubeY+medicion.fila,2.1,"punto");
+    }
+    function dibujarGrafica(elemento,d,muestras,tipo) {
+      const {contexto:c,ancho:w,alto:h}=prepararCanvas(elemento);if(w<40||h<40)return;
+      const izq=47,der=15,arriba=21,abajo=h-35,x=q=>izq+(q+d.dominioX)/(2*d.dominioX)*(w-izq-der);
+      // Escala temporal fija: no se reescala una parte real cuando pasa por cero.
+      const valoresBase=muestras.map(p=>Math.abs(funcionPropia(estado.n,p.x,d.longitud))+(d.superpuesto?Math.abs(funcionPropia(estado.n+1,p.x,d.longitud)):0));
+      const limiteOnda=Math.max(...valoresBase)/(d.superpuesto?Math.SQRT2:1)*1.14;
+      const limiteY=tipo==="onda"?limiteOnda:limiteOnda*limiteOnda, minY=tipo==="onda"?-limiteY:0, y=q=>abajo-(q-minY)/(limiteY-minY)*(abajo-arriba);
+      texto(c,izq,9,tipo==="onda"?"Ψ · Lᵣ½":"ρ · Lᵣ","texto-secundario","left",11);
+      c.save();c.beginPath();c.rect(izq,arriba,w-izq-der,abajo-arriba);c.clip();
+      const limite=d.superpuesto?d.limiteSuperior:d.limite;c.globalAlpha=.10;c.fillStyle=color("punto");c.fillRect(izq,arriba,x(-limite)-izq,abajo-arriba);c.fillRect(x(limite),arriba,w-der-x(limite),abajo-arriba);c.globalAlpha=1;
+      if(tipo==="onda") {linea(c,izq,y(0),w-der,y(0),"guia",.7);curva(c,muestras.map(p=>[x(p.x),y(p.real)]),"onda",2);curva(c,muestras.map(p=>[x(p.x),y(p.imaginaria)]),"punto",1.8,[5,4]);}
+      else {c.beginPath();c.moveTo(x(muestras[0].x),y(0));muestras.forEach(p=>c.lineTo(x(p.x),y(p.densidad)));c.lineTo(x(muestras[muestras.length-1].x),y(0));c.closePath();c.fillStyle=color("secundario");c.globalAlpha=.5;c.fill();c.globalAlpha=1;curva(c,muestras.map(p=>[x(p.x),y(p.densidad)]),"densidad",2);}
+      const limites=d.superpuesto?[d.limite,d.limiteSuperior]:[d.limite];for(const borde of limites)for(const s of [-1,1])linea(c,x(s*borde),arriba,x(s*borde),abajo,"guia",1,[3,4]);
+      if(d.superpuesto)linea(c,x(d.posicionMedia),arriba,x(d.posicionMedia),abajo,"punto",1,[2,3]);c.restore();
+      linea(c,izq,arriba,izq,abajo);linea(c,izq,abajo,w-der,abajo);
+      for(const q of marcas(d.dominioX,w<360?3:4)){linea(c,x(q),abajo,x(q),abajo+3);texto(c,x(q),abajo+13,numero(q,0),"texto-secundario","center",11);}
+      const ticks=tipo==="onda"?[-limiteY,0,limiteY]:[0,limiteY/2,limiteY];for(const v of ticks){linea(c,izq-3,y(v),izq,y(v));texto(c,izq-6,y(v),numero(v,1),"texto-secundario","right",11);}
+      texto(c,w-der,h-7,"x / Lᵣ","texto-secundario","right",11);
+    }
+
+    // Interfaz y reproducción: un único ciclo activo; en pausa se dibuja bajo demanda.
+    function interfaz(anunciar=false) {
+      const d=datos();
+      for(const nombre of Object.keys(inicial)){$(nombre).value=estado[nombre];$(nombre).style.setProperty("--progreso",(estado[nombre]-Number($(nombre).min))/(Number($(nombre).max)-Number($(nombre).min))*100+"%");}
+      $("salida-n").value=String(estado.n);$("salida-omega").value=numero(estado.omega)+" ωᵣ";$("salida-masa").value=numero(estado.masa)+" mᵣ";
+      $("energia").textContent=numero(d.energia)+" Eᵣ";$("salto").textContent=numero(estado.omega)+" Eᵣ";$("media-energia").hidden=!d.superpuesto;$("energia-media").textContent=numero(d.energiaMedia)+" Eᵣ";
+      $("estado-etiqueta").innerHTML=d.superpuesto?`<strong>n = ${estado.n} + ${estado.n+1}</strong> · interferencia`:`<strong>n = ${estado.n}</strong> · ${estado.n===0?"estado fundamental":estado.n+" nodo"+(estado.n===1?"":"s")+" · probabilidad fija"}`;
+      const a=subindice(estado.n),b=subindice(estado.n+1);$("solucion").innerHTML=d.superpuesto?`Ψ(x,t) = [φ${a} e<sup>−iE${a}t/ℏ</sup> + φ${b} e<sup>−iE${b}t/ℏ</sup>] / √2`:`Ψ${a}(x,t) = φ${a}(x) e<sup>−iE${a}t/ℏ</sup>`;
+      document.querySelectorAll("[data-parametro]").forEach(boton=>{const activo=boton.dataset.parametro===estado.parametro;boton.classList.toggle("activo",activo);boton.setAttribute("aria-pressed",String(activo));});
+      document.querySelectorAll("[data-modo]").forEach(boton=>boton.setAttribute("aria-pressed",String(boton.dataset.modo===estado.modo)));
+      document.querySelectorAll("[data-grafica]").forEach(boton=>boton.setAttribute("aria-pressed",String(boton.dataset.grafica===estado.grafica)));
+      $("pausa").textContent=estado.pausado?"Reproducir":"Pausa";$("pausa").setAttribute("aria-pressed",String(estado.pausado));
+      $("graficas").setAttribute("aria-pressed",String(estado.graficas));$("panel-graficas").hidden=!estado.graficas;$("panel-graficas").dataset.grafica=estado.grafica;$("laboratorio").classList.toggle("con-graficas",estado.graficas);
+      const conceptos={n:d.superpuesto?`n · superposición de ${estado.n} y ${estado.n+1}; dos energías posibles, ½ cada una.`:`n · ${estado.n} nodo${estado.n===1?"":"s"}; ${estado.n===0?"energía mínima distinta de cero.":"más n, mayor energía y extensión espacial."}`,omega:"ω · mayor frecuencia: niveles más separados y nube más estrecha.",masa:"m · mayor masa: nube más estrecha; a ω fija, Eₙ no cambia.",fase:d.superpuesto?"t · la interferencia hace oscilar la nube; T = 2π/ω.":"t · Ψ cambia de fase; su densidad |Ψ|² permanece fija."};
+      $("concepto").textContent=conceptos[estado.parametro];
+      $("mediciones-info").textContent=estado.mediciones.length?"80 copias · detecciones independientes a t fijo":"Una partícula · posibles posiciones de detección";
+      if(anunciar){clearTimeout(anuncio);anuncio=setTimeout(()=>{$("resumen-accesible").textContent=`${d.superpuesto?"Superposición":"Estado propio"}, n ${estado.n}. Energía ${numero(d.energia)}. ${conceptos[estado.parametro]}`;},180);}
+      pedirFotograma();
+    }
+    function renderizar() {
+      const d=datos(),muestras=muestrear(d);
+      const fase=((estado.omega*estado.tiempo)%(4*Math.PI)+4*Math.PI)%(4*Math.PI);
+      $("tiempo").value="t = "+numero(estado.tiempo)+" tᵣ";$("fase").value=fase;$("fase").style.setProperty("--progreso",fase/(4*Math.PI)*100+"%");$("salida-fase").value=numero(fase)+" rad";
+      $("posicion-media").textContent="⟨x⟩ = "+numero(d.posicionMedia)+" Lᵣ";
+      if(getComputedStyle($("area-oscilador")).display!=="none"&&$("area-oscilador").getBoundingClientRect().height>0)dibujarEscena(d,muestras);
+      if(estado.graficas){for(const [id,tipo] of [["grafica-onda","onda"],["grafica-densidad","densidad"]])if($(id).getBoundingClientRect().height>0)dibujarGrafica($(id),d,muestras,tipo);}
+    }
+    function pedirFotograma() {if(fotograma===null&&!document.hidden)fotograma=requestAnimationFrame(animar);}
+    function animar(marca) {
+      fotograma=null;
+      if(!estado.pausado&&tiempoAnterior!==null) {estado.tiempo+=Math.min((marca-tiempoAnterior)/1000,.1);if(estado.mediciones.length){estado.mediciones=[];$("mediciones-info").textContent="Una partícula · posibles posiciones de detección";}}
+      tiempoAnterior=estado.pausado?null:marca;renderizar();if(!estado.pausado)pedirFotograma();
+    }
+    function seleccionar(nombre) {estado.parametro=nombre;interfaz(true);}
+    for(const nombre of Object.keys(inicial))$(nombre).addEventListener("input",()=>{estado[nombre]=Number($(nombre).value);estado.parametro=nombre;estado.mediciones=[];interfaz(true);});
+    $("fase").addEventListener("input",()=>{estado.tiempo=Number($("fase").value)/estado.omega;estado.parametro="fase";estado.pausado=true;estado.mediciones=[];tiempoAnterior=null;interfaz(true);});
+    document.querySelectorAll("[data-parametro]").forEach(b=>b.addEventListener("click",()=>seleccionar(b.dataset.parametro)));
+    document.querySelectorAll("[data-modo]").forEach(b=>b.addEventListener("click",()=>{estado.modo=b.dataset.modo;estado.mediciones=[];interfaz(true);}));
+    $("pausa").addEventListener("click",()=>{estado.pausado=!estado.pausado;tiempoAnterior=null;interfaz();});
+    $("paso").addEventListener("click",()=>{estado.pausado=true;estado.tiempo+=datos().periodo/24;estado.mediciones=[];tiempoAnterior=null;interfaz();});
+    $("graficas").addEventListener("click",()=>{estado.graficas=!estado.graficas;interfaz();});
+    document.querySelectorAll("[data-grafica]").forEach(b=>b.addEventListener("click",()=>{estado.grafica=b.dataset.grafica;interfaz();}));
+    $("reiniciar").addEventListener("click",()=>{Object.assign(estado,{...inicial,tiempo:0,parametro:"n",pausado:movimientoReducido.matches,graficas:false,mediciones:[]});tiempoAnterior=null;ayuda(false);interfaz(true);});
+    $("medir").addEventListener("click",()=>{
+      estado.pausado=true;tiempoAnterior=null;const d=datos(),muestras=muestrear(d,1800),cdf=[0];
+      for(let i=1;i<muestras.length;i++)cdf.push(cdf[i-1]+(muestras[i].densidad+muestras[i-1].densidad)/2*(muestras[i].x-muestras[i-1].x));
+      const integral=cdf[cdf.length-1];estado.mediciones=[];
+      for(let j=0;j<80;j++){const u=Math.random()*integral;let a=0,b=cdf.length-1;while(b-a>1){const medio=(a+b)>>1;if(cdf[medio]<u)a=medio;else b=medio;}const fraccion=(u-cdf[a])/(cdf[b]-cdf[a]||1),x=muestras[a].x+fraccion*(muestras[b].x-muestras[a].x);estado.mediciones.push({x,fila:(Math.random()-.5)*23});}
+      interfaz(true);
+    });
+    $("pantalla-completa").addEventListener("click",async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($("laboratorio").requestFullscreen)await $("laboratorio").requestFullscreen();else $("pantalla-completa").textContent="Vista de ventana";}catch{$("pantalla-completa").textContent="Vista de ventana";}});
+    document.addEventListener("fullscreenchange",()=>{$("pantalla-completa").textContent=document.fullscreenElement?"Salir de pantalla completa":"Pantalla completa";pedirFotograma();});
+    function ayuda(mostrar) {$("detalle").hidden=!mostrar;$("ayuda").setAttribute("aria-expanded",String(mostrar));if(mostrar)$("cerrar-detalle").focus();}
+    $("ayuda").addEventListener("click",()=>ayuda($("detalle").hidden));$("cerrar-detalle").addEventListener("click",()=>{ayuda(false);$("ayuda").focus();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")ayuda(false);if(e.code==="Space"&&e.target===document.body){e.preventDefault();$("pausa").click();}});
+    $("escena").addEventListener("pointermove",e=>{if(!geometria)return;const rect=$("escena").getBoundingClientRect(),px=e.clientX-rect.left;const x=(px-geometria.izquierda)/(geometria.ancho-geometria.izquierda-geometria.derecha)*2*geometria.dominioX-geometria.dominioX;if(Math.abs(x)>geometria.dominioX){$("tooltip").hidden=true;return;}const d=datos(),a=amplitud(x,d);$("tooltip").textContent="x = "+numero(x)+" Lᵣ · ρ = "+numero(a.densidad,3)+" / Lᵣ";$("tooltip").hidden=false;const ancho=$("tooltip").getBoundingClientRect().width;$("tooltip").style.left=Math.max(4,Math.min(px+14,rect.width-ancho-4))+"px";$("tooltip").style.top=Math.max(4,Math.min(e.clientY-rect.top+14,rect.height-36))+"px";});
+    $("escena").addEventListener("pointerleave",()=>{$("tooltip").hidden=true;});
+    document.addEventListener("visibilitychange",()=>{if(fotograma!==null)cancelAnimationFrame(fotograma);fotograma=null;tiempoAnterior=null;if(!document.hidden)pedirFotograma();});
+    movimientoReducido.addEventListener("change",()=>{if(movimientoReducido.matches)estado.pausado=true;tiempoAnterior=null;interfaz();});
+    new ResizeObserver(()=>pedirFotograma()).observe($("espacio")||document.querySelector(".espacio"));
+    window.addEventListener("resize",pedirFotograma);
+    interfaz();
+  </script>
+</body>
+</html>

@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Oscilador asimétrico y pared cuántica: enunciado, solución íntegra y resultados interactivos del problema S-5-8.">
+<title>Oscilador asimétrico y pared cuántica · S-5-8</title>
+<style>
+:root{color-scheme:only light;--color-fondo:#F7F8FC;--color-tarjeta:#FFFFFF;--color-primario:#A8C7FA;--color-secundario:#B8E0D2;--color-acento:#CDB4DB;--color-texto:#273043;--color-texto-secundario:#667085;--color-borde:#E4E7EC;--color-onda:#668EC6;--color-verde:#67998A;--color-punto:#9471AE;--radio-tarjeta:18px;--sombra:0 10px 32px rgba(39,48,67,.07)}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0;width:100%;height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--color-fondo);color:var(--color-texto)}button,input{font:inherit;color:inherit}button{cursor:pointer}button,input{-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--color-onda);outline-offset:3px}.app{height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(ellipse at 20% 20%,rgba(168,199,250,.12),transparent 70%),var(--color-fondo)}
+.cabecera{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;flex-shrink:0}.identidad h1{margin:4px 0 0;font-size:1.4rem;line-height:1.2;letter-spacing:-.035em}.kicker{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-texto-secundario)}.selector{display:flex;flex-wrap:wrap;gap:3px;padding:4px;border-radius:12px;background:rgba(228,231,236,.7)}.selector button{padding:8px 12px;min-height:36px;border:0;background:transparent;border-radius:9px;font-size:.83rem;color:var(--color-texto-secundario)}.selector button[aria-selected="true"],.selector button[aria-pressed="true"]{background:var(--color-tarjeta);color:var(--color-texto);box-shadow:0 2px 6px rgba(39,48,67,.06)}.boton{border:1px solid var(--color-borde);border-radius:11px;background:var(--color-tarjeta);padding:8px 12px;min-height:38px;font-size:.8rem;white-space:nowrap}.boton:hover{background:rgba(168,199,250,.12)}.boton[aria-pressed="true"]{background:var(--color-acento)}.principal{background:var(--color-texto);color:var(--color-tarjeta);border-color:var(--color-texto)}.principal:hover{background:#42516A}.pagina{flex:1;min-height:0}.lectura{overflow:auto;padding:12px 28px 48px}.papel{max-width:960px;margin:auto;padding:34px 44px;background:var(--color-tarjeta);border:1px solid var(--color-borde);border-radius:18px;box-shadow:var(--sombra)}.numero-pagina{font-size:.74rem;color:var(--color-onda);letter-spacing:.1em;text-transform:uppercase}.papel h2{font-size:1.45rem;margin:18px 0 24px;line-height:1.4}.papel h3{font-size:1.16rem;margin:32px 0 12px}.papel h4{font-size:1rem;margin:22px 0 10px}.papel p,.papel li{line-height:1.8;font-size:1rem}.papel p{margin:12px 0}.papel li{margin:10px 0}.papel li p{margin:6px 0}.math-block{overflow-x:auto;overflow-y:hidden;padding:14px 8px;margin:8px 0;max-width:100%;text-align:center}.math-block .katex{display:block;width:max-content;min-width:100%}math{font-family:"Cambria Math","STIX Two Math",serif;font-size:1.12em}math[display="block"]{margin:0}annotation{display:none}.fuente{font-size:.8rem;color:var(--color-texto-secundario);line-height:1.6}.fuente a,.detalle a{color:var(--color-onda)}.lectura-footer{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;border-top:1px solid var(--color-borde);padding-top:22px;margin-top:30px}.explorar{margin:16px 0}.indice{display:flex;flex-wrap:wrap;gap:8px}.indice a{font-size:.8rem;color:var(--color-onda)}
+.laboratorio{display:flex;flex-direction:column;gap:10px;position:relative;padding:0 28px 18px;overflow:hidden}.barra-viz{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0}.acciones{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.cristal{background:rgba(255,255,255,.93);border:1px solid rgba(228,231,236,.9);box-shadow:var(--sombra);backdrop-filter:blur(14px);border-radius:18px}.ecuacion{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 18px;flex-shrink:0}.formula{font-family:Georgia,serif;font-size:1.3rem;line-height:1.4;margin:0}.simbolo{border:0;border-radius:5px;background:transparent;padding:2px 4px;font:inherit;color:inherit}.simbolo.activo{background:rgba(168,199,250,.3);color:var(--color-texto)}.numeros{font-size:.81rem;line-height:1.5;color:var(--color-texto-secundario);text-align:right;font-variant-numeric:tabular-nums;max-width:55%}.numeros strong{color:var(--color-texto)}.cuerpo-viz{display:flex;gap:16px;flex:1;min-height:0;position:relative}.escena{position:relative;flex:1;min-width:0;min-height:0;overflow:hidden;touch-action:none;border-radius:12px;cursor:grab}.escena:active{cursor:grabbing}#lienzo,#alternativa,#anotaciones{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#anotaciones{z-index:2}#anotaciones text,#alternativa text,.grafica text{font-family:Inter,system-ui,sans-serif;font-size:12px}#pie-escena{position:absolute;bottom:4px;left:8px;right:8px;font-size:.76rem;text-align:center;color:var(--color-texto-secundario);pointer-events:none;background:rgba(247,248,252,.8)}.panel-graficas{width:340px;flex-shrink:0;padding:14px;align-self:center;max-height:100%;overflow:auto}.panel-graficas h2{font-size:.9rem;margin:0 0 8px}.grafica{width:100%;height:225px;display:block}.leyenda{display:flex;flex-wrap:wrap;gap:10px;font-size:.76rem;color:var(--color-texto-secundario)}.leyenda span{display:flex;gap:5px;align-items:center}.muestra-color{width:12px;height:3px;display:inline-block}.dock{padding:13px 18px 10px;flex-shrink:0;max-width:1100px;width:100%;align-self:center}.parametros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.parametro{min-width:0}.parametro-cabecera{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:10px;font-size:.81rem}.parametro-cabecera button{border:0;background:transparent;padding:2px 3px;border-radius:5px;text-align:left}.parametro-cabecera button.activo{background:rgba(168,199,250,.3)}output{font-size:.81rem;font-variant-numeric:tabular-nums;white-space:nowrap}input[type="range"]{display:block;width:100%;margin:0;height:22px;appearance:none;background:transparent;cursor:pointer}input[type="range"]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(to right,var(--color-primario) var(--progreso,50%),var(--color-borde) var(--progreso,50%))}input[type="range"]::-webkit-slider-thumb{appearance:none;margin-top:-7px;width:20px;height:20px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto);box-shadow:0 2px 7px rgba(39,48,67,.2)}input[type="range"]::-moz-range-track{height:6px;border-radius:99px;background:var(--color-borde)}input[type="range"]::-moz-range-progress{height:6px;border-radius:99px;background:var(--color-primario)}input[type="range"]::-moz-range-thumb{width:14px;height:14px;border:3px solid var(--color-tarjeta);border-radius:50%;background:var(--color-texto)}.dock-pie{display:flex;gap:12px;justify-content:space-between;align-items:center;border-top:1px solid var(--color-borde);margin-top:11px;padding-top:9px;font-size:.76rem;color:var(--color-texto-secundario)}.herramientas{display:flex;gap:10px;flex-shrink:0}.enlace{background:transparent;border:0;padding:4px 0;min-height:28px;text-decoration:underline;text-underline-offset:3px;color:inherit;font-size:.76rem}.detalle{position:absolute;z-index:6;right:28px;top:55px;width:min(510px,calc(100% - 56px));max-height:calc(100% - 70px);overflow:auto;padding:20px;font-size:.87rem;line-height:1.7}.detalle h2{margin:0 0 16px;font-size:1.1rem;padding-right:35px}.detalle p{margin:12px 0}.cerrar{position:absolute;right:12px;top:10px}.sr-only{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}.etiqueta-render{font-size:.7rem;color:var(--color-texto-secundario)}
+@media(max-width:1050px){.barra-viz{align-items:flex-start}.acciones{max-width:390px}.panel-graficas{width:290px}.cabecera{gap:12px}.identidad h1{font-size:1.2rem}.selector button{padding:7px 9px}.formula{font-size:1.15rem}}
+@media(max-width:680px){.cabecera{display:block;padding:12px 13px 10px}.identidad h1{font-size:1.05rem;margin:3px 0 9px}.kicker{font-size:.62rem}.paginas{justify-content:space-between}.paginas button{padding:6px 8px;font-size:.77rem;min-height:34px}.laboratorio{padding:0 13px 12px;gap:8px}.barra-viz{display:block}.barra-viz .selector{width:100%;justify-content:space-between}.barra-viz .selector button{font-size:.73rem;min-height:31px;padding:5px 8px}.acciones{max-width:none;justify-content:space-between;gap:4px;margin-top:6px}.acciones .boton{font-size:.71rem;padding:6px 7px;min-height:34px}.ecuacion{display:block;padding:9px 12px}.formula{font-size:1.06rem}.numeros{max-width:none;text-align:left;font-size:.74rem;margin-top:5px;line-height:1.4}.parametros{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 18px}.parametro-cabecera{font-size:.74rem;gap:3px;margin-bottom:3px}.parametro-cabecera output{font-size:.73rem}.dock{padding:10px 12px 7px}.dock-pie{align-items:flex-start;flex-direction:column;gap:2px;font-size:.72rem;margin-top:7px;padding-top:6px}.herramientas{width:100%;justify-content:space-between}.enlace{font-size:.73rem;min-height:28px}.detalle{right:13px;top:0;width:calc(100% - 26px);max-height:100%;font-size:.84rem}.panel-graficas{width:100%;align-self:stretch;padding:10px;max-height:none;overflow:hidden;display:flex;flex-direction:column;height:100%}.con-graficas .numeros{display:none}.leyenda{flex-shrink:0}.con-graficas .escena{display:none}.con-graficas .cuerpo-viz{min-height:110px}.grafica{height:auto;min-height:0;flex:1}.panel-graficas h2{flex-shrink:0}.panel-graficas h2{font-size:.8rem}.lectura{padding:6px 13px 28px}.papel{padding:24px 18px}.papel h2{font-size:1.25rem}.papel p,.papel li{font-size:.94rem}.papel ul{padding-left:20px}.math-block{font-size:.91rem;padding:12px 0}.lectura-footer .boton{white-space:normal}.etiqueta-render{font-size:.66rem}}
+@media(max-height:720px) and (min-width:681px){.cabecera{padding:12px 24px}.laboratorio{gap:7px;padding-bottom:12px}.ecuacion{padding:9px 14px}.dock{padding:10px 14px 7px}.grafica{height:180px}.detalle{max-height:calc(100% - 50px);top:35px}}
+@media(max-width:370px){.paginas button{padding:6px 5px;font-size:.72rem}.identidad h1{font-size:1rem}.acciones .boton{font-size:.67rem;padding:5px 6px}.formula{font-size:.98rem}.numeros{font-size:.7rem}.barra-viz .selector button{font-size:.69rem;padding:5px 6px}.parametro-cabecera{font-size:.71rem}.parametro-cabecera output{font-size:.71rem}.dock-pie{font-size:.7rem}.enlace{font-size:.7rem}}
+@media(pointer:coarse){input[type="range"]{height:26px}.boton,.selector button,.enlace{min-height:38px}.parametro-cabecera button{min-height:24px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+.barra-viz .selector{max-width:60%}.barra-viz .selector button{flex:1}.formula{overflow-wrap:anywhere}.indice:empty{display:none}.nota-convencion{font-size:.86rem;padding:14px;border-radius:12px;background:var(--color-fondo);line-height:1.7}
+@media(max-width:680px){.barra-viz .selector{max-width:none;flex-wrap:wrap;justify-content:flex-start}.barra-viz .selector button{padding:5px;flex:1 1 auto}.ecuacion{max-height:120px;overflow:auto}.identidad h1{font-size:1rem}.parametros{gap:8px 14px}.cuerpo-viz{min-height:90px}.boton,.selector button{min-height:34px!important}.formula{font-size:1rem}.numeros{font-size:.73rem}.dock-pie{font-size:.7rem}}
+input:disabled{opacity:.45;cursor:default}.parametro-cabecera button:disabled{color:var(--color-texto-secundario);cursor:default}
+#pagina-3 #lienzo,#pagina-3 #alternativa,#pagina-3 #anotaciones{bottom:auto;height:calc(100% - var(--pie-alto,30px))}
+
+#pagina-3 #alternativa polygon{shape-rendering:geometricPrecision}#pagina-3 #alternativa{isolation:isolate}
+:fullscreen::backdrop{background:var(--color-fondo)}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body><main class="app" id="app">
+<header class="cabecera"><div class="identidad"><span class="kicker">Mecánica estadística · Problema S-5-8</span><h1>Oscilador asimétrico y pared cuántica</h1></div><nav class="selector paginas" role="tablist" aria-label="Páginas del problema"><button id="tab-1" role="tab" aria-selected="true" aria-controls="pagina-1" data-pagina="1">1 · Enunciado</button><button id="tab-2" role="tab" aria-selected="false" aria-controls="pagina-2" data-pagina="2" tabindex="-1">2 · Solución</button><button id="tab-3" role="tab" aria-selected="false" aria-controls="pagina-3" data-pagina="3" tabindex="-1">3 · Visualización</button></nav></header>
+<section id="pagina-1" class="pagina lectura" role="tabpanel" aria-labelledby="tab-1" tabindex="0"><article class="papel"><span class="numero-pagina">Enunciado · 01 / 03</span><p><strong>Oscilador clásico asimétrico con salto de energía.</strong></p>
+<p>Considere un sistema de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span> osciladores localizados unidimensionales, a temperatura <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span>, descrito por el Hamiltoniano clásico</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="script">H</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><mrow><mo fence="true">[</mo><mfrac><msubsup><mi>p</mi><mi>i</mi><mn>2</mn></msubsup><mrow><mn>2</mn><mi>m</mi></mrow></mfrac><mo>+</mo><mi>V</mi><mo stretchy="false">(</mo><msub><mi>q</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mo fence="true">]</mo></mrow><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\mathcal{H}
+=
+\sum_{i=1}^{N}
+\left[
+\frac{p_i^2}{2m}
++
+V(q_i)
+\right],
+</annotation></semantics></math></span></div>
+<p>donde el potencial de un oscilador está dado por</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo fence="true">{</mo><mtable rowspacing="0.36em" columnalign="left left" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mo separator="true">,</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>q</mi><mo>&gt;</mo><mn>0</mn><mo separator="true">,</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>2</mn></mfrac></mstyle><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mo>+</mo><mi>ϵ</mi><mo separator="true">,</mo></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mi>q</mi><mo>&lt;</mo><mn>0</mn><mo separator="true">,</mo></mrow></mstyle></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+V(q)=
+\begin{cases}
+\dfrac{1}{2}m\omega^2q^2, &amp; q&gt;0,\\[6pt]
+\dfrac{1}{2}m\omega^2q^2+\epsilon, &amp; q&lt;0,
+\end{cases}
+</annotation></semantics></math></span></div>
+<p>con <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\epsilon&gt;0</annotation></semantics></math></span>.</p>
+<ul>
+<li>
+<strong>(a)</strong> 
+<p>Obtenga la función de partición canónica clásica del sistema. Calcule la energía interna por oscilador <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo>=</mo><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">u=u(T)</annotation></semantics></math></span>. Analice la forma de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">u(T)</annotation></semantics></math></span> en los límites <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\epsilon\to 0</annotation></semantics></math></span> y <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\epsilon\to\infty</annotation></semantics></math></span>.</p>
+</li>
+<li>
+<strong>(b)</strong> 
+<p>Considere ahora el análogo cuántico de este modelo en el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\epsilon\to\infty</annotation></semantics></math></span>. Obtenga una expresión para la función de partición canónica. Determine la energía interna por oscilador de este análogo cuántico.</p>
+</li>
+</ul><footer class="lectura-footer"><span class="fuente">Fuente: Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001), problema 5.8 según el archivo de trabajo. Autor, título y edición cotejados con el editor.</span><button class="boton principal" data-ir="2">Ver solución paso a paso →</button></footer></article></section>
+<section id="pagina-2" class="pagina lectura" role="tabpanel" aria-labelledby="tab-2" tabindex="0" hidden><article class="papel"><span class="numero-pagina">Solución · 02 / 03</span><h2>Desarrollo completo del archivo de trabajo</h2><p class="fuente">Se reproduce íntegramente la solución suministrada, incluida la sección <code>comment</code>.</p><nav class="indice" aria-label="Índice de la solución"><a href="#paso-1">(a) Función de partición clásica</a> · <a href="#paso-2">(b) Análogo cuántico en el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\epsilon\to\infty</annotation></semantics></math></span></a></nav><h3 id="paso-1">(a) Función de partición clásica</h3>
+<p>Como los osciladores son localizados e independientes, el Hamiltoniano total se puede escribir como suma de Hamiltonianos de una partícula:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="script">H</mi><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi mathvariant="script">H</mi><mi>i</mi></msub><mo separator="true">,</mo><mspace width="2em"/><msub><mi mathvariant="script">H</mi><mi>i</mi></msub><mo>=</mo><mfrac><msubsup><mi>p</mi><mi>i</mi><mn>2</mn></msubsup><mrow><mn>2</mn><mi>m</mi></mrow></mfrac><mo>+</mo><mi>V</mi><mo stretchy="false">(</mo><msub><mi>q</mi><mi>i</mi></msub><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\mathcal{H}
+=
+\sum_{i=1}^{N}\mathcal{H}_i,
+\qquad
+\mathcal{H}_i
+=
+\frac{p_i^2}{2m}+V(q_i).
+</annotation></semantics></math></span></div>
+<p>Por tanto, la función de partición canónica factoriza:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>Z</mi><mo>=</mo><msubsup><mi>Z</mi><mn>1</mn><mi>N</mi></msubsup><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+Z=Z_1^N,
+</annotation></semantics></math></span></div>
+<p>donde <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">Z_1</annotation></semantics></math></span> es la función de partición de un solo oscilador:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>p</mi><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><mi>exp</mi><mo>⁡</mo><mrow><mo fence="true">[</mo><mo>−</mo><mi>β</mi><mrow><mo fence="true">(</mo><mfrac><msup><mi>p</mi><mn>2</mn></msup><mrow><mn>2</mn><mi>m</mi></mrow></mfrac><mo>+</mo><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo><mo fence="true">)</mo></mrow><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1
+=
+\int_{-\infty}^{+\infty}dp
+\int_{-\infty}^{+\infty}dq\,
+\exp\left[
+-\beta\left(
+\frac{p^2}{2m}+V(q)
+\right)
+\right].
+</annotation></semantics></math></span></div>
+<p>Como la parte cinética y la parte configuracional se separan,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mrow><mo fence="true">[</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>p</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><msup><mi>p</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><mn>2</mn><mi>m</mi><mo stretchy="false">)</mo></mrow></msup><mo fence="true">]</mo></mrow><mrow><mo fence="true">[</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1
+=
+\left[
+\int_{-\infty}^{+\infty}
+dp\,
+e^{-\beta p^2/(2m)}
+\right]
+\left[
+\int_{-\infty}^{+\infty}
+dq\,
+e^{-\beta V(q)}
+\right].
+</annotation></semantics></math></span></div>
+<p>La integral en momentos es gaussiana:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>p</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><msup><mi>p</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><mn>2</mn><mi>m</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><msqrt><mfrac><mrow><mn>2</mn><mi>π</mi><mi>m</mi></mrow><mi>β</mi></mfrac></msqrt><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}
+dp\,
+e^{-\beta p^2/(2m)}
+=
+\sqrt{\frac{2\pi m}{\beta}}.
+</annotation></semantics></math></span></div>
+<p>Ahora calculamos la integral en coordenadas. Como el potencial cambia según el signo de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi></mrow><annotation encoding="application/x-tex">q</annotation></semantics></math></span>, separamos:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mo>+</mo><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mn>0</mn></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mo stretchy="false">(</mo><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn><mo>+</mo><mi>ϵ</mi><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}dq\,e^{-\beta V(q)}
+=
+\int_{0}^{+\infty}dq\,
+e^{-\beta m\omega^2q^2/2}
++
+\int_{-\infty}^{0}dq\,
+e^{-\beta(m\omega^2q^2/2+\epsilon)}.
+</annotation></semantics></math></span></div>
+<p>En el segundo término, el factor <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><annotation encoding="application/x-tex">e^{-\beta\epsilon}</annotation></semantics></math></span> es constante:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mn>0</mn></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}dq\,e^{-\beta V(q)}
+=
+\int_{0}^{+\infty}dq\,
+e^{-\beta m\omega^2q^2/2}
++
+e^{-\beta\epsilon}
+\int_{-\infty}^{0}dq\,
+e^{-\beta m\omega^2q^2/2}.
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
+e^{-\beta m\omega^2q^2/2}
+</annotation></semantics></math></span></div>
+<p>es una función par,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mn>0</mn></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mo>=</mo><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{0}dq\,
+e^{-\beta m\omega^2q^2/2}
+=
+\int_{0}^{+\infty}dq\,
+e^{-\beta m\omega^2q^2/2}.
+</annotation></semantics></math></span></div>
+<p>Luego,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}dq\,e^{-\beta V(q)}
+=
+\left(1+e^{-\beta\epsilon}\right)
+\int_{0}^{+\infty}dq\,
+e^{-\beta m\omega^2q^2/2}.
+</annotation></semantics></math></span></div>
+<p>Usamos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><msup><mi>e</mi><mrow><mo>−</mo><mi>a</mi><msup><mi>q</mi><mn>2</mn></msup></mrow></msup><mtext> </mtext><mi>d</mi><mi>q</mi><mo>=</mo><msqrt><mfrac><mi>π</mi><mi>a</mi></mfrac></msqrt><mo separator="true">,</mo><mspace width="2em"/><mi>a</mi><mo>&gt;</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}e^{-aq^2}\,dq
+=
+\sqrt{\frac{\pi}{a}},
+\qquad a&gt;0,
+</annotation></semantics></math></span></div>
+<p>por lo que</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><msup><mi>e</mi><mrow><mo>−</mo><mi>a</mi><msup><mi>q</mi><mn>2</mn></msup></mrow></msup><mtext> </mtext><mi>d</mi><mi>q</mi><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mfrac><mi>π</mi><mi>a</mi></mfrac></msqrt><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_0^{+\infty}e^{-aq^2}\,dq
+=
+\frac{1}{2}\sqrt{\frac{\pi}{a}}.
+</annotation></semantics></math></span></div>
+<p>Con</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>a</mi><mo>=</mo><mfrac><mrow><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup></mrow><mn>2</mn></mfrac><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+a=\frac{\beta m\omega^2}{2},
+</annotation></semantics></math></span></div>
+<p>se obtiene</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mn>0</mn><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup><msup><mi>q</mi><mn>2</mn></msup><mi mathvariant="normal">/</mi><mn>2</mn></mrow></msup><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mfrac><mrow><mn>2</mn><mi>π</mi></mrow><mrow><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup></mrow></mfrac></msqrt><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{0}^{+\infty}dq\,
+e^{-\beta m\omega^2q^2/2}
+=
+\frac{1}{2}
+\sqrt{\frac{2\pi}{\beta m\omega^2}}.
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mo>∫</mo><mrow><mo>−</mo><mi mathvariant="normal">∞</mi></mrow><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow></msubsup><mi>d</mi><mi>q</mi><mtext> </mtext><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>V</mi><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mfrac><mrow><mn>2</mn><mi>π</mi></mrow><mrow><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup></mrow></mfrac></msqrt><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\int_{-\infty}^{+\infty}dq\,e^{-\beta V(q)}
+=
+\frac{1}{2}
+\sqrt{\frac{2\pi}{\beta m\omega^2}}
+\left(1+e^{-\beta\epsilon}\right).
+</annotation></semantics></math></span></div>
+<p>Multiplicando la parte cinética y la parte configuracional:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><msqrt><mfrac><mrow><mn>2</mn><mi>π</mi><mi>m</mi></mrow><mi>β</mi></mfrac></msqrt><mtext> </mtext><mfrac><mn>1</mn><mn>2</mn></mfrac><msqrt><mfrac><mrow><mn>2</mn><mi>π</mi></mrow><mrow><mi>β</mi><mi>m</mi><msup><mi>ω</mi><mn>2</mn></msup></mrow></mfrac></msqrt><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1
+=
+\sqrt{\frac{2\pi m}{\beta}}
+\,
+\frac{1}{2}
+\sqrt{\frac{2\pi}{\beta m\omega^2}}
+\left(1+e^{-\beta\epsilon}\right).
+</annotation></semantics></math></span></div>
+<p>Simplificando,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mfrac><mrow><mn>2</mn><mi>π</mi></mrow><mrow><mi>β</mi><mi>ω</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1
+=
+\frac{1}{2}
+\frac{2\pi}{\beta\omega}
+\left(1+e^{-\beta\epsilon}\right).
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mfrac><mi>π</mi><mrow><mi>β</mi><mi>ω</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+Z_1
+=
+\frac{\pi}{\beta\omega}
+\left(1+e^{-\beta\epsilon}\right).
+}
+</annotation></semantics></math></span></div>
+<p>Entonces la función de partición total es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>Z</mi><mo>=</mo><msup><mrow><mo fence="true">[</mo><mfrac><mi>π</mi><mrow><mi>β</mi><mi>ω</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mo fence="true">]</mo></mrow><mi>N</mi></msup><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+Z
+=
+\left[
+\frac{\pi}{\beta\omega}
+\left(1+e^{-\beta\epsilon}\right)
+\right]^N.
+}
+</annotation></semantics></math></span></div>
+<p>La energía interna total se obtiene desde</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><mi>Z</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+U
+=
+-\frac{\partial}{\partial\beta}\ln Z.
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ln</mi><mo>⁡</mo><mi>Z</mi><mo>=</mo><mi>N</mi><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\ln Z
+=
+N\ln Z_1,
+</annotation></semantics></math></span></div>
+<p>la energía interna por oscilador es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo>=</mo><mfrac><mi>U</mi><mi>N</mi></mfrac><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u
+=
+\frac{U}{N}
+=
+-\frac{\partial}{\partial\beta}\ln Z_1.
+</annotation></semantics></math></span></div>
+<p>Ahora,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mi>ln</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><mfrac><mi>π</mi><mi>ω</mi></mfrac><mo fence="true">)</mo></mrow><mo>−</mo><mi>ln</mi><mo>⁡</mo><mi>β</mi><mo>+</mo><mi>ln</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\ln Z_1
+=
+\ln\left(\frac{\pi}{\omega}\right)
+-\ln\beta
++
+\ln\left(1+e^{-\beta\epsilon}\right).
+</annotation></semantics></math></span></div>
+<p>Derivando respecto de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>β</mi></mfrac><mo>+</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}\ln Z_1
+=
+-\frac{1}{\beta}
++
+\frac{1}{1+e^{-\beta\epsilon}}
+\frac{\partial}{\partial\beta}
+\left(1+e^{-\beta\epsilon}\right).
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo fence="true">)</mo></mrow><mo>=</mo><mo>−</mo><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}
+\left(1+e^{-\beta\epsilon}\right)
+=
+-\epsilon e^{-\beta\epsilon},
+</annotation></semantics></math></span></div>
+<p>queda</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mo>−</mo><mfrac><mn>1</mn><mi>β</mi></mfrac><mo>−</mo><mfrac><mrow><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}\ln Z_1
+=
+-\frac{1}{\beta}
+-
+\frac{\epsilon e^{-\beta\epsilon}}{1+e^{-\beta\epsilon}}.
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>u</mi><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msub><mi>Z</mi><mn>1</mn></msub><mo>=</mo><mfrac><mn>1</mn><mi>β</mi></mfrac><mo>+</mo><mfrac><mrow><mi>ϵ</mi><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>β</mi><mi>ϵ</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u
+=
+-\frac{\partial}{\partial\beta}\ln Z_1
+=
+\frac{1}{\beta}
++
+\frac{\epsilon e^{-\beta\epsilon}}{1+e^{-\beta\epsilon}}.
+</annotation></semantics></math></span></div>
+<p>Usando <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi><mo>=</mo><mn>1</mn><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\beta=1/(k_BT)</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mo>+</mo><mfrac><mi>ϵ</mi><mrow><msup><mi>e</mi><mrow><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>1</mn></mrow></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+u(T)
+=
+k_BT
++
+\frac{\epsilon}{e^{\beta\epsilon}+1}.
+}
+</annotation></semantics></math></span></div>
+<p>El primer término,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+k_BT,
+</annotation></semantics></math></span></div>
+<p>proviene de los dos términos cuadráticos clásicos, uno cinético y uno potencial. Cada contribución cuadrática aporta <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>2</mn></mfrac><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi></mrow><annotation encoding="application/x-tex">\frac{1}{2}k_BT</annotation></semantics></math></span>.</p>
+<p>El segundo término,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>ϵ</mi><mrow><msup><mi>e</mi><mrow><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>1</mn></mrow></mfrac><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\frac{\epsilon}{e^{\beta\epsilon}+1},
+</annotation></semantics></math></span></div>
+<p>corresponde a la energía adicional asociada a la mitad <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q&lt;0</annotation></semantics></math></span> del potencial.</p>
+<p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\epsilon\to 0</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>ϵ</mi><mrow><msup><mi>e</mi><mrow><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>1</mn></mrow></mfrac><mo>→</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\frac{\epsilon}{e^{\beta\epsilon}+1}
+\to
+0,
+</annotation></semantics></math></span></div>
+<p>ya que el numerador tiende a cero. Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>→</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mspace width="2em"/><mo stretchy="false">(</mo><mi>ϵ</mi><mo>→</mo><mn>0</mn><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+u(T)\to k_BT
+\qquad
+(\epsilon\to 0).
+}
+</annotation></semantics></math></span></div>
+<p>En este límite se recupera el oscilador armónico clásico usual.</p>
+<p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\epsilon\to\infty</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>e</mi><mrow><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>→</mo><mi mathvariant="normal">∞</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+e^{\beta\epsilon}\to\infty,
+</annotation></semantics></math></span></div>
+<p>de modo que</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi>ϵ</mi><mrow><msup><mi>e</mi><mrow><mi>β</mi><mi>ϵ</mi></mrow></msup><mo>+</mo><mn>1</mn></mrow></mfrac><mo>→</mo><mn>0.</mn></mrow><annotation encoding="application/x-tex">
+\frac{\epsilon}{e^{\beta\epsilon}+1}\to 0.
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>u</mi><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>→</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mspace width="2em"/><mo stretchy="false">(</mo><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+u(T)\to k_BT
+\qquad
+(\epsilon\to\infty).
+}
+</annotation></semantics></math></span></div>
+<p>En este segundo límite, la región <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q&lt;0</annotation></semantics></math></span> queda suprimida estadísticamente, pero el movimiento permitido en <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q&gt;0</annotation></semantics></math></span> sigue teniendo una coordenada cuadrática y un momento cuadrático, por lo que la energía media clásica sigue siendo <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi></mrow><annotation encoding="application/x-tex">k_BT</annotation></semantics></math></span>.</p>
+<h3 id="paso-2">(b) Análogo cuántico en el límite <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">\epsilon\to\infty</annotation></semantics></math></span></h3>
+<p>En el límite</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ϵ</mi><mo>→</mo><mi mathvariant="normal">∞</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\epsilon\to\infty,
+</annotation></semantics></math></span></div>
+<p>la región <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>&lt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q&lt;0</annotation></semantics></math></span> queda prohibida. El sistema cuántico equivalente corresponde a un oscilador armónico restringido a la semirrecta</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>q</mi><mo>&gt;</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+q&gt;0,
+</annotation></semantics></math></span></div>
+<p>con una pared impenetrable en</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0.</mn></mrow><annotation encoding="application/x-tex">
+q=0.
+</annotation></semantics></math></span></div>
+<p>El oscilador armónico cuántico usual en toda la recta tiene niveles</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>E</mi><mi>n</mi></msub><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mrow><mo fence="true">(</mo><mi>n</mi><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo fence="true">)</mo></mrow><mo separator="true">,</mo><mspace width="2em"/><mi>n</mi><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mo>…</mo></mrow><annotation encoding="application/x-tex">
+E_n
+=
+\hbar\omega
+\left(
+n+\frac{1}{2}
+\right),
+\qquad
+n=0,1,2,\dots
+</annotation></semantics></math></span></div>
+<p>Sus autofunciones tienen paridad definida. Las funciones pares no se anulan en <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q=0</annotation></semantics></math></span>, mientras que las funciones impares sí satisfacen</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ψ</mi><mo stretchy="false">(</mo><mn>0</mn><mo stretchy="false">)</mo><mo>=</mo><mn>0.</mn></mrow><annotation encoding="application/x-tex">
+\psi(0)=0.
+</annotation></semantics></math></span></div>
+<p>Como en el problema con pared infinita en <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">q=0</annotation></semantics></math></span> debe cumplirse</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ψ</mi><mo stretchy="false">(</mo><mn>0</mn><mo stretchy="false">)</mo><mo>=</mo><mn>0</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\psi(0)=0,
+</annotation></semantics></math></span></div>
+<p>solo sobreviven los estados impares del oscilador armónico completo. Es decir,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>n</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>3</mn><mo separator="true">,</mo><mn>5</mn><mo separator="true">,</mo><mo>…</mo></mrow><annotation encoding="application/x-tex">
+n=1,3,5,\dots
+</annotation></semantics></math></span></div>
+<p>Escribimos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>n</mi><mo>=</mo><mn>2</mn><mi>r</mi><mo>+</mo><mn>1</mn><mo separator="true">,</mo><mspace width="2em"/><mi>r</mi><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mo>…</mo></mrow><annotation encoding="application/x-tex">
+n=2r+1,
+\qquad
+r=0,1,2,\dots
+</annotation></semantics></math></span></div>
+<p>Entonces los niveles permitidos son</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>E</mi><mi>r</mi></msub><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mrow><mo fence="true">(</mo><mn>2</mn><mi>r</mi><mo>+</mo><mn>1</mn><mo>+</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo fence="true">)</mo></mrow><mo>=</mo><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mrow><mo fence="true">(</mo><mn>2</mn><mi>r</mi><mo>+</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+E_r
+=
+\hbar\omega
+\left(
+2r+1+\frac{1}{2}
+\right)
+=
+\hbar\omega
+\left(
+2r+\frac{3}{2}
+\right).
+</annotation></semantics></math></span></div>
+<p>La función de partición de un oscilador es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant="normal">∞</mi></munderover><mi>exp</mi><mo>⁡</mo><mrow><mo fence="true">[</mo><mo>−</mo><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mrow><mo fence="true">(</mo><mn>2</mn><mi>r</mi><mo>+</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mo fence="true">)</mo></mrow><mo fence="true">]</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1^{(q)}
+=
+\sum_{r=0}^{\infty}
+\exp\left[
+-\beta\hbar\omega
+\left(
+2r+\frac{3}{2}
+\right)
+\right].
+</annotation></semantics></math></span></div>
+<p>Separando el factor independiente de <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi></mrow><annotation encoding="application/x-tex">r</annotation></semantics></math></span>,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mo stretchy="false">(</mo><mn>3</mn><mi mathvariant="normal">/</mi><mn>2</mn><mo stretchy="false">)</mo><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant="normal">∞</mi></munderover><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>r</mi><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+Z_1^{(q)}
+=
+e^{-(3/2)\beta\hbar\omega}
+\sum_{r=0}^{\infty}
+e^{-2r\beta\hbar\omega}.
+</annotation></semantics></math></span></div>
+<p>La suma es geométrica:</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><munderover><mo>∑</mo><mrow><mi>r</mi><mo>=</mo><mn>0</mn></mrow><mi mathvariant="normal">∞</mi></munderover><msup><mi>x</mi><mi>r</mi></msup><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>−</mo><mi>x</mi></mrow></mfrac><mo separator="true">,</mo><mspace width="2em"/><mi mathvariant="normal">∣</mi><mi>x</mi><mi mathvariant="normal">∣</mi><mo>&lt;</mo><mn>1.</mn></mrow><annotation encoding="application/x-tex">
+\sum_{r=0}^{\infty}x^r=\frac{1}{1-x},
+\qquad |x|&lt;1.
+</annotation></semantics></math></span></div>
+<p>Con</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>x</mi><mo>=</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+x=e^{-2\beta\hbar\omega},
+</annotation></semantics></math></span></div>
+<p>obtenemos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><mfrac><msup><mi>e</mi><mrow><mo>−</mo><mo stretchy="false">(</mo><mn>3</mn><mi mathvariant="normal">/</mi><mn>2</mn><mo stretchy="false">)</mo><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+Z_1^{(q)}
+=
+\frac{
+e^{-(3/2)\beta\hbar\omega}
+}{
+1-e^{-2\beta\hbar\omega}
+}.
+}
+</annotation></semantics></math></span></div>
+<p>Para <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi></mrow><annotation encoding="application/x-tex">N</annotation></semantics></math></span> osciladores independientes,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msup><mi>Z</mi><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msup><mo>=</mo><msup><mrow><mo fence="true">[</mo><mfrac><msup><mi>e</mi><mrow><mo>−</mo><mo stretchy="false">(</mo><mn>3</mn><mi mathvariant="normal">/</mi><mn>2</mn><mo stretchy="false">)</mo><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow></mfrac><mo fence="true">]</mo></mrow><mi>N</mi></msup><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+Z^{(q)}
+=
+\left[
+\frac{
+e^{-(3/2)\beta\hbar\omega}
+}{
+1-e^{-2\beta\hbar\omega}
+}
+\right]^N.
+}
+</annotation></semantics></math></span></div>
+<p>La energía interna por oscilador es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>u</mi><mi>q</mi></msub><mo>=</mo><mo>−</mo><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u_q
+=
+-\frac{\partial}{\partial\beta}
+\ln Z_1^{(q)}.
+</annotation></semantics></math></span></div>
+<p>Primero,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>ln</mi><mo>⁡</mo><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><mo>−</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>−</mo><mi>ln</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\ln Z_1^{(q)}
+=
+-\frac{3}{2}\beta\hbar\omega
+-
+\ln\left(1-e^{-2\beta\hbar\omega}\right).
+</annotation></semantics></math></span></div>
+<p>Derivando,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><mo>−</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>−</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow></mfrac><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo fence="true">)</mo></mrow><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}
+\ln Z_1^{(q)}
+=
+-\frac{3}{2}\hbar\omega
+-
+\frac{1}{1-e^{-2\beta\hbar\omega}}
+\frac{\partial}{\partial\beta}
+\left(
+1-e^{-2\beta\hbar\omega}
+\right).
+</annotation></semantics></math></span></div>
+<p>Como</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mrow><mo fence="true">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo fence="true">)</mo></mrow><mo>=</mo><mn>2</mn><mi mathvariant="normal">ℏ</mi><mi>ω</mi><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}
+\left(
+1-e^{-2\beta\hbar\omega}
+\right)
+=
+2\hbar\omega e^{-2\beta\hbar\omega},
+</annotation></semantics></math></span></div>
+<p>queda</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><mi mathvariant="normal">∂</mi><mrow><mi mathvariant="normal">∂</mi><mi>β</mi></mrow></mfrac><mi>ln</mi><mo>⁡</mo><msubsup><mi>Z</mi><mn>1</mn><mrow><mo stretchy="false">(</mo><mi>q</mi><mo stretchy="false">)</mo></mrow></msubsup><mo>=</mo><mo>−</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>−</mo><mfrac><mrow><mn>2</mn><mi mathvariant="normal">ℏ</mi><mi>ω</mi><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\frac{\partial}{\partial\beta}
+\ln Z_1^{(q)}
+=
+-\frac{3}{2}\hbar\omega
+-
+\frac{
+2\hbar\omega e^{-2\beta\hbar\omega}
+}{
+1-e^{-2\beta\hbar\omega}
+}.
+</annotation></semantics></math></span></div>
+<p>Por tanto,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>u</mi><mi>q</mi></msub><mo>=</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>+</mo><mfrac><mrow><mn>2</mn><mi mathvariant="normal">ℏ</mi><mi>ω</mi><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup></mrow></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u_q
+=
+\frac{3}{2}\hbar\omega
++
+\frac{
+2\hbar\omega e^{-2\beta\hbar\omega}
+}{
+1-e^{-2\beta\hbar\omega}
+}.
+</annotation></semantics></math></span></div>
+<p>Usando</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mfrac><msup><mi>e</mi><mrow><mo>−</mo><mi>x</mi></mrow></msup><mrow><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>x</mi></mrow></msup></mrow></mfrac><mo>=</mo><mfrac><mn>1</mn><mrow><msup><mi>e</mi><mi>x</mi></msup><mo>−</mo><mn>1</mn></mrow></mfrac><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\frac{e^{-x}}{1-e^{-x}}
+=
+\frac{1}{e^x-1},
+</annotation></semantics></math></span></div>
+<p>con <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow><annotation encoding="application/x-tex">x=2\beta\hbar\omega</annotation></semantics></math></span>, obtenemos</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>u</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>+</mo><mfrac><mrow><mn>2</mn><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow><mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo>−</mo><mn>1</mn></mrow></mfrac><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+u_q(T)
+=
+\frac{3}{2}\hbar\omega
++
+\frac{
+2\hbar\omega
+}{
+e^{2\beta\hbar\omega}-1
+}.
+}
+</annotation></semantics></math></span></div>
+<p>En el límite de alta temperatura,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>≪</mo><mn>1</mn><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\beta\hbar\omega\ll 1,
+</annotation></semantics></math></span></div>
+<p>se tiene</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>e</mi><mrow><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow></msup><mo>−</mo><mn>1</mn><mo>≈</mo><mn>2</mn><mi>β</mi><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+e^{2\beta\hbar\omega}-1
+\approx
+2\beta\hbar\omega,
+</annotation></semantics></math></span></div>
+<p>por lo tanto</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>u</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>≈</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>+</mo><mfrac><mn>1</mn><mi>β</mi></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u_q(T)
+\approx
+\frac{3}{2}\hbar\omega
++
+\frac{1}{\beta}.
+</annotation></semantics></math></span></div>
+<p>Así,</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>u</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>≈</mo><mfrac><mn>3</mn><mn>2</mn></mfrac><mi mathvariant="normal">ℏ</mi><mi>ω</mi><mo>+</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+u_q(T)
+\approx
+\frac{3}{2}\hbar\omega
++
+k_BT.
+</annotation></semantics></math></span></div>
+<p>El término constante <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>3</mn><mi mathvariant="normal">/</mi><mn>2</mn><mo stretchy="false">)</mo><mi mathvariant="normal">ℏ</mi><mi>ω</mi></mrow><annotation encoding="application/x-tex">(3/2)\hbar\omega</annotation></semantics></math></span> es la energía fundamental del oscilador cuántico restringido. En el régimen clásico, la contribución térmica dominante es</p>
+<div class="math-block" tabindex="0" role="region" aria-label="Fórmula matemática; use las flechas para desplazarla"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><menclose notation="box"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="false"><mstyle scriptlevel="0" displaystyle="true"><mrow><msub><mi>u</mi><mi>q</mi></msub><mo stretchy="false">(</mo><mi>T</mi><mo stretchy="false">)</mo><mo>∼</mo><msub><mi>k</mi><mi>B</mi></msub><mi>T</mi><mi mathvariant="normal">.</mi></mrow></mstyle></mstyle></mstyle></menclose></mrow><annotation encoding="application/x-tex">
+\boxed{
+u_q(T)\sim k_BT.
+}
+</annotation></semantics></math></span></div><footer class="lectura-footer"><span class="fuente">Fuente: Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001), problema 5.8 según el archivo de trabajo. Autor, título y edición cotejados con el editor.<br>Archivo de trabajo: <code>prob_S-5-8.tex</code>.</span><button class="boton principal" data-ir="3">Explorar los resultados →</button></footer></article></section>
+<section id="pagina-3" class="pagina laboratorio" role="tabpanel" aria-labelledby="tab-3" hidden>
+<div class="barra-viz"><div class="selector" id="resultados" aria-label="Resultado representado"><button type="button" data-resultado="clasico" aria-pressed="true">Clásico</button><button type="button" data-resultado="limites" aria-pressed="false">Límites</button><button type="button" data-resultado="cuantico" aria-pressed="false">Pared cuántica</button></div><nav class="acciones" aria-label="Herramientas de exploración"><button id="pausa" class="boton principal" aria-pressed="false">Explorar</button><button id="paso" class="boton">Paso</button><button id="reiniciar" class="boton">Reiniciar</button><button id="graficas" class="boton" aria-pressed="false">Gráficas</button><button id="pantalla-completa" class="boton" aria-label="Pantalla completa">Ampliar</button></nav></div>
+<div class="ecuacion cristal"><p class="formula" id="formula"></p><div class="numeros" id="numeros"></div></div>
+<div class="cuerpo-viz"><div class="escena" id="escena" tabindex="0" role="img" aria-label="Escena interactiva del modelo" aria-describedby="descripcion-escena"><svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg><div id="pie-escena"></div></div><aside id="panel-graficas" class="panel-graficas cristal" hidden><h2 id="titulo-grafica"></h2><svg id="grafica" class="grafica" role="img" aria-label="Gráfica del resultado seleccionado"></svg><div class="leyenda" id="leyenda"></div></aside></div>
+<div class="dock cristal"><div class="parametros"><div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="T" aria-pressed="false" id="etiqueta-T">Temperatura · kBT</button><output id="salida-T" for="T">1 E₀</output></div><input type="range" id="T" min="0.1" max="6" step="0.1" value="1" aria-labelledby="etiqueta-T"></div>
+<div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="epsilon" aria-pressed="false" id="etiqueta-epsilon">Salto clásico · ε</button><output id="salida-epsilon" for="epsilon">2 E₀</output></div><input type="range" id="epsilon" min="0" max="12" step="0.1" value="2" aria-labelledby="etiqueta-epsilon"></div>
+<div class="parametro"><div class="parametro-cabecera"><button type="button" data-seleccion="omega" aria-pressed="false" id="etiqueta-omega">Frecuencia · ω</button><output id="salida-omega" for="omega">1 ω₀</output></div><input type="range" id="omega" min="0.5" max="3" step="0.1" value="1" aria-labelledby="etiqueta-omega"></div></div><div class="dock-pie"><span id="concepto"></span><div class="herramientas"><button id="vista-inicial" class="enlace">Restablecer vista</button><button id="ayuda" class="enlace" aria-expanded="false" aria-controls="detalle">Modelo</button><span class="etiqueta-render" id="modo-render">2D</span></div></div></div>
+<aside class="detalle cristal" id="detalle" role="dialog" aria-labelledby="titulo-modelo" hidden><h2 id="titulo-modelo">Cómo leer el modelo</h2><button id="cerrar-detalle" class="boton cerrar" aria-label="Cerrar Modelo">×</button><p>Ejemplo ilustrativo en unidades ℏ=1 y E₀=ℏω₀. Las dos parábolas representan el potencial clásico: la mitad verde q&lt;0 está elevada en ε y la azul q&gt;0 conserva el mínimo cero. El segmento lavanda mide el salto con factor 0,18 unidades por E₀; la curvatura del dibujo usa coordenadas reducidas q√[mω²/E₀].</p><p>Los puntos señalan la región de configuraciones de equilibrio, con posiciones esquemáticas acotadas al tramo de la parábola; sus cantidades aproximan P₋ y P₊ y el texto muestra los pesos exactos. La energía térmica cuadrática aporta kBT, mientras el salto aporta εP₋. La integral clásica de la solución se conserva; el valor Z₁/h de la escena usa una celda h=2πℏ.</p><p>La vista Pared cuántica representa exclusivamente ε→∞. La línea lavanda es la pared impenetrable q=0; los primeros ocho niveles azules tienen n impar, y las longitudes verdes miden su probabilidad. Los cálculos incluyen todos los niveles. La gráfica cuántica compara con el límite clásico kBT. El control del salto finito se activa en las otras dos vistas; en Pared cuántica permanece desactivado.</p><p>El potencial clásico se construye como dos perfiles con espesor, costillas y una regla de posición. El borde elevado conserva el salto ε y los puntos siguen representando configuraciones independientes de equilibrio. En Pared cuántica, la pared sostiene un expositor de niveles impares con reglas de probabilidad; la vista mantiene la misma serie infinita y sus pesos.</p><p>Paso avanza la temperatura reducida en 0,1 y vuelve al mínimo al superar el máximo. Explorar aplica ese paso cada 1,2 segundos reales. Este recorrido compara estados de equilibrio. Reiniciar recupera los parámetros iniciales, el primer resultado y la cámara; navegar conserva los parámetros y detiene el recorrido.</p><p>Arrastra para girar y usa la rueda o un gesto de dos dedos para acercar. Con la escena enfocada, las flechas giran y +/− ajustan el zoom. Restablecer vista conserva los parámetros; Reiniciar recupera parámetros, resultado inicial y estado pausado.</p><p>Three.js y OrbitControls 0.180.0 se cargan desde jsDelivr para dibujar la escena 3D; requieren conexión y WebGL 2. La alternativa 2D, las fórmulas y los cálculos están incluidos en este archivo y funcionan sin conexión. El respaldo conserva los controles y la misma escala física.</p><p id="estado-carga">Vista 2D preparada; el 3D se carga al abrir Visualización.</p><p class="fuente">Fuente: Silvio R. A. Salinas, <a href="https://link.springer.com/book/10.1007/978-1-4757-3508-6" target="_blank" rel="noopener"><cite>Introduction to Statistical Physics</cite></a>, Springer (2001), problema 5.8 según el archivo de trabajo. Autor, título y edición cotejados con el editor.<br>La numeración procede del código del archivo de trabajo. El enunciado y el desarrollo corresponden a su adaptación en español.</p></aside>
+<p id="descripcion-escena" class="sr-only"></p><p id="resumen-accesible" class="sr-only" aria-live="polite"></p>
+</section></main>
+<script id="fuente-original" type="application/json">{"archivo":"prob_S-5-8.tex","sha256":"7e7ae01fc5cc4a792b2274e790f58d834894d2c1840b8be20dfc2bfd074fa8e6","tex":"\\item \\textbf{Oscilador clásico asimétrico con salto de energía.}\n\n\\begin{tcolorbox}[colback=blue!2!white,colframe=blue!55!black,title={Enunciado}]\nConsidere un sistema de \\(N\\) osciladores localizados unidimensionales, a temperatura \\(T\\), descrito por el Hamiltoniano clásico\n\\[\n\\mathcal{H}\n=\n\\sum_{i=1}^{N}\n\\left[\n\\frac{p_i^2}{2m}\n+\nV(q_i)\n\\right],\n\\]\ndonde el potencial de un oscilador está dado por\n\\[\nV(q)=\n\\begin{cases}\n\\dfrac{1}{2}m\\omega^2q^2, & q>0,\\\\[6pt]\n\\dfrac{1}{2}m\\omega^2q^2+\\epsilon, & q\u003c0,\n\\end{cases}\n\\]\ncon \\(\\epsilon>0\\).\n\n\\begin{itemize}\n    \\item[(a)] Obtenga la función de partición canónica clásica del sistema. Calcule la energía interna por oscilador \\(u=u(T)\\). Analice la forma de \\(u(T)\\) en los límites \\(\\epsilon\\to 0\\) y \\(\\epsilon\\to\\infty\\).\n    \\item[(b)] Considere ahora el análogo cuántico de este modelo en el límite \\(\\epsilon\\to\\infty\\). Obtenga una expresión para la función de partición canónica. Determine la energía interna por oscilador de este análogo cuántico.\n\\end{itemize}\n\\end{tcolorbox}\n\n\\begin{comment}\n\\subsubsection*{(a) Función de partición clásica}\n\nComo los osciladores son localizados e independientes, el Hamiltoniano total se puede escribir como suma de Hamiltonianos de una partícula:\n\\[\n\\mathcal{H}\n=\n\\sum_{i=1}^{N}\\mathcal{H}_i,\n\\qquad\n\\mathcal{H}_i\n=\n\\frac{p_i^2}{2m}+V(q_i).\n\\]\n\nPor tanto, la función de partición canónica factoriza:\n\\[\nZ=Z_1^N,\n\\]\ndonde \\(Z_1\\) es la función de partición de un solo oscilador:\n\\[\nZ_1\n=\n\\int_{-\\infty}^{+\\infty}dp\n\\int_{-\\infty}^{+\\infty}dq\\,\n\\exp\\left[\n-\\beta\\left(\n\\frac{p^2}{2m}+V(q)\n\\right)\n\\right].\n\\]\n\nComo la parte cinética y la parte configuracional se separan,\n\\[\nZ_1\n=\n\\left[\n\\int_{-\\infty}^{+\\infty}\ndp\\,\ne^{-\\beta p^2/(2m)}\n\\right]\n\\left[\n\\int_{-\\infty}^{+\\infty}\ndq\\,\ne^{-\\beta V(q)}\n\\right].\n\\]\n\nLa integral en momentos es gaussiana:\n\\[\n\\int_{-\\infty}^{+\\infty}\ndp\\,\ne^{-\\beta p^2/(2m)}\n=\n\\sqrt{\\frac{2\\pi m}{\\beta}}.\n\\]\n\nAhora calculamos la integral en coordenadas. Como el potencial cambia según el signo de \\(q\\), separamos:\n\\[\n\\int_{-\\infty}^{+\\infty}dq\\,e^{-\\beta V(q)}\n=\n\\int_{0}^{+\\infty}dq\\,\ne^{-\\beta m\\omega^2q^2/2}\n+\n\\int_{-\\infty}^{0}dq\\,\ne^{-\\beta(m\\omega^2q^2/2+\\epsilon)}.\n\\]\n\nEn el segundo término, el factor \\(e^{-\\beta\\epsilon}\\) es constante:\n\\[\n\\int_{-\\infty}^{+\\infty}dq\\,e^{-\\beta V(q)}\n=\n\\int_{0}^{+\\infty}dq\\,\ne^{-\\beta m\\omega^2q^2/2}\n+\ne^{-\\beta\\epsilon}\n\\int_{-\\infty}^{0}dq\\,\ne^{-\\beta m\\omega^2q^2/2}.\n\\]\n\nComo\n\\[\ne^{-\\beta m\\omega^2q^2/2}\n\\]\nes una función par,\n\\[\n\\int_{-\\infty}^{0}dq\\,\ne^{-\\beta m\\omega^2q^2/2}\n=\n\\int_{0}^{+\\infty}dq\\,\ne^{-\\beta m\\omega^2q^2/2}.\n\\]\n\nLuego,\n\\[\n\\int_{-\\infty}^{+\\infty}dq\\,e^{-\\beta V(q)}\n=\n\\left(1+e^{-\\beta\\epsilon}\\right)\n\\int_{0}^{+\\infty}dq\\,\ne^{-\\beta m\\omega^2q^2/2}.\n\\]\n\nUsamos\n\\[\n\\int_{-\\infty}^{+\\infty}e^{-aq^2}\\,dq\n=\n\\sqrt{\\frac{\\pi}{a}},\n\\qquad a>0,\n\\]\npor lo que\n\\[\n\\int_0^{+\\infty}e^{-aq^2}\\,dq\n=\n\\frac{1}{2}\\sqrt{\\frac{\\pi}{a}}.\n\\]\n\nCon\n\\[\na=\\frac{\\beta m\\omega^2}{2},\n\\]\nse obtiene\n\\[\n\\int_{0}^{+\\infty}dq\\,\ne^{-\\beta m\\omega^2q^2/2}\n=\n\\frac{1}{2}\n\\sqrt{\\frac{2\\pi}{\\beta m\\omega^2}}.\n\\]\n\nPor tanto,\n\\[\n\\int_{-\\infty}^{+\\infty}dq\\,e^{-\\beta V(q)}\n=\n\\frac{1}{2}\n\\sqrt{\\frac{2\\pi}{\\beta m\\omega^2}}\n\\left(1+e^{-\\beta\\epsilon}\\right).\n\\]\n\nMultiplicando la parte cinética y la parte configuracional:\n\\[\nZ_1\n=\n\\sqrt{\\frac{2\\pi m}{\\beta}}\n\\,\n\\frac{1}{2}\n\\sqrt{\\frac{2\\pi}{\\beta m\\omega^2}}\n\\left(1+e^{-\\beta\\epsilon}\\right).\n\\]\n\nSimplificando,\n\\[\nZ_1\n=\n\\frac{1}{2}\n\\frac{2\\pi}{\\beta\\omega}\n\\left(1+e^{-\\beta\\epsilon}\\right).\n\\]\n\nAsí,\n\\[\n\\boxed{\nZ_1\n=\n\\frac{\\pi}{\\beta\\omega}\n\\left(1+e^{-\\beta\\epsilon}\\right).\n}\n\\]\n\nEntonces la función de partición total es\n\\[\n\\boxed{\nZ\n=\n\\left[\n\\frac{\\pi}{\\beta\\omega}\n\\left(1+e^{-\\beta\\epsilon}\\right)\n\\right]^N.\n}\n\\]\n\nLa energía interna total se obtiene desde\n\\[\nU\n=\n-\\frac{\\partial}{\\partial\\beta}\\ln Z.\n\\]\n\nComo\n\\[\n\\ln Z\n=\nN\\ln Z_1,\n\\]\nla energía interna por oscilador es\n\\[\nu\n=\n\\frac{U}{N}\n=\n-\\frac{\\partial}{\\partial\\beta}\\ln Z_1.\n\\]\n\nAhora,\n\\[\n\\ln Z_1\n=\n\\ln\\left(\\frac{\\pi}{\\omega}\\right)\n-\\ln\\beta\n+\n\\ln\\left(1+e^{-\\beta\\epsilon}\\right).\n\\]\n\nDerivando respecto de \\(\\beta\\),\n\\[\n\\frac{\\partial}{\\partial\\beta}\\ln Z_1\n=\n-\\frac{1}{\\beta}\n+\n\\frac{1}{1+e^{-\\beta\\epsilon}}\n\\frac{\\partial}{\\partial\\beta}\n\\left(1+e^{-\\beta\\epsilon}\\right).\n\\]\n\nComo\n\\[\n\\frac{\\partial}{\\partial\\beta}\n\\left(1+e^{-\\beta\\epsilon}\\right)\n=\n-\\epsilon e^{-\\beta\\epsilon},\n\\]\nqueda\n\\[\n\\frac{\\partial}{\\partial\\beta}\\ln Z_1\n=\n-\\frac{1}{\\beta}\n-\n\\frac{\\epsilon e^{-\\beta\\epsilon}}{1+e^{-\\beta\\epsilon}}.\n\\]\n\nPor tanto,\n\\[\nu\n=\n-\\frac{\\partial}{\\partial\\beta}\\ln Z_1\n=\n\\frac{1}{\\beta}\n+\n\\frac{\\epsilon e^{-\\beta\\epsilon}}{1+e^{-\\beta\\epsilon}}.\n\\]\n\nUsando \\(\\beta=1/(k_BT)\\),\n\\[\n\\boxed{\nu(T)\n=\nk_BT\n+\n\\frac{\\epsilon}{e^{\\beta\\epsilon}+1}.\n}\n\\]\n\nEl primer término,\n\\[\nk_BT,\n\\]\nproviene de los dos términos cuadráticos clásicos, uno cinético y uno potencial. Cada contribución cuadrática aporta \\(\\frac{1}{2}k_BT\\).\n\nEl segundo término,\n\\[\n\\frac{\\epsilon}{e^{\\beta\\epsilon}+1},\n\\]\ncorresponde a la energía adicional asociada a la mitad \\(q\u003c0\\) del potencial.\n\nPara \\(\\epsilon\\to 0\\),\n\\[\n\\frac{\\epsilon}{e^{\\beta\\epsilon}+1}\n\\to\n0,\n\\]\nya que el numerador tiende a cero. Por tanto,\n\\[\n\\boxed{\nu(T)\\to k_BT\n\\qquad\n(\\epsilon\\to 0).\n}\n\\]\n\nEn este límite se recupera el oscilador armónico clásico usual.\n\nPara \\(\\epsilon\\to\\infty\\),\n\\[\ne^{\\beta\\epsilon}\\to\\infty,\n\\]\nde modo que\n\\[\n\\frac{\\epsilon}{e^{\\beta\\epsilon}+1}\\to 0.\n\\]\n\nAsí,\n\\[\n\\boxed{\nu(T)\\to k_BT\n\\qquad\n(\\epsilon\\to\\infty).\n}\n\\]\n\nEn este segundo límite, la región \\(q\u003c0\\) queda suprimida estadísticamente, pero el movimiento permitido en \\(q>0\\) sigue teniendo una coordenada cuadrática y un momento cuadrático, por lo que la energía media clásica sigue siendo \\(k_BT\\).\n\n\\subsubsection*{(b) Análogo cuántico en el límite \\(\\epsilon\\to\\infty\\)}\n\nEn el límite\n\\[\n\\epsilon\\to\\infty,\n\\]\nla región \\(q\u003c0\\) queda prohibida. El sistema cuántico equivalente corresponde a un oscilador armónico restringido a la semirrecta\n\\[\nq>0,\n\\]\ncon una pared impenetrable en\n\\[\nq=0.\n\\]\n\nEl oscilador armónico cuántico usual en toda la recta tiene niveles\n\\[\nE_n\n=\n\\hbar\\omega\n\\left(\nn+\\frac{1}{2}\n\\right),\n\\qquad\nn=0,1,2,\\dots\n\\]\n\nSus autofunciones tienen paridad definida. Las funciones pares no se anulan en \\(q=0\\), mientras que las funciones impares sí satisfacen\n\\[\n\\psi(0)=0.\n\\]\n\nComo en el problema con pared infinita en \\(q=0\\) debe cumplirse\n\\[\n\\psi(0)=0,\n\\]\nsolo sobreviven los estados impares del oscilador armónico completo. Es decir,\n\\[\nn=1,3,5,\\dots\n\\]\n\nEscribimos\n\\[\nn=2r+1,\n\\qquad\nr=0,1,2,\\dots\n\\]\n\nEntonces los niveles permitidos son\n\\[\nE_r\n=\n\\hbar\\omega\n\\left(\n2r+1+\\frac{1}{2}\n\\right)\n=\n\\hbar\\omega\n\\left(\n2r+\\frac{3}{2}\n\\right).\n\\]\n\nLa función de partición de un oscilador es\n\\[\nZ_1^{(q)}\n=\n\\sum_{r=0}^{\\infty}\n\\exp\\left[\n-\\beta\\hbar\\omega\n\\left(\n2r+\\frac{3}{2}\n\\right)\n\\right].\n\\]\n\nSeparando el factor independiente de \\(r\\),\n\\[\nZ_1^{(q)}\n=\ne^{-(3/2)\\beta\\hbar\\omega}\n\\sum_{r=0}^{\\infty}\ne^{-2r\\beta\\hbar\\omega}.\n\\]\n\nLa suma es geométrica:\n\\[\n\\sum_{r=0}^{\\infty}x^r=\\frac{1}{1-x},\n\\qquad |x|\u003c1.\n\\]\n\nCon\n\\[\nx=e^{-2\\beta\\hbar\\omega},\n\\]\nobtenemos\n\\[\n\\boxed{\nZ_1^{(q)}\n=\n\\frac{\ne^{-(3/2)\\beta\\hbar\\omega}\n}{\n1-e^{-2\\beta\\hbar\\omega}\n}.\n}\n\\]\n\nPara \\(N\\) osciladores independientes,\n\\[\n\\boxed{\nZ^{(q)}\n=\n\\left[\n\\frac{\ne^{-(3/2)\\beta\\hbar\\omega}\n}{\n1-e^{-2\\beta\\hbar\\omega}\n}\n\\right]^N.\n}\n\\]\n\nLa energía interna por oscilador es\n\\[\nu_q\n=\n-\\frac{\\partial}{\\partial\\beta}\n\\ln Z_1^{(q)}.\n\\]\n\nPrimero,\n\\[\n\\ln Z_1^{(q)}\n=\n-\\frac{3}{2}\\beta\\hbar\\omega\n-\n\\ln\\left(1-e^{-2\\beta\\hbar\\omega}\\right).\n\\]\n\nDerivando,\n\\[\n\\frac{\\partial}{\\partial\\beta}\n\\ln Z_1^{(q)}\n=\n-\\frac{3}{2}\\hbar\\omega\n-\n\\frac{1}{1-e^{-2\\beta\\hbar\\omega}}\n\\frac{\\partial}{\\partial\\beta}\n\\left(\n1-e^{-2\\beta\\hbar\\omega}\n\\right).\n\\]\n\nComo\n\\[\n\\frac{\\partial}{\\partial\\beta}\n\\left(\n1-e^{-2\\beta\\hbar\\omega}\n\\right)\n=\n2\\hbar\\omega e^{-2\\beta\\hbar\\omega},\n\\]\nqueda\n\\[\n\\frac{\\partial}{\\partial\\beta}\n\\ln Z_1^{(q)}\n=\n-\\frac{3}{2}\\hbar\\omega\n-\n\\frac{\n2\\hbar\\omega e^{-2\\beta\\hbar\\omega}\n}{\n1-e^{-2\\beta\\hbar\\omega}\n}.\n\\]\n\nPor tanto,\n\\[\nu_q\n=\n\\frac{3}{2}\\hbar\\omega\n+\n\\frac{\n2\\hbar\\omega e^{-2\\beta\\hbar\\omega}\n}{\n1-e^{-2\\beta\\hbar\\omega}\n}.\n\\]\n\nUsando\n\\[\n\\frac{e^{-x}}{1-e^{-x}}\n=\n\\frac{1}{e^x-1},\n\\]\ncon \\(x=2\\beta\\hbar\\omega\\), obtenemos\n\\[\n\\boxed{\nu_q(T)\n=\n\\frac{3}{2}\\hbar\\omega\n+\n\\frac{\n2\\hbar\\omega\n}{\ne^{2\\beta\\hbar\\omega}-1\n}.\n}\n\\]\n\nEn el límite de alta temperatura,\n\\[\n\\beta\\hbar\\omega\\ll 1,\n\\]\nse tiene\n\\[\ne^{2\\beta\\hbar\\omega}-1\n\\approx\n2\\beta\\hbar\\omega,\n\\]\npor lo tanto\n\\[\nu_q(T)\n\\approx\n\\frac{3}{2}\\hbar\\omega\n+\n\\frac{1}{\\beta}.\n\\]\n\nAsí,\n\\[\nu_q(T)\n\\approx\n\\frac{3}{2}\\hbar\\omega\n+\nk_BT.\n\\]\n\nEl término constante \\((3/2)\\hbar\\omega\\) es la energía fundamental del oscilador cuántico restringido. En el régimen clásico, la contribución térmica dominante es\n\\[\n\\boxed{\nu_q(T)\\sim k_BT.\n}\n\\]\n\\end{comment}\n"}</script>
+<script>
+(() => {
+'use strict';
+const configuracion={"code":"S-5-8","title":"Oscilador asimétrico y pared cuántica","unit":"Potenciales discontinuos y semioscilador","tags":"equipartición, salto de potencial, niveles impares, pared infinita","params":[["T","Temperatura · kBT",0.1,6,0.1,1,"E₀"],["epsilon","Salto clásico · ε",0,12,0.1,2,"E₀"],["omega","Frecuencia · ω",0.5,3,0.1,1,"ω₀"]],"results":[["clasico","Clásico","{u} = kBT + ε/(eᵝᵋ+1)","La mitad elevada contribuye con ε multiplicado por su probabilidad."],["limites","Límites","ε→0 o ∞: {u}→kBT","La población en q\u003c0 disminuye al aumentar el salto."],["cuantico","Pared cuántica","{u_q} = 3ℏω/2 + 2ℏω/(e²ᵝℏω−1)","La pared en q=0 conserva los estados impares y eleva la energía fundamental."]],"simbolos":{"u":"epsilon","u_q":"omega"},"model":"\u003cp>Ejemplo ilustrativo en unidades ℏ=1 y E₀=ℏω₀. Las dos parábolas representan el potencial clásico: la mitad verde q&lt;0 está elevada en ε y la azul q&gt;0 conserva el mínimo cero. El segmento lavanda mide el salto con factor 0,18 unidades por E₀; la curvatura del dibujo usa coordenadas reducidas q√[mω²/E₀].\u003c/p>\u003cp>Los puntos señalan la región de configuraciones de equilibrio, con posiciones esquemáticas acotadas al tramo de la parábola; sus cantidades aproximan P₋ y P₊ y el texto muestra los pesos exactos. La energía térmica cuadrática aporta kBT, mientras el salto aporta εP₋. La integral clásica de la solución se conserva; el valor Z₁/h de la escena usa una celda h=2πℏ.\u003c/p>\u003cp>La vista Pared cuántica representa exclusivamente ε→∞. La línea lavanda es la pared impenetrable q=0; los primeros ocho niveles azules tienen n impar, y las longitudes verdes miden su probabilidad. Los cálculos incluyen todos los niveles. La gráfica cuántica compara con el límite clásico kBT. El control del salto finito se activa en las otras dos vistas; en Pared cuántica permanece desactivado.\u003c/p>\u003cp>El potencial clásico se construye como dos perfiles con espesor, costillas y una regla de posición. El borde elevado conserva el salto ε y los puntos siguen representando configuraciones independientes de equilibrio. En Pared cuántica, la pared sostiene un expositor de niveles impares con reglas de probabilidad; la vista mantiene la misma serie infinita y sus pesos.\u003c/p>","area":"mecanica-estadistica","kind":"S-5-8","pasoDescripcion":"Paso avanza la temperatura reducida en 0,1 y vuelve al mínimo al superar el máximo"};
+function calcular(s){const pminus=1/(Math.exp(s.epsilon/s.T)+1),u=s.T+s.epsilon*pminus,zBare=Math.PI*s.T/s.omega*(1+Math.exp(-s.epsilon/s.T)),q=impar(s.T,s.omega);return {pminus,pplus:1-pminus,u,zBare,z:zBare/(2*Math.PI),uq:q.u,logZq:q.logZ,P:q.P,cola:q.cola};}
+function numerosModelo(d){if(estado.resultado==='cuantico')return `<strong>u_q/E₀ = ${fmt(d.uq)} · ln Z_q = ${fmt(d.logZq)}</strong><br>ε→∞ · probabilidad en niveles superiores: ${fmt(1-sumar(d.P.slice(0,8)),6)}`;return `<strong>u/E₀ = ${fmt(d.u)} · P(q&lt;0) = ${fmt(d.pminus)}</strong><br>Z₁/h = ${fmt(d.z)} · u_q/E₀ = ${fmt(d.uq)}<br>Cuántico: pared infinita en q=0`;}
+const $=id=>document.getElementById(id),SVG='http://www.w3.org/2000/svg';
+const color=nombre=>getComputedStyle(document.documentElement).getPropertyValue('--color-'+nombre).trim();
+const tonos={azul:color('onda'),verde:color('verde'),lavanda:color('punto'),neutro:color('texto-secundario'),borde:color('borde'),base:color('secundario'),claro:color('primario')};
+Object.assign(tonos,{metal:'#B8C3D0',metalClaro:'#E1E6ED',metalOscuro:'#7E8B9D',papel:'#F1F4F8',caucho:'#8993A3'});
+const inicial=Object.fromEntries(configuracion.params.map(p=>[p[0],p[5]]));
+const estado={...inicial,pagina:1,resultado:configuracion.results[0][0],seleccion:'',pausado:true,graficas:false,tiempo:0,pasos:0,render:'2D'};
+let vista3D=null,promesa3D=null,marco=null,anterior=null,intervalo=0,sucio=true,anuncio=null,ancho=1,alto=1,escenaActual=null;
+const movimientoReducido=matchMedia('(prefers-reduced-motion: reduce)');
+const fmt=(x,d=3)=>!Number.isFinite(x)?(x===Infinity?'∞':x===-Infinity?'−∞':'singular'):Number(x).toLocaleString('es-CL',{maximumFractionDigits:d});
+const entero=x=>Math.round(x),fac=n=>{let r=1;for(let i=2;i<=n;i++)r*=i;return r;};
+function combinacion(n,r){if(r<0||r>n)return 0;r=Math.min(r,n-r);let q=1;for(let i=1;i<=r;i++)q=q*(n-r+i)/i;return Math.round(q);}
+function composicion(N,M,indice){const a=[];for(let j=0;j<N-1;j++){const restantes=N-j-1;for(let n=0;n<=M;n++){const cuentas=combinacion(M-n+restantes-1,restantes-1);if(indice<cuentas){a.push(n);M-=n;break;}indice-=cuentas;}}a.push(M);return a;}
+function subconjunto(V,N,indice){const a=[];let desde=0;for(let j=0;j<N;j++)for(let x=desde;x<V;x++){const cuenta=combinacion(V-x-1,N-j-1);if(indice<cuenta){a.push(x);desde=x+1;break;}indice-=cuenta;}return a;}
+function permutacion(N,indice){const libres=Array.from({length:N},(_,i)=>i),a=[];while(libres.length){const f=fac(libres.length-1),q=Math.floor(indice/f);a.push(libres.splice(q,1)[0]);indice%=f;}return a;}
+// Model calculations are independent of the rendering backend.
+const sumar=a=>a.reduce((q,x)=>q+x,0),xlogx=x=>x>0?x*Math.log(x):0;
+function logGamma(z){const c=[676.5203681218851,-1259.1392167224028,771.3234287776531,-176.6150291621406,12.507343278686905,-.13857109526572012,9.984369578019572e-6,1.5056327351493116e-7];if(z<.5)return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-logGamma(1-z);z-=1;let x=.99999999999980993;for(let i=0;i<c.length;i++)x+=c[i]/(z+i+1);const t=z+c.length-.5;return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x);}
+function gibbs(energias,T){const Emin=Math.min(...energias),w=energias.map(E=>Math.exp(-(E-Emin)/T)),z=sumar(w),P=w.map(x=>x/z),u=sumar(P.map((p,i)=>p*energias[i])),e2=sumar(P.map((p,i)=>p*energias[i]**2)),variance=Math.max(0,e2-u*u),s=-sumar(P.map(xlogx));return {P,u,e2,variance,s,c:variance/T**2,logZ:Math.log(z)-Emin/T};}
+function impar(T,epsilon){const x=2*epsilon/T,q=Math.exp(-x),nr=1/Math.expm1(x),u=1.5*epsilon+2*epsilon*nr,logZ=-1.5*epsilon/T-Math.log(-Math.expm1(-x)),s=-Math.log(-Math.expm1(-x))+x*nr,c=x*x*q/(1-q)**2,P=Array.from({length:10},(_,r)=>(1-q)*q**r);return {u,logZ,s,c,P,cola:q**10,nr};}
+function integrar(f,a,b,n=1200){n+=n%2;let q=f(a)+f(b);for(let i=1;i<n;i++)q+=(i%2?4:2)*f(a+(b-a)*i/n);return q*(b-a)/(3*n);}
+function langevin(x){return Math.abs(x)<.01?x/3-x**3/45+2*x**5/945:1/Math.tanh(x)-1/x;}
+function halton(i,b){let v=0,f=1/b;while(i){v+=f*(i%b);i=Math.floor(i/b);f/=b;}return v;}
+function puntosBola(n,r=1){return Array.from({length:n},(_,i)=>{const u=halton(i+1,2),c=2*halton(i+1,3)-1,phi=2*Math.PI*halton(i+1,5),R=r*Math.cbrt(u),t=Math.sqrt(1-c*c);return [R*t*Math.cos(phi),R*c,R*t*Math.sin(phi)];});}
+function rejilla(a,b,n=101){return Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));}
+function serie(nombre,tono,xs,f){return {nombre,tono,datos:xs.map(x=>[x,f(x)])};}
+
+function modelo(s=estado){return calcular(s);}
+function ajustar(){const pared=estado.resultado==='cuantico';$('epsilon').disabled=pared;document.querySelector('[data-seleccion=epsilon]').disabled=pared;}
+function elemento(tipo,attrs={},contenido){const e=document.createElementNS(SVG,tipo);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,String(v));if(contenido!==undefined)e.textContent=contenido;return e;}
+function linea(svg,puntos,tono,grosor=1.3,guiones=''){svg.appendChild(elemento('polyline',{points:puntos.map(p=>p.join(',')).join(' '),fill:'none',stroke:tono,'stroke-width':grosor,'stroke-dasharray':guiones,'stroke-linecap':'round'}));}
+function texto(svg,x,y,contenido,tono=tonos.neutro,ancla='middle'){svg.appendChild(elemento('text',{x,y,fill:tono,'text-anchor':ancla},contenido));}
+// Geometría conceptual: las mismas primitivas alimentan Three.js y el respaldo SVG.
+function destacada(clave){return !estado.seleccion||!clave||clave.split(' ').includes(estado.seleccion);}
+function geometria(d){
+ const objetos=[],lineas=[],caras=[],etiquetas=[];
+ const esfera=(p,r,tono='azul',clave='',opacidad=1)=>objetos.push({tipo:'esfera',p,r,tono,clave,opacidad});
+ const caja=(p,tamano,tono='azul',clave='',opacidad=1)=>objetos.push({tipo:'caja',p,tamano,tono,clave,opacidad});
+ const trazo=(puntos,tono='neutro',clave='',opacidad=1)=>lineas.push({puntos,tono,clave,opacidad});
+ const cara=(puntos,tono='verde',opacidad=.3)=>caras.push({puntos,tono,opacidad});
+ const label=(p,texto,tono='neutro',ancla='middle')=>etiquetas.push({p,texto,tono,ancla});
+ const alambre=(centro,lado,tono='neutro',clave='')=>{for(let eje=0;eje<3;eje++)for(const a of [-1,1])for(const b of [-1,1]){const p=centro.map((x,j)=>x+(j===eje?-lado/2:j===(eje+1)%3?a:b)*lado/2),q=[...p];p[eje]=centro[eje]-lado/2;q[eje]=centro[eje]+lado/2;trazo([p,q],tono,clave);}};
+ const circulo=(centro,r,plano='xy',tono='azul',clave='')=>trazo(Array.from({length:65},(_,i)=>{const t=2*Math.PI*i/64,p=[...centro],a=plano==='yz'?1:0,b=plano==='xy'?1:2;p[a]+=r*Math.cos(t);p[b]+=r*Math.sin(t);return p;}),tono,clave);
+ const bola=(centro,r,tono='azul',clave='')=>{for(const plano of ['xy','xz','yz'])circulo(centro,r,plano,tono,clave);};
+ const flecha=(p,q,tono='lavanda',clave='')=>{trazo([p,q],tono,clave);const v=q.map((x,i)=>x-p[i]),len=Math.hypot(...v);if(len<1e-9)return;let u=[v[1],-v[0],0];if(Math.hypot(...u)<1e-9)u=[1,0,0];const n=Math.hypot(...u);u=u.map(x=>x/n*.12);trazo([q.map((x,i)=>x-v[i]/len*.25+u[i]),q,q.map((x,i)=>x-v[i]/len*.25-u[i])],tono,clave);};
+ const barras=(valores,nombres,claves,tonosBarra=['azul','verde','lavanda'])=>{const max=Math.max(.001,...valores),h=3.8/max;for(let i=0;i<valores.length;i++){const x=(i-(valores.length-1)/2)*1.4,y=valores[i]*h;caja([x,-1.9+y/2,0],[.75,Math.max(.005,y),.8],tonosBarra[i%tonosBarra.length],claves||'');label([x,-2.3,0],nombres[i]);label([x,-1.7+y,0],fmt(valores[i]),tonosBarra[i%tonosBarra.length]);}trazo([[-4.7,-1.9,0],[4.7,-1.9,0]]);};
+ let limites=[-5,5,-3,3,-3,3],pie='';
+ if(estado.resultado==='cuantico'){trazo([[0,-2.5,0],[0,3.2,0]],'lavanda','omega');for(let j=0;j<8;j++){const y=-2+j*.62;trazo([[.1,y,0],[3.7,y,0]],'azul','omega');caja([.2+1.7*d.P[j],y+.07,0],[Math.max(.01,3.4*d.P[j]),.12,.5],'verde','T');if(j%2===0)label([3.9,y,0],(2*j+1)+' · n','neutro','start');}label([0,3.5,0],'Pared q=0','lavanda');limites=[-1,5,-3,4,-1,1];}else {const f=estado.epsilon*.18;for(const sign of [-1,1]){const pts=Array.from({length:65},(_,i)=>{const x=sign*(.02+2.6*i/64);return [x,-2+x*x*.45+(sign<0?f:0),0];});trazo(pts,sign<0?'verde':'azul','epsilon omega');}trazo([[-.07,-2,0],[-.07,-2+f,0]],'lavanda','epsilon');label([-.7,-1.9+f/2,.2],'ε='+fmt(estado.epsilon),'lavanda');for(let j=1;j<=80;j++){const neg=j/80<d.pminus,x=(neg?-1:1)*Math.min(2.45,Math.sqrt(-Math.log(Math.max(.01,halton(j,2))))*.85*Math.sqrt(estado.T)),y=-2+x*x*.45+(neg?f:0);esfera([x,y+.12,(halton(j,3)-.5)*1.4],.055,neg?'verde':'azul','T');}label([-2.5,2.7+f,0],'q<0','verde');label([2.5,2.7,0],'q>0','azul');limites=[-3.6,3.6,-2.7,3.5+f,-1.2,1.2];}pie=estado.resultado==='cuantico'?'Solo n=1,3,5,… · caso ε→∞':'P₋='+fmt(d.pminus)+' · P₊='+fmt(d.pplus);
+ return anatomiaPagina3({objetos,lineas,caras,etiquetas,limites,pie},d);
+}
+// Partes del montaje: el mismo sólido alimenta WebGL y SVG, con Y hacia arriba.
+function anatomiaPagina3(g,d){
+ const piezas=g.objetos;
+ const box=(p,tamano,tono='metal',clave='',nombre='soporte')=>piezas.push({tipo:'caja',p,tamano,tono,clave,opacidad:1,nombre});
+ const ball=(p,r,tono='metal',clave='',nombre='rótula')=>piezas.push({tipo:'esfera',p,r,tono,clave,opacidad:1,nombre});
+ const cylinder=(p,r,h,tono='metal',eje=[0,1,0],clave='',nombre='casquillo')=>piezas.push({tipo:'cilindro',p,r,h,eje,tono,clave,opacidad:1,nombre});
+ const ring=(p,r,tono='metalOscuro',eje=[0,1,0],clave='',nombre='aro')=>piezas.push({tipo:'anillo',p,r,eje,tono,clave,opacidad:1,nombre});
+ const beam=(a,b,r,tono='metal',clave='',nombre='barra')=>{const v=b.map((x,i)=>x-a[i]),h=Math.hypot(...v);if(h>1e-8)cylinder(a.map((x,i)=>(x+b[i])/2),r,h,tono,v.map(x=>x/h),clave,nombre);};
+ const screw=(p,eje=[0,1,0])=>{cylinder(p,.038,.028,'metalOscuro',eje,'','tornillo');const a=p.map((x,i)=>x+eje[i]*.016);beam([a[0]-.023,a[1],a[2]],[a[0]+.023,a[1],a[2]],.004,'metalClaro','','ranura');};
+ const feet=(x,y,z,w,depth)=>{for(const a of [-1,1])for(const b of [-1,1]){const p=[x+a*(w/2-.18),y,z+b*(depth/2-.16)];cylinder(p,.11,.12,'caucho',[0,1,0],'','pie');cylinder([p[0],y+.075,p[2]],.13,.03,'metal',[0,1,0],'','brida');}};
+ const deck=(x,y,z,w,depth)=>{feet(x,y-.17,z,w,depth);box([x,y,z],[w,.16,depth],'metal','','bandeja');box([x,y+.09,z],[w-.10,.025,depth-.10],'papel','','superficie');for(const a of [-1,1])for(const b of [-1,1])screw([x+a*(w/2-.12),y+.12,z+b*(depth/2-.12)]);};
+ const ruler=(x,y,z,w,n=20)=>{box([x,y,z],[w,.045,.12],'metalClaro','','regla');for(let i=0;i<=n;i++){const xx=x-w/2+i*w/n;box([xx,y+.026,z+.06-(i%5===0?.065:.035)],[.008,.006,i%5===0?.13:.07],'metalOscuro','','graduación');}};
+ const rack=(x,y,z,w,h)=>{box([x,y-.10,z],[w,.14,.85],'metal','','base del expositor');feet(x,y-.24,z,w,.85);for(const side of [-1,1]){box([x+side*(w/2-.10),y+h/2,z-.36],[.12,h,.12],'metal','','montante');for(const yy of [y,y+h]){box([x+side*(w/2-.10),yy,z-.28],[.24,.14,.20],'metalClaro','','escuadra');screw([x+side*(w/2-.10),yy+.08,z-.28]);}}box([x,y+h,z-.36],[w,.10,.12],'metal','','travesaño');};
+ const histogram=(fixedHeight=0)=>{const bars=piezas.filter(o=>o.tipo==='caja'&&o.clave);if(!bars.length)return;const min=Math.min(...bars.map(o=>o.p[0]-o.tamano[0]/2)),max=Math.max(...bars.map(o=>o.p[0]+o.tamano[0]/2)),floor=Math.min(...bars.map(o=>o.p[1]-o.tamano[1]/2)),top=Math.max(floor+fixedHeight,...bars.map(o=>o.p[1]+o.tamano[1]/2));rack((min+max)/2,floor-.02,-.10,max-min+.75,top-floor+.30);for(const o of bars){box([o.p[0],floor-.01,o.p[2]],[o.tamano[0]+.08,.035,o.tamano[2]+.07],'metalClaro','','zapata del contador');box([o.p[0],o.p[1]+o.tamano[1]/2+.016,o.p[2]],[o.tamano[0]+.025,.025,o.tamano[2]+.025],o.tono,o.clave,'lectura superior');}box([min-.28,(floor+top)/2,-.25],[.19,top-floor+.04,.06],'metalClaro','','regla de lectura');for(let i=0;i<=10;i++){const yy=floor+(top-floor)*i/10;box([min-.28,yy,-.22],[i%5===0?.18:.09,.015,.04],'metalOscuro','','escala común');}g.limites[0]=Math.min(g.limites[0],min-.7);g.limites[1]=Math.max(g.limites[1],max+.7);g.limites[2]=Math.min(g.limites[2],floor-.6);};
+ 
+ if(estado.resultado==='cuantico'){
+  deck(2,-2.70,0,4.8,1.5);
+  box([0,.35,-.20],[.16,6.02,.7],'lavanda','omega','pared infinita');
+  box([4.10,.35,-.42],[.12,6.0,.12],'metal','','montante de espectro');
+  for(let r=0;r<8;r++){
+   const y=-2+r*.62;box([1.9,y,-.18],[3.6,.04,.90],'azul','omega','nivel impar');
+   for(const x of [.18,3.92]){box([x,y-.07,-.34],[x<1?.38:.54,.14,.24],'metalClaro','','escuadra de nivel');screw([x,y+.025,-.33]);}
+   box([1.90,y,.31],[3.4,.035,.09],'metalClaro','','regla de peso');
+   for(let k=0;k<=6;k++)box([.20+3.4*k/6,y+.025,.32],[.012,.012,k%3===0?.055:.03],'metalOscuro','','marca de probabilidad');
+  }
+  for(const o of piezas)if(o.tipo==='caja'&&o.clave==='T')o.nombre='probabilidad cuántica';
+ }else{
+  deck(0,-2.42,0,6.3,2.2);
+  box([0,-2.295,-.87],[5.35,.07,.46],'metalClaro','','zapata de perfiles');
+  for(const sign of [-1,1]){
+   const points=Array.from({length:65},(_,j)=>{const x=sign*(.02+2.6*j/64);return [x,-2+x*x*.45+(sign<0?estado.epsilon*.18:0),-.78];});
+   for(let j=0;j<64;j++){
+    const a=points[j],b=points[j+1];g.caras.push({puntos:[[a[0],-2.28,a[2]],a,b],tono:sign<0?'base':'claro',opacidad:1},{puntos:[[a[0],-2.28,a[2]],b,[b[0],-2.28,b[2]]],tono:sign<0?'base':'claro',opacidad:1});
+    beam(a,b,.028,sign<0?'verde':'azul','epsilon omega','borde del potencial');
+   }
+   for(let k=0;k<9;k++){
+    const x=sign*(.16+2.42*k/8),top=-2+x*x*.45+(sign<0?estado.epsilon*.18:0);
+    box([x,(top-2.28)/2,-.92],[.045,top+2.28,.28],'metalClaro','','costilla del perfil');
+   }
+  }
+  ruler(0,-2.27,.74,5.6,28);
+  for(const o of piezas)if(o.tipo==='esfera')o.nombre='configuración de equilibrio';
+ }
+
+ g.anatomia={version:1,piezas:piezas.length,solidos:piezas.filter(o=>o.nombre).length};
+ return g;
+}
+
+// El encuadre usa los sólidos realmente dibujados, también en el respaldo.
+function puntosAnatomia(g){
+ const points=[];for(const o of g.objetos){let half;if(o.tipo==='caja')half=o.tamano.map(x=>x/2);else if(o.tipo==='esfera')half=[o.r,o.r,o.r];else{const axis=o.eje||[0,1,0];half=axis.map(a=>o.tipo==='cilindro'?Math.abs(a)*o.h/2+o.r*Math.sqrt(Math.max(0,1-a*a)):o.r*(Math.sqrt(Math.max(0,1-a*a))+.09));}for(let n=0;n<8;n++)points.push(o.p.map((x,i)=>x+(n&(1<<i)?1:-1)*half[i]));}
+ for(const l of g.lineas)points.push(...l.puntos);for(const f of g.caras)points.push(...f.puntos);for(const t of g.etiquetas)points.push(t.p);return points;
+}
+let marcoAnatomia2D=null;
+function encuadreAnatomia2D(g){
+ if(marcoAnatomia2D&&marcoAnatomia2D.g===g&&marcoAnatomia2D.w===ancho&&marcoAnatomia2D.h===alto)return marcoAnatomia2D;
+ const e=configuracion.vistaElevada?.5:.16;let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+ for(const p of puntosAnatomia(g)){const x=p[0]+.18*p[2],y=p[1]-e*p[2];xmin=Math.min(xmin,x);xmax=Math.max(xmax,x);ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);}
+ const scale=Math.min(Math.max(1,ancho-30)/(xmax-xmin+.45),Math.max(1,alto-52)/(ymax-ymin+.45));
+ return marcoAnatomia2D={g,w:ancho,h:alto,cx:(xmin+xmax)/2,cy:(ymin+ymax)/2,escala:scale};
+}
+
+function espacio(g){const [xmin,xmax,ymin,ymax]=g.limites,cx=(xmin+xmax)/2,cy=(ymin+ymax)/2,W=xmax-xmin,H=ymax-ymin;return {cx,cy,W,H};}
+function proyectar(p){if(vista3D)return vista3D.proyectar(p);const f=encuadreAnatomia2D(escenaActual),e=configuracion.vistaElevada?.5:.16;return [ancho/2+(p[0]+.18*p[2]-f.cx)*f.escala,(alto-40)/2-(p[1]-e*p[2]-f.cy)*f.escala];}
+function respaldo(g){
+ const svg=$('alternativa');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+ const gs=encuadreAnatomia2D(g),escala=gs.escala;
+ const view=[-.18,configuracion.vistaElevada?.5:.16,1],dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),add=(a,b)=>a.map((v,i)=>v+b[i]),mul=(a,k)=>a.map(v=>v*k),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+ const tint=(c,k)=>{const rgb=c.match(/\w\w/g).map(v=>parseInt(v,16));return '#'+rgb.map(v=>Math.round(k<1?v*k:v+(255-v)*(k-1)).toString(16).padStart(2,'0')).join('');};
+ const faces=[];
+ const face=(points,fill,opacity=1,normal=null)=>{if(normal&&dot(normal,view)<=1e-8)return;faces.push({points,fill,opacity,depth:dot(points.reduce((a,p)=>add(a,mul(p,1/points.length)),[0,0,0]),view)});};
+ for(const c of g.caras)face(c.puntos,tonos[c.tono],c.opacidad);
+ const spheres=[];
+ for(const o of g.objetos){
+  const fill=tonos[o.tono],opacity=o.opacidad*(destacada(o.clave)?1:.35),p=o.p;
+  if(o.tipo==='esfera'){
+   spheres.push({sphere:o,fill,opacity});continue;
+  }
+  if(o.tipo==='caja'){
+   const v=[];for(let i=0;i<8;i++)v.push(p.map((x,j)=>x+(i&(1<<j)?1:-1)*o.tamano[j]/2));
+   for(const [ids,n,k] of [[[1,3,7,5],[1,0,0],.83],[[0,4,6,2],[-1,0,0],.69],[[2,6,7,3],[0,1,0],1.26],[[0,1,5,4],[0,-1,0],.62],[[4,5,7,6],[0,0,1],1],[[0,2,3,1],[0,0,-1],.72]])face(ids.map(i=>v[i]),tint(fill,k),opacity,n);
+   continue;
+  }
+  const axis=o.eje||[0,1,0],raw=cross(axis,Math.abs(axis[0])<.9?[1,0,0]:[0,0,1]),u=mul(raw,1/Math.hypot(...raw)),v=cross(axis,u),at=(r,t,h=0)=>add(p,add(mul(axis,h),add(mul(u,r*Math.cos(t)),mul(v,r*Math.sin(t))))),N=24;
+  if(o.tipo==='cilindro'){
+   for(let i=0;i<N;i++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,n=add(mul(u,Math.cos((a+b)/2)),mul(v,Math.sin((a+b)/2)));face([at(o.r,a,-o.h/2),at(o.r,b,-o.h/2),at(o.r,b,o.h/2),at(o.r,a,o.h/2)],tint(fill,.84+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+   for(const side of [-1,1])face(Array.from({length:N},(_,i)=>at(o.r,2*Math.PI*i/N,side*o.h/2)),tint(fill,side===1?1.20:.75),opacity,mul(axis,side));
+  }else if(o.tipo==='anillo'){
+   const point=(t,phi)=>at(o.r*(1+.09*Math.cos(phi)),t,o.r*.09*Math.sin(phi));
+   for(let i=0;i<N;i++)for(let j=0;j<8;j++){const a=2*Math.PI*i/N,b=2*Math.PI*(i+1)/N,c=j*Math.PI/4,d=(j+1)*Math.PI/4,n=add(mul(axis,Math.sin((c+d)/2)),add(mul(u,Math.cos((a+b)/2)*Math.cos((c+d)/2)),mul(v,Math.sin((a+b)/2)*Math.cos((c+d)/2))));face([point(a,c),point(b,c),point(b,d),point(a,d)],tint(fill,.88+.24*Math.max(0,dot(n,[-.45,.75,.35]))),opacity,n);}
+  }
+ }
+ // Respaldo autónomo con profundidad por píxel: una bandeja grande nunca tapa
+ // las bolas que sostiene por culpa del centro usado para ordenar polígonos.
+ const ratio=Math.min(1.5,devicePixelRatio||1.5),W=Math.max(1,Math.ceil(ancho*ratio)),H=Math.max(1,Math.ceil(alto*ratio)),canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
+ const ctx=canvas.getContext('2d'),im=ctx.createImageData(W,H),pixels=im.data,zbuf=new Float32Array(W*H);zbuf.fill(-Infinity);
+ const rgb=c=>c.match(/\w\w/g).map(v=>parseInt(v,16));
+ const write=(idx,z,c,a)=>{if(z<zbuf[idx]-1e-5)return;if(a>=.999){zbuf[idx]=z;pixels[idx*4]=c[0];pixels[idx*4+1]=c[1];pixels[idx*4+2]=c[2];pixels[idx*4+3]=255;}else{const aa=pixels[idx*4+3]/255,na=a+aa*(1-a);for(let j=0;j<3;j++)pixels[idx*4+j]=(c[j]*a+pixels[idx*4+j]*aa*(1-a))/na;pixels[idx*4+3]=na*255;}};
+ const tri=(points,c,alpha)=>{const p=points.map(q=>{const a=proyectar(q);return [a[0]*ratio,a[1]*ratio,dot(q,view)];}),[a,b,d]=p,den=(b[1]-d[1])*(a[0]-d[0])+(d[0]-b[0])*(a[1]-d[1]);if(Math.abs(den)<1e-9)return;
+  const xmin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[0])))),xmax=Math.min(W-1,Math.ceil(Math.max(...p.map(v=>v[0])))),ymin=Math.max(0,Math.floor(Math.min(...p.map(v=>v[1])))),ymax=Math.min(H-1,Math.ceil(Math.max(...p.map(v=>v[1]))));
+  for(let y=ymin;y<=ymax;y++)for(let x=xmin;x<=xmax;x++){const aa=((b[1]-d[1])*(x+.5-d[0])+(d[0]-b[0])*(y+.5-d[1]))/den,bb=((d[1]-a[1])*(x+.5-d[0])+(a[0]-d[0])*(y+.5-d[1]))/den,cc=1-aa-bb;if(aa>=0&&bb>=0&&cc>=0)write(y*W+x,aa*a[2]+bb*b[2]+cc*d[2],c,alpha);}
+ };
+ const paintFace=f=>{const c=rgb(f.fill);for(let i=1;i<f.points.length-1;i++)tri([f.points[0],f.points[i],f.points[i+1]],c,f.opacity);};
+ const paintSphere=f=>{const o=f.sphere,c=rgb(f.fill),p=proyectar(o.p),vx=dot(view,view),len=Math.sqrt(vx),ex=o.r*Math.sqrt(1+.18**2)*escala*ratio,ey=o.r*Math.sqrt(1+view[1]**2)*escala*ratio;
+  for(let y=Math.max(0,Math.floor(p[1]*ratio-ey));y<=Math.min(H-1,Math.ceil(p[1]*ratio+ey));y++)for(let x=Math.max(0,Math.floor(p[0]*ratio-ex));x<=Math.min(W-1,Math.ceil(p[0]*ratio+ex));x++){
+   const origin=[(x+.5)/ratio/escala-ancho/2/escala+gs.cx,gs.cy-((y+.5)/ratio-(alto-40)/2)/escala,0],delta=o.p.map((v,i)=>v-origin[i]),along=dot(delta,view)/vx,perp=dot(delta,delta)-along*along*vx,inside=o.r*o.r-perp;if(inside<0)continue;
+   const t=along+Math.sqrt(inside)/len,normal=origin.map((v,i)=>(v+view[i]*t-o.p[i])/o.r),light=Math.max(0,dot(normal,[-.42,.77,.40])),shade=.72+.40*light,shine=18*Math.pow(Math.max(0,dot(normal,[-.3,.55,.78])),16);write(y*W+x,dot(o.p,view)+len*Math.sqrt(inside),c.map(v=>Math.min(255,v*shade+shine)),f.opacity);
+  }
+ };
+ for(const f of faces.filter(f=>f.opacity>=.999))paintFace(f);for(const f of spheres.filter(f=>f.opacity>=.999))paintSphere(f);
+ const transparent=[...faces.filter(f=>f.opacity<.999).map(f=>({...f,paint:paintFace})),...spheres.filter(f=>f.opacity<.999).map(f=>({...f,depth:dot(f.sphere.p,view),paint:paintSphere}))].sort((a,b)=>a.depth-b.depth);for(const f of transparent)f.paint(f);
+ ctx.putImageData(im,0,0);svg.append(elemento('image',{x:0,y:0,width:ancho,height:alto,href:canvas.toDataURL('image/png')}));
+ for(const l of g.lineas)linea(svg,l.puntos.map(proyectar),tonos[l.tono],l.tono==='neutro'||l.tono==='borde'?1:1.5);
+}
+
+function anotaciones(g){const svg=$('anotaciones');svg.setAttribute('viewBox',`0 0 ${ancho} ${alto}`);svg.replaceChildren();
+ const suelo=alto-8;const cajas=[];for(const t of g.etiquetas){const p=proyectar(t.p);const e=elemento('text',{x:Math.min(ancho-8,Math.max(8,p[0])),y:Math.min(suelo,Math.max(14,p[1])),fill:tonos[t.tono],'text-anchor':t.ancla},t.texto);svg.appendChild(e);let b=e.getBBox();
+  if(b.x<4)e.setAttribute('x',Number(e.getAttribute('x'))+4-b.x);if(b.x+b.width>ancho-4)e.setAttribute('x',Number(e.getAttribute('x'))-(b.x+b.width-ancho+4));
+  b=e.getBBox();let desplazamiento=0;while(cajas.some(q=>b.x<q.x+q.width+3&&b.x+b.width+3>q.x&&b.y<q.y+q.height+2&&b.y+b.height+2>q.y)&&desplazamiento<36){desplazamiento+=14;e.setAttribute('y',Math.min(suelo,Math.max(14,p[1])+desplazamiento));b=e.getBBox();}
+  if(cajas.some(q=>b.x<q.x+q.width+2&&b.x+b.width+2>q.x&&b.y<q.y+q.height+1&&b.y+b.height+1>q.y)){e.remove();}else cajas.push(b);
+ }
+}
+function datosGrafica(d){if(estado.resultado==='cuantico'){const xs=rejilla(.05,12,151);return {titulo:'Semioscilador con pared infinita',x:'kBT / E₀',y:'u / E₀',series:[serie('Cuántico','azul',xs,T=>impar(T,estado.omega).u),serie('Clásico ε→∞','verde',xs,T=>T)],cursor:estado.T};}const xs=rejilla(0,20,151);return {titulo:'Contribución del salto a la energía',x:'ε / E₀',y:'u / E₀',series:[serie('Asimétrico','azul',xs,epsilon=>calcular({...estado,epsilon}).u),serie('kBT','verde',xs,()=>estado.T)],cursor:estado.epsilon};}
+function graficar(d){if(!estado.graficas)return;const svg=$('grafica'),r=svg.getBoundingClientRect(),w=Math.max(240,r.width),h=Math.max(110,r.height),g=datosGrafica(d);svg.setAttribute('viewBox',`0 0 ${w} ${h}`);svg.replaceChildren();$('titulo-grafica').textContent=g.titulo;svg.setAttribute('aria-label',g.titulo+'; eje horizontal '+g.x+'; eje vertical '+g.y);
+ const l=50,ri=w-14,t=24,b=h-35,datos=g.series.flatMap(s=>s.datos),xmin=Math.min(...datos.map(p=>p[0])),xmax=Math.max(xmin+1,...datos.map(p=>p[0])),min=Math.min(0,...datos.map(p=>p[1])),max=Math.max(.01,...datos.map(p=>p[1])),ymin=min<0?min*1.08:0,ymax=max>0?max*1.12:max+Math.abs(max-min)*.12;
+ const sx=x=>l+(x-xmin)/(xmax-xmin)*(ri-l),sy=y=>b-(y-ymin)/(ymax-ymin)*(b-t);
+ svg.appendChild(elemento('rect',{x:l,y:t,width:ri-l,height:Math.max(1,b-t),fill:'none',stroke:tonos.borde,'data-chart-frame':''}));
+ for(let i=0;i<3;i++){const x=xmin+(xmax-xmin)*i/2,y=ymin+(ymax-ymin)*i/2;texto(svg,sx(x),h-18,fmt(x,1),tonos.neutro,i===0?'start':i===2?'end':'middle');texto(svg,l-6,sy(y)+4,fmt(y,2),tonos.neutro,'end');}
+ texto(svg,l,14,g.y,tonos.neutro,'start');texto(svg,ri,h-3,g.x,tonos.neutro,'end');
+ for(const serie of g.series){linea(svg,serie.datos.map(([x,y])=>[sx(x),sy(y)]),tonos[serie.tono],2);if(serie.datos.length<40)for(const [x,y] of serie.datos)svg.appendChild(elemento('circle',{cx:sx(x),cy:sy(y),r:2.3,fill:tonos[serie.tono]}));}
+ const cx=sx(g.cursor);linea(svg,[[cx,t],[cx,b]],tonos.lavanda,1,'4 4');
+ $('leyenda').replaceChildren();for(const serie of g.series){const span=document.createElement('span'),mark=document.createElement('i');mark.className='muestra-color';mark.style.background=tonos[serie.tono];span.append(mark,document.createTextNode(serie.nombre));$('leyenda').appendChild(span);}
+}
+function actualizar(){
+ ajustar();const d=modelo(),tipo=configuracion.kind,r=configuracion.results.find(r=>r[0]===estado.resultado);
+ $('formula').replaceChildren();for(const parte of r[2].split(/(\{[^}]+\})/g)){const m=parte.match(/^\{([^}]+)\}$/);if(m){const key=configuracion.simbolos[m[1]]||m[1];const boton=document.createElement('button');boton.className='simbolo';boton.dataset.simbolo=key;boton.textContent=m[1];boton.setAttribute('aria-label','Destacar '+m[1]);boton.setAttribute('aria-pressed',String(estado.seleccion===key));boton.classList.toggle('activo',estado.seleccion===key);boton.addEventListener('click',()=>seleccionar(key));$('formula').append(boton);}else $('formula').append(document.createTextNode(parte));}
+ let numeros=numerosModelo(d);
+ $('numeros').innerHTML=numeros;
+ for(const p of configuracion.params){const id=p[0],e=$(id);e.value=estado[id];e.style.setProperty('--progreso',((Number(e.value)-Number(e.min))/Math.max(1,Number(e.max)-Number(e.min))*100)+'%');$('salida-'+id).textContent=fmt(id==='indice'?estado[id]+1:estado[id],p[4]<1?2:0)+(p[6]?' '+p[6]:'');e.setAttribute('aria-valuetext',$('salida-'+id).textContent);}
+ document.querySelectorAll('[data-resultado]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.resultado===estado.resultado)));document.querySelectorAll('[data-seleccion]').forEach(b=>{b.classList.toggle('activo',b.dataset.seleccion===estado.seleccion);b.setAttribute('aria-pressed',String(b.dataset.seleccion===estado.seleccion));});
+ $('pausa').textContent=estado.pausado?'Explorar':'Pausa';$('pausa').setAttribute('aria-pressed',String(!estado.pausado));$('paso').setAttribute('aria-label',configuracion.pasoDescripcion);
+ $('graficas').setAttribute('aria-pressed',String(estado.graficas));$('panel-graficas').hidden=!estado.graficas;$('pagina-3').classList.toggle('con-graficas',estado.graficas);$('concepto').textContent=r[3];
+ $('descripcion-escena').textContent=r[1]+'. '+r[3]+' '+$('numeros').textContent;sucio=true;solicitar();
+}
+function seleccionar(key){const objetivo=configuracion.resultadosSeleccion?.[key];if(objetivo)estado.resultado=objetivo;estado.seleccion=estado.seleccion===key?'':key;actualizar();comunicar();}
+function comunicar(){clearTimeout(anuncio);anuncio=setTimeout(()=>{$('resumen-accesible').textContent=$('descripcion-escena').textContent;},220);}
+function avanzar(){estado.T=Math.round((estado.T+.1)*10)/10;if(estado.T>Number($('T').max))estado.T=Number($('T').min); estado.pasos++;sucio=true;}
+function cambiarPagina(n,enfocar=false){if(n!==3){estado.pausado=true;anterior=null;intervalo=0;if(marco!==null)cancelAnimationFrame(marco);marco=null;cerrarModelo();}estado.pagina=n;for(let j=1;j<=3;j++){$('pagina-'+j).hidden=n!==j;$('tab-'+j).setAttribute('aria-selected',String(n===j));$('tab-'+j).tabIndex=n===j?0:-1;}if(enfocar)$('tab-'+n).focus();if(n===3){actualizar();redimensionar();iniciar3D();}}
+function solicitar(){if(estado.pagina===3&&!document.hidden&&marco===null)marco=requestAnimationFrame(dibujar);}
+function dibujar(t){marco=null;if(estado.pagina!==3||document.hidden){anterior=null;return;}if(!estado.pausado&&anterior!==null){const dt=Math.min(.1,(t-anterior)/1000);intervalo+=dt;if(intervalo>=1.2){intervalo%=1.2;avanzar();actualizar();}}anterior=estado.pausado?null:t;
+ if(sucio){const d=modelo();escenaActual=geometria(d);if($('pie-escena').textContent!==escenaActual.pie){$('pie-escena').textContent=escenaActual.pie;redimensionar();}if(vista3D)vista3D.dibujar(escenaActual);else respaldo(escenaActual);anotaciones(escenaActual);graficar(d);$('pie-escena').textContent=escenaActual.pie;sucio=false;}if(!estado.pausado)solicitar();}
+function redimensionar(){if(estado.pagina!==3)return;const rect=$('escena').getBoundingClientRect(),reserva=Math.ceil($('pie-escena').offsetHeight)+12;$('escena').style.setProperty('--pie-alto',reserva+'px');ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height-reserva);if(vista3D&&rect.width&&rect.height)vista3D.redimensionar(ancho,alto);sucio=true;solicitar();}
+function cerrarModelo(){$('detalle').hidden=true;$('ayuda').setAttribute('aria-expanded','false');}
+async function iniciar3D(){
+ if(promesa3D)return promesa3D;
+ promesa3D=(async()=>{let renderizador=null,orbita=null;try{
+  const [THREE,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
+  const escena=new THREE.Scene(),camara=new THREE.OrthographicCamera(-6,6,4,-4,.1,100);camara.position.set(4,configuracion.vistaElevada?9:4,16);camara.lookAt(0,0,0);
+  renderizador=new THREE.WebGLRenderer({alpha:true,antialias:true});renderizador.setPixelRatio(Math.min(devicePixelRatio||1,2));renderizador.outputColorSpace=THREE.SRGBColorSpace;
+  const lienzo=renderizador.domElement;lienzo.id='lienzo';lienzo.setAttribute('aria-hidden','true');$('escena').prepend(lienzo);
+  orbita=new OrbitControls(camara,$('escena'));orbita.enablePan=false;orbita.enableDamping=false;orbita.minZoom=.7;orbita.maxZoom=1.7;orbita.minPolarAngle=.8;orbita.maxPolarAngle=1.8;orbita.minAzimuthAngle=-.65;orbita.maxAzimuthAngle=.65;orbita.update();orbita.saveState();orbita.addEventListener('change',()=>{sucio=true;solicitar();});
+  escena.add(new THREE.HemisphereLight(color('tarjeta'),color('primario'),2));const luz=new THREE.DirectionalLight(color('tarjeta'),2.1);luz.position.set(-4,8,12);escena.add(luz);
+  const esferas=[],cajas=[],cilindros=[],anillos=[],trazos=[],superficies=[],geometriaEsfera=new THREE.SphereGeometry(1,24,16),geometriaCilindro=new THREE.CylinderGeometry(1,1,1,32),geometriaAnillo=new THREE.TorusGeometry(1,.09,8,32),vector=new THREE.Vector3(),vertical=new THREE.Vector3(0,1,0);geometriaAnillo.rotateX(Math.PI/2);
+  const perfilCaja=new THREE.Shape();perfilCaja.moveTo(-.465,-.465);perfilCaja.lineTo(.465,-.465);perfilCaja.lineTo(.465,.465);perfilCaja.lineTo(-.465,.465);perfilCaja.closePath();const geometriaCaja=new THREE.ExtrudeGeometry(perfilCaja,{depth:.93,bevelEnabled:true,bevelThickness:.035,bevelSize:.035,bevelSegments:2,steps:1});geometriaCaja.translate(0,0,-.465);
+  let espacioAnterior='';
+  function encuadrar(g,forzar=false){const e=espacio(g),key=JSON.stringify(g.limites);if(key!==espacioAnterior||forzar){const delta=new THREE.Vector3(e.cx,e.cy,0).sub(orbita.target);camara.position.add(delta);orbita.target.set(e.cx,e.cy,0);orbita.update();espacioAnterior=key;}
+   camara.updateMatrixWorld(true);let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity;
+   for(const p of puntosAnatomia(g)){vector.set(...p).applyMatrix4(camara.matrixWorldInverse);xmin=Math.min(xmin,vector.x);xmax=Math.max(xmax,vector.x);ymin=Math.min(ymin,vector.y);ymax=Math.max(ymax,vector.y);}
+   const aspect=ancho/Math.max(1,alto-30),padding=Math.max(.22,(ymax-ymin)*.08),H=Math.max(1,ymax-ymin+padding*2,(xmax-xmin+padding*2)/aspect),W=H*aspect,cx=(xmin+xmax)/2,cy=(ymin+ymax)/2;
+   camara.left=cx-W/2;camara.right=cx+W/2;camara.top=cy+H/2;camara.bottom=cy-H/2;camara.updateProjectionMatrix();}
+  vista3D={redimensionar(w,h){renderizador.setSize(w,h,false);if(escenaActual)encuadrar(escenaActual,true);},proyectar(p){vector.set(...p).project(camara);return [(vector.x+1)*ancho/2,(1-vector.y)*alto/2];},reiniciar(){orbita.reset();espacioAnterior='';},camara,renderizador,
+   dibujar(g){
+    encuadrar(g);const pools={esfera:esferas,caja:cajas,cilindro:cilindros,anillo:anillos},geos={esfera:geometriaEsfera,caja:geometriaCaja,cilindro:geometriaCilindro,anillo:geometriaAnillo},counts={esfera:0,caja:0,cilindro:0,anillo:0};
+    for(const o of g.objetos){const pool=pools[o.tipo],index=counts[o.tipo]++;let m=pool[index];if(!m){m=new THREE.Mesh(geos[o.tipo],new THREE.MeshStandardMaterial({roughness:.5}));pool.push(m);escena.add(m);}m.visible=true;m.position.set(...o.p);m.quaternion.identity();if(o.eje)m.quaternion.setFromUnitVectors(vertical,vector.set(...o.eje).normalize());if(o.tipo==='esfera'||o.tipo==='anillo')m.scale.setScalar(o.r);else if(o.tipo==='cilindro')m.scale.set(o.r,o.h,o.r);else m.scale.set(...o.tamano);m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);m.material.transparent=m.material.opacity<1;m.material.depthWrite=m.material.opacity>.5;m.material.roughness=o.tono.startsWith('metal')?.36:.58;m.material.metalness=o.tono.startsWith('metal')?.32:0;}
+    for(const [tipo,pool] of Object.entries(pools))for(let i=counts[tipo];i<pool.length;i++)pool[i].visible=false;
+    for(let i=0;i<g.lineas.length;i++){const o=g.lineas[i];let m=trazos[i];if(!m){m=new THREE.Line(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({transparent:true}));m.frustumCulled=false;trazos.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad*(destacada(o.clave)?1:.35);const len=o.puntos.length*3;let a=m.geometry.getAttribute('position');if(!a||a.array.length!==len){a=new THREE.BufferAttribute(new Float32Array(len),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.lineas.length;i<trazos.length;i++)trazos[i].visible=false;
+    for(let i=0;i<g.caras.length;i++){const o=g.caras[i];let m=superficies[i];if(!m){m=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({transparent:true,side:THREE.DoubleSide,depthWrite:false}));m.frustumCulled=false;superficies.push(m);escena.add(m);}m.visible=true;m.material.color.set(tonos[o.tono]);m.material.opacity=o.opacidad;let a=m.geometry.getAttribute('position');if(!a){a=new THREE.BufferAttribute(new Float32Array(9),3).setUsage(THREE.DynamicDrawUsage);m.geometry.setAttribute('position',a);}a.array.set(o.puntos.flat());a.needsUpdate=true;}
+    for(let i=g.caras.length;i<superficies.length;i++)superficies[i].visible=false;renderizador.render(escena,camara);
+   }
+  };
+  estado.render='3D';$('modo-render').textContent='3D';$('alternativa').setAttribute('hidden','');$('estado-carga').textContent='Escena 3D activa. El respaldo conserva el modelo al perder WebGL.';
+  lienzo.addEventListener('webglcontextlost',e=>{e.preventDefault();vista3D=null;estado.render='2D';lienzo.hidden=true;orbita.dispose();$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='El contexto WebGL se perdió. La vista 2D mantiene los controles y cálculos.';redimensionar();});
+  $('escena').addEventListener('keydown',e=>{if(!vista3D||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-'].includes(e.key))return;e.preventDefault();const esf=new THREE.Spherical().setFromVector3(camara.position.clone().sub(orbita.target));if(e.key==='ArrowLeft')esf.theta=Math.max(-.65,esf.theta-.08);if(e.key==='ArrowRight')esf.theta=Math.min(.65,esf.theta+.08);if(e.key==='ArrowUp')esf.phi=Math.max(.8,esf.phi-.08);if(e.key==='ArrowDown')esf.phi=Math.min(1.8,esf.phi+.08);if(e.key==='+'||e.key==='=')camara.zoom=Math.min(1.7,camara.zoom*1.1);if(e.key==='-')camara.zoom=Math.max(.7,camara.zoom/1.1);camara.position.setFromSpherical(esf).add(orbita.target);camara.updateProjectionMatrix();orbita.update();sucio=true;solicitar();});
+  redimensionar();
+ }catch(error){if(orbita)orbita.dispose();if(renderizador){renderizador.domElement.remove();renderizador.dispose();}vista3D=null;estado.render='2D';$('alternativa').removeAttribute('hidden');$('modo-render').textContent='2D';$('estado-carga').textContent='Vista 2D activa. El 3D requiere conexión para Three.js y soporte WebGL 2.';redimensionar();}})();return promesa3D;
+}
+document.querySelectorAll('[data-pagina]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.pagina))));document.querySelectorAll('[data-ir]').forEach(b=>b.addEventListener('click',()=>cambiarPagina(Number(b.dataset.ir),true)));
+document.querySelectorAll('[data-explorar]').forEach(b=>b.addEventListener('click',()=>{estado.resultado=b.dataset.explorar;estado.seleccion='';cambiarPagina(3,true);}));
+document.querySelectorAll('[data-resultado]').forEach(b=>b.addEventListener('click',()=>{estado.resultado=b.dataset.resultado;estado.seleccion='';if('indice' in estado)estado.indice=0;actualizar();comunicar();}));
+document.querySelectorAll('[data-seleccion]').forEach(b=>b.addEventListener('click',()=>seleccionar(b.dataset.seleccion)));
+for(const p of configuracion.params)$(p[0]).addEventListener('input',()=>{estado[p[0]]=Number($(p[0]).value);estado.seleccion=p[0];estado.pausado=true;estado.tiempo=0;anterior=null;intervalo=0;if(p[0]!=='indice'&&'indice' in estado)estado.indice=0;actualizar();comunicar();});
+$('pausa').addEventListener('click',()=>{estado.pausado=!estado.pausado;anterior=null;intervalo=0;actualizar();});$('paso').addEventListener('click',()=>{estado.pausado=true;anterior=null;avanzar();actualizar();comunicar();});
+$('reiniciar').addEventListener('click',()=>{Object.assign(estado,inicial,{resultado:configuracion.results[0][0],seleccion:'',pausado:true,graficas:false,tiempo:0,pasos:0});anterior=null;intervalo=0;if(vista3D)vista3D.reiniciar();cerrarModelo();actualizar();redimensionar();});
+$('graficas').addEventListener('click',()=>{estado.graficas=!estado.graficas;actualizar();redimensionar();});$('vista-inicial').addEventListener('click',()=>{if(vista3D)vista3D.reiniciar();sucio=true;solicitar();});
+$('ayuda').addEventListener('click',()=>{const abrir=$('detalle').hidden;$('detalle').hidden=!abrir;$('ayuda').setAttribute('aria-expanded',String(abrir));if(abrir)$('cerrar-detalle').focus();});$('cerrar-detalle').addEventListener('click',()=>{cerrarModelo();$('ayuda').focus();});
+$('pantalla-completa').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($('app').requestFullscreen)await $('app').requestFullscreen();}catch{$('pantalla-completa').setAttribute('aria-label','La vista ocupa la ventana; pantalla completa no disponible');}});
+document.querySelector('.paginas').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const n=e.key==='Home'?1:e.key==='End'?3:(estado.pagina-1+(e.key==='ArrowRight'?1:2))%3+1;cambiarPagina(n,true);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('detalle').hidden){cerrarModelo();$('ayuda').focus();}});document.addEventListener('visibilitychange',()=>{anterior=null;intervalo=0;if(marco!==null)cancelAnimationFrame(marco);marco=null;if(!document.hidden){sucio=true;solicitar();}});movimientoReducido.addEventListener('change',()=>{if(movimientoReducido.matches){estado.pausado=true;anterior=null;actualizar();}});
+new ResizeObserver(redimensionar).observe($('escena'));new ResizeObserver(()=>{sucio=true;solicitar();}).observe($('grafica'));window.addEventListener('resize',redimensionar);
+window.problema={modelo:(par={})=>modelo({...estado,...par}),instantanea:()=>({...estado,datos:modelo(),camara:vista3D?{posicion:vista3D.camara.position.toArray(),zoom:vista3D.camara.zoom}:null}),geometria:()=>geometria(modelo()),configuracion,paso:()=>{avanzar();actualizar();},cambiar:(par)=>{Object.assign(estado,par);ajustar();actualizar();},cambiarPagina};
+actualizar();cambiarPagina(1);
+})();
+</script></body></html>
+<!-- anatomy-page3-v1 {"status":"verified","date":"2026-10-11T21:40:11.317433+00:00","sha256":"0fefec9c589cdac39b683d2ac7a80d0b0dbf679f40fabff28eb874e1cb19c162"} -->

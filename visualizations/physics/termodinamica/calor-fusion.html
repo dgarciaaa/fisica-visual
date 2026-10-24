@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calor latente: fusión, solidificación y vaporización. Prototipos interactivos en 3D con masa conservada y temperatura constante durante la transición.">
+  <title>Calor latente · Fusión y vaporización</title>
+  <style>
+
+    :root {
+      color-scheme: only light;
+      --color-fondo: #F7F8FC; --color-tarjeta: #FFFFFF;
+      --color-primario: #A8C7FA; --color-secundario: #B8E0D2; --color-acento: #CDB4DB;
+      --color-texto: #273043; --color-texto-secundario: #667085; --color-borde: #E4E7EC;
+      --color-onda: #668EC6; --color-longitudinal: #67998A; --color-punto: #9471AE;
+      --sombra: 0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--color-texto); background: var(--color-fondo); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button, input { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .laboratorio { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: radial-gradient(ellipse at 25% 28%, rgba(168,199,250,.16), transparent 65%), radial-gradient(ellipse at 90% 70%, rgba(205,180,219,.12), transparent 60%), var(--color-fondo); }
+    #lienzo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cristal { background: rgba(255,255,255,.91); border: 1px solid rgba(228,231,236,.9); box-shadow: var(--sombra); backdrop-filter: blur(14px); border-radius: 18px; }
+    .cabecera { position: absolute; z-index: 3; top: 22px; left: 28px; right: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .identidad h1 { margin: 0 0 9px; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -.035em; font-weight: 750; }
+    .selector { display: inline-flex; padding: 4px; border-radius: 12px; background: rgba(228,231,236,.65); gap: 3px; }
+    .selector button { border: 0; background: transparent; color: var(--color-texto-secundario); border-radius: 9px; padding: 8px 13px; font-size: .86rem; font-weight: 650; min-height: 36px; }
+    .selector button[aria-pressed="true"] { color: var(--color-texto); background: var(--color-tarjeta); box-shadow: 0 2px 6px rgba(39,48,67,.06); }
+    .selector select { width: 123px; min-height: 36px; padding: 6px 9px; border: 0; border-radius: 9px; background: var(--color-tarjeta); color: var(--color-texto); font-size: .86rem; font-weight: 650; cursor: pointer; }
+    select:focus-visible { outline: 3px solid var(--color-onda); outline-offset: 4px; }
+    .acciones { display: flex; flex-wrap: wrap; gap: 7px; justify-content: flex-end; }
+    .boton { border: 1px solid var(--color-borde); background: var(--color-tarjeta); color: var(--color-texto); padding: 9px 12px; border-radius: 11px; min-height: 40px; font-size: .83rem; font-weight: 650; }
+    .boton:hover { background: #F0F4FA; }
+    .boton[aria-pressed="true"] { background: #EAE2F0; border-color: var(--color-acento); }
+    .principal { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .principal:hover { background: #42516A; }
+    .principal[aria-pressed="true"] { background: var(--color-texto); border-color: var(--color-texto); color: var(--color-tarjeta); }
+    .ecuacion { position: absolute; z-index: 3; top: 122px; left: 28px; padding: 15px 19px 13px; width: max-content; max-width: calc(100% - 56px); }
+    .formula { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.4; white-space: nowrap; }
+    .formula button { font: inherit; border: 0; border-radius: 5px; background: transparent; padding: 0 3px; color: inherit; }
+    .formula button.activo { background: rgba(168,199,250,.25); color: #476B9D; }
+    .relaciones { margin-top: 8px; display: flex; gap: 18px; flex-wrap: wrap; font-size: .79rem; font-variant-numeric: tabular-nums; color: var(--color-texto-secundario); }
+    .relaciones strong { color: var(--color-texto); font-weight: 650; }
+    .rapidez { margin-top: 8px; font-size: .8rem; color: var(--color-texto-secundario); }
+    .rapidez strong { color: var(--color-texto); font-weight: 650; }
+    #area-escena { position: absolute; left: 32px; right: 32px; top: 264px; bottom: 190px; min-height: 80px; overflow: hidden; touch-action: none; cursor: grab; border-radius: 16px; }
+    #area-escena:active { cursor: grabbing; }
+    #alternativa, #anotaciones { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    #anotaciones { z-index: 2; }
+    #anotaciones text, #alternativa text, .grafica text { font-family: Inter, system-ui, sans-serif; font-size: 12px; }
+    .escena-etiqueta { position: absolute; left: 50%; top: 238px; transform: translateX(-50%); white-space: nowrap; font-size: .84rem; color: var(--color-texto-secundario); }
+    .escena-etiqueta strong { color: var(--color-texto); font-weight: 650; }
+    .seguimiento { position: absolute; left: 50%; bottom: 166px; transform: translateX(-50%); text-align: center; font-size: .8rem; color: var(--color-texto-secundario); white-space: nowrap; }
+    .seguimiento strong { color: var(--color-punto); }
+    .tiempo { position: absolute; top: 246px; right: 36px; color: var(--color-texto-secundario); font-size: .8rem; font-variant-numeric: tabular-nums; }
+    .panel-graficas { position: absolute; z-index: 3; right: 28px; top: 270px; width: 340px; padding: 14px 14px 10px; }
+    .panel-graficas h2 { margin: 0 0 3px; font-size: .81rem; font-weight: 650; }
+    .selector-graficas { display: none; }
+    .grafica { display: block; width: 100%; height: 145px; overflow: visible; }
+    .punto-control { display: flex; align-items: center; gap: 12px; font-size: .78rem; color: var(--color-texto-secundario); margin: 6px 0 2px; }
+    .punto-control label { white-space: nowrap; }
+    .punto-control input { min-width: 0; }
+    .dock { position: absolute; z-index: 4; bottom: 22px; left: 50%; transform: translateX(-50%); width: min(1100px, calc(100% - 56px)); padding: 16px 20px 12px; }
+    .parametros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 27px; }
+    .parametro { min-width: 0; }
+    .parametro-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 5px; margin-bottom: 12px; }
+    .parametro-cabecera button { font-size: .81rem; font-weight: 650; padding: 3px 5px; margin-left: -5px; color: var(--color-texto-secundario); border: 0; background: transparent; border-radius: 6px; text-align: left; }
+    .parametro-cabecera button.activo { color: var(--color-texto); background: rgba(168,199,250,.25); }
+    output { font-size: .82rem; white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 650; }
+    input[type="range"] { width: 100%; display: block; appearance: none; height: 6px; border-radius: 99px; margin: 0; background: linear-gradient(to right, var(--color-primario) var(--progreso, 50%), #EBEEF3 var(--progreso, 50%)); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 21px; height: 21px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); box-shadow: 0 2px 7px rgba(39,48,67,.2); }
+    input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: 3px solid var(--color-tarjeta); border-radius: 50%; background: var(--color-texto); }
+    .dock-pie { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; border-top: 1px solid var(--color-borde); padding-top: 10px; font-size: .76rem; color: var(--color-texto-secundario); }
+    .dock-pie .herramientas { display: flex; gap: 12px; align-items: center; }
+    .enlace { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; min-height: 22px; text-decoration: underline; text-underline-offset: 3px; }
+    .detalle { position: absolute; z-index: 5; left: 28px; bottom: 177px; width: min(380px, calc(100% - 56px)); max-height: calc(100dvh - 210px); overflow: auto; padding: 17px; font-size: .84rem; line-height: 1.6; }
+    .detalle p { margin: 7px 0; }
+    .detalle .cerrar { position: absolute; top: 7px; right: 9px; background: transparent; border: 0; font-size: 1.3rem; color: var(--color-texto-secundario); }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .laboratorio.con-graficas #area-escena { right: 395px; }
+    .laboratorio.con-graficas .escena-etiqueta, .laboratorio.con-graficas .seguimiento { left: calc((100% - 360px) / 2); }
+    .laboratorio.con-graficas .tiempo { right: 395px; }
+    @media (max-width: 950px) {
+      .cabecera { left: 18px; right: 18px; top: 16px; }
+      .identidad h1 { font-size: 1.2rem; }
+      .ecuacion { left: 18px; top: 122px; max-width: calc(100% - 36px); }
+      .panel-graficas { width: 290px; right: 18px; }
+      .laboratorio.con-graficas #area-escena { right: 320px; }
+      .laboratorio.con-graficas .escena-etiqueta, .laboratorio.con-graficas .seguimiento { left: calc((100% - 290px) / 2); }
+      .laboratorio.con-graficas .tiempo { right: 326px; }
+      .dock { width: calc(100% - 36px); }
+      .parametros { gap: 17px; }
+    }
+    @media (max-width: 680px) {
+      .cabecera { top: 13px; left: 13px; right: 13px; align-items: flex-start; gap: 7px; }
+      .identidad h1 { font-size: 1.04rem; margin-bottom: 8px; }
+      .selector button { font-size: .75rem; padding: 7px 8px; }
+      .acciones { gap: 5px; width: 160px; }
+      .acciones .boton { padding: 7px 8px; min-height: 34px; font-size: .73rem; }
+      #pantalla-completa { display: none; }
+      .ecuacion { top: 114px; left: 13px; right: 13px; max-width: none; width: auto; padding: 11px 13px; }
+      .formula { font-size: 1.19rem; }
+      .relaciones { gap: 7px 15px; font-size: .73rem; }
+      .rapidez { font-size: .74rem; }
+      #area-escena, .laboratorio.con-graficas #area-escena { left: 14px; right: 14px; top: 267px; bottom: 234px; }
+      .escena-etiqueta, .laboratorio.con-graficas .escena-etiqueta { top: 246px; left: 50%; font-size: .76rem; }
+      .seguimiento, .laboratorio.con-graficas .seguimiento { bottom: 215px; left: 50%; font-size: .73rem; }
+      .tiempo, .laboratorio.con-graficas .tiempo { top: auto; bottom: 235px; right: 15px; font-size: .71rem; }
+      .dock { bottom: 12px; width: calc(100% - 26px); padding: 13px 15px 9px; border-radius: 16px; }
+      .parametros { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 23px 20px; }
+      .parametro-cabecera { margin-bottom: 10px; }
+      .parametro-cabecera button, output { font-size: .76rem; }
+      .dock-pie { font-size: .69rem; gap: 5px; margin-top: 14px; padding-top: 8px; }
+      .dock-pie .herramientas { gap: 8px; }
+      .detalle { left: 13px; bottom: 218px; width: calc(100% - 26px); max-height: calc(100dvh - 245px); font-size: .8rem; }
+      .panel-graficas { top: auto; bottom: 245px; right: 13px; width: calc(100% - 26px); padding: 10px 12px 7px; }
+      .grafica { height: 110px; }
+      .panel-graficas h2 { font-size: .74rem; }
+      .punto-control { font-size: .7rem; }
+      .laboratorio.con-graficas #area-escena { bottom: 530px; top: 267px; }
+      .laboratorio.con-graficas.solo-tiempo #area-escena { bottom: 411px; }
+      .laboratorio.con-graficas .seguimiento { display: none; }
+      .laboratorio.con-graficas .tiempo { bottom: auto; top: 262px; }
+      .selector-graficas { display: inline-flex; margin-bottom: 6px; }
+      .selector-graficas button { font-size: .73rem; padding: 4px 9px; min-height: 27px; }
+      .panel-graficas.movil-temporal #grafica-espacial-panel, .panel-graficas.movil-espacial #grafica-temporal-panel { display: none; }
+      .laboratorio.con-graficas .ecuacion .relaciones, .laboratorio.con-graficas .ecuacion .rapidez { display: none; }
+      .laboratorio.con-graficas .escena-etiqueta { top: 177px; }
+      .laboratorio.con-graficas #area-escena, .laboratorio.con-graficas.solo-tiempo #area-escena { top: 199px; bottom: 460px; }
+      .laboratorio.con-graficas .tiempo { top: 197px; }
+    }
+    @media (max-height: 710px) and (min-width: 681px) {
+      .cabecera { top: 13px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .ecuacion { top: 108px; padding: 10px 15px; }
+      .escena-etiqueta { top: 218px; }
+      #area-escena { top: 240px; bottom: 165px; }
+      .seguimiento { bottom: 148px; }
+      .tiempo { top: 220px; }
+      .dock { bottom: 12px; padding: 12px 17px 9px; }
+      .panel-graficas { top: 235px; }
+      .grafica { height: 100px; }
+    }
+    @media (max-width: 680px) and (max-height: 750px) {
+      .ecuacion { top: 108px; }
+      .relaciones { gap: 6px 10px; }
+      .escena-etiqueta { top: 233px; }
+      #area-escena, .laboratorio.con-graficas #area-escena { top: 252px; }
+      .laboratorio.con-graficas #area-escena, .laboratorio.con-graficas.solo-tiempo #area-escena { top: 194px; bottom: 440px; }
+      .grafica { height: 112px; }
+      .laboratorio.con-graficas #area-escena, .laboratorio.con-graficas #lienzo { visibility: hidden; }
+      .laboratorio.con-graficas .panel-graficas { top: 211px; bottom: auto; }
+      .laboratorio.con-graficas .grafica { height: 130px; }
+      .laboratorio.con-graficas .tiempo { display: none; }
+    }
+    @media (max-width: 370px) {
+      .cabecera { display: grid; grid-template-columns: 1fr; gap: 7px; }
+      .identidad h1 { margin-bottom: 5px; }
+      .acciones { width: 100%; justify-content: flex-start; flex-wrap: nowrap; }
+      .acciones .boton { padding: 5px 9px; min-height: 31px; }
+      .ecuacion { top: 136px; }
+      .escena-etiqueta { top: 265px; }
+      #area-escena { top: 286px; }
+      .laboratorio.con-graficas .escena-etiqueta { top: 199px; }
+      .laboratorio.con-graficas .panel-graficas { top: 232px; }
+      .parametro-cabecera button { white-space: nowrap; font-size: .72rem; }
+      output { font-size: .72rem; }
+    }
+  
+    :root {
+      --color-calor: #F7E7A9; --color-calor-texto: #8A6A32;
+      --color-metal: #B8C3D0; --color-metal-claro: #E1E6ED;
+      --color-hielo: #A8CEE5; --color-agua: #8ABAD3;
+      --color-onda-texto: #476B9D; --color-punto-texto: #7A598F;
+    }
+    .cabecera { align-items: flex-start; }
+    .selectores { display: flex; gap: 10px; flex-wrap: wrap; }
+    .selector button { padding-inline: 12px; }
+    .acciones { max-width: 590px; }
+    .ecuacion { top: 110px; }
+    .formula { display: flex; align-items: baseline; gap: 4px; }
+    .formula .resultado { font: 650 1.13rem Inter, system-ui, sans-serif; color: var(--color-punto-texto); margin-left: 7px; }
+    .relaciones { gap: 7px 17px; margin-top: 9px; }
+    .relaciones button { font: inherit; color: inherit; border: 0; background: transparent; padding: 2px 4px; margin-left: -4px; border-radius: 5px; }
+    .relaciones button.activo { background: #EAE2F0; color: var(--color-texto); }
+    .relaciones strong { color: var(--color-texto); }
+    .estado-escena { position: absolute; left: 32px; right: 32px; display: flex; justify-content: space-between; align-items: start; gap: 12px; margin: 0; color: var(--color-texto-secundario); font-size: .8rem; }
+    .estado-escena strong { color: var(--color-onda-texto); font-weight: 650; }
+    .estado-escena.meseta strong { color: var(--color-punto-texto); }
+    .estado-escena output { font-size: .8rem; font-weight: 500; }
+    #area-escena { min-height: 0; outline-offset: -4px; }
+    .fase-panel { position: absolute; width: min(410px,calc(100% - 45px)); left: 50%; transform: translateX(-50%); font-size: .73rem; color: var(--color-texto-secundario); }
+    .fase-rotulos { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+    .fase-rotulos strong { font-weight: 650; color: var(--color-texto); }
+    .fase-barra { display: flex; height: 6px; border-radius: 6px; overflow: hidden; background: var(--color-borde); }
+    #barra-solido { background: var(--color-primario); } #barra-liquido { background: var(--color-acento); }
+    .fase-nota { margin: 8px 0 0; text-align: center; font-size: .72rem; }
+    .fase-nota.meseta { color: var(--color-punto-texto); }
+    .grafica { height: auto; aspect-ratio: 340/205; }
+    .panel-graficas h2 { font-size: .84rem; margin-bottom: 8px; }
+    .nota-grafica { margin: 7px 0 0; color: var(--color-texto-secundario); line-height: 1.45; font-size: .72rem; }
+    .dock-pie { align-items: center; }
+    #concepto { max-width: 64%; }
+    .detalle { padding-top: 25px; }
+    .detalle h2 { margin: 0 0 5px; font-size: .9rem; }
+    .detalle a { color: var(--color-onda-texto); }
+    .detalle table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .77rem; }
+    .detalle th,.detalle td { text-align: left; padding: 5px; border-bottom: 1px solid var(--color-borde); }
+    @media (max-width:950px) {
+      .cabecera { gap: 14px; }
+      .selector button { font-size: .8rem; padding-inline: 9px; }
+      .acciones { max-width: 315px; }
+      .formula .resultado { font-size: 1rem; }
+      .estado-escena { left: 20px; right: 20px; }
+    }
+    @media (max-width:680px) {
+      .cabecera { display: grid; grid-template-columns: 1fr; gap: 7px; }
+      .selectores { gap: 7px; flex-wrap: nowrap; }
+      .selector { padding: 3px; gap: 2px; }
+      .selector button { font-size: .72rem; padding: 5px 7px; min-height: 30px; }
+      .selector select { width: 86px; min-height: 30px; font-size: .7rem; padding: 5px 6px; }
+      .selector-procesos button { padding-inline: 5px; font-size: .68rem; }
+      .acciones { width: 100%; max-width: none; justify-content: flex-start; flex-wrap: wrap; }
+      .acciones .boton { font-size: .72rem; padding: 7px 8px; min-height: 33px; }
+      .ecuacion { padding: 10px 13px; }
+      .formula { font-size: 1.35rem; flex-wrap: wrap; }
+      .formula .resultado { font-size: 1rem; }
+      .relaciones { font-size: .69rem; gap: 5px 10px; }
+      .estado-escena { font-size: .72rem; left: 15px; right: 15px; }
+      .estado-escena output { font-size: .72rem; }
+      .dock-pie { display: block; padding-top: 9px; }
+      #concepto { display: block; max-width: none; min-height: 28px; line-height: 1.4; }
+      .dock-pie .herramientas { justify-content: space-between; margin-top: 4px; }
+      .parametro-cabecera button,output { font-size: .72rem; }
+      .fase-panel { font-size: .68rem; }
+      .fase-nota { font-size: .67rem; }
+      .panel-graficas { left: 13px; right: 13px; width: calc(100% - 26px); padding: 12px 15px; }
+      .panel-graficas .grafica { max-height: 215px; }
+      .laboratorio.con-graficas #area-escena,.laboratorio.con-graficas #fase-panel { visibility: hidden; }
+    }
+    @media (max-width:370px) {
+      .selector button { padding-inline: 6px; }
+      .selector-procesos button { padding-inline: 4px; }
+      .acciones { gap: 3px; flex-wrap: nowrap; }
+      .acciones .boton { padding: 5px 4px; min-height: 33px; }
+      .parametro-cabecera button,output { font-size: .69rem; }
+      .parametro-cabecera button { white-space: nowrap; }
+      .parametros { gap: 22px 13px; }
+    }
+    @media (max-height:660px) and (min-width:681px) {
+      .cabecera { top: 10px; }
+      .identidad h1 { font-size: 1.15rem; margin-bottom: 5px; }
+      .ecuacion { padding: 9px 15px; }
+      .dock { bottom: 10px; padding: 12px 17px 9px; }
+    }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad">
+        <h1 id="titulo">Calor de fusión</h1>
+        <div class="selectores">
+          <div class="selector"><select id="material" aria-label="Material de la muestra"><option value="hierro">Hierro</option><option value="aluminio">Aluminio</option><option value="hielo">Hielo</option></select></div>
+          <div class="selector selector-procesos" aria-label="Proceso de cambio de fase">
+            <button type="button" data-direccion="1" aria-pressed="true">Fundir</button>
+            <button type="button" data-direccion="-1" aria-pressed="false">Solidificar</button>
+            <button type="button" id="vaporizar" aria-pressed="false">Vaporizar</button>
+          </div>
+        </div>
+      </div>
+      <nav class="acciones" aria-label="Reproducción y exploración">
+        <button class="boton principal" id="pausa" type="button" aria-pressed="false">Pausa</button>
+        <button class="boton" id="paso" type="button">Paso</button>
+        <button class="boton" id="meseta" type="button" title="Ir al 50 % de la transformación en pausa">Meseta</button>
+        <button class="boton" id="graficas" type="button" aria-pressed="false" aria-controls="panel-graficas">Gráfica</button>
+        <button class="boton" id="reiniciar" type="button">Reiniciar</button>
+        <button class="boton" id="pantalla-completa" type="button">Pantalla completa</button>
+      </nav>
+    </header>
+    <section class="ecuacion cristal" aria-label="Calor latente de la masa transformada">
+      <p class="formula"><button type="button" data-parametro="energia">Q<sub data-indice="fase">f</sub></button> = <span id="signo">+</span><button type="button" data-parametro="masa">m<sub data-indice="fase">f</sub></button><button type="button" data-parametro="latente">L<sub data-indice="fase">f</sub></button> = <span class="resultado" id="valor-fase">+0,0 kJ</span></p>
+      <div class="relaciones">
+        <button type="button" data-parametro="masa">m<sub data-indice="fase">f</sub> = <strong id="valor-transformada">0,000 kg</strong></button>
+        <button type="button" data-parametro="latente">L<sub data-indice="fase">f</sub> = <strong id="valor-latente">247 kJ/kg</strong></button>
+        <button type="button" data-parametro="inicial">T<sub data-indice="temperatura">f</sub> = <strong id="valor-tf">1538 °C</strong></button>
+      </div>
+      <div class="rapidez">Toda la muestra: |Q<sub data-indice="fase">f</sub>| = mL<sub data-indice="fase">f</sub> = <strong id="valor-total">123,5 kJ</strong></div>
+    </section>
+    <p class="estado-escena" id="estado-escena"><span><strong id="etapa">Calentamiento del sólido</strong><span id="tipo-calor"> · Q = mcΔT</span></span><output id="tiempo">t = 0,0 s</output></p>
+    <div id="area-escena" tabindex="0" role="img" aria-label="Lingote de hierro dentro de un crisol sobre una fuente de calor" aria-describedby="descripcion-escena">
+      <svg id="alternativa" aria-hidden="true"></svg><svg id="anotaciones" aria-hidden="true"></svg>
+    </div>
+    <div class="fase-panel" id="fase-panel">
+      <div class="fase-rotulos"><span><span id="rotulo-fase-inicial">Sólido</span> <strong id="masa-solido">0,500 kg</strong></span><span><span id="rotulo-fase-final">Líquido</span> <strong id="masa-liquido">0,000 kg</strong></span></div>
+      <div class="fase-barra" aria-hidden="true"><span id="barra-solido"></span><span id="barra-liquido"></span></div>
+      <p class="fase-nota" id="fase-nota">La temperatura cambia; la muestra conserva su fase.</p>
+    </div>
+    <aside class="panel-graficas cristal" id="panel-graficas" hidden aria-labelledby="titulo-grafica">
+      <h2 id="titulo-grafica">Temperatura frente a energía recibida</h2>
+      <svg class="grafica" id="grafica" viewBox="0 0 340 205" role="img" aria-label="Curva de calentamiento con meseta de fusión"></svg>
+      <p class="nota-grafica" id="nota-grafica">La meseta consume mL<sub>f</sub> sin aumentar la temperatura. El eje horizontal es energía.</p>
+    </aside>
+    <section class="dock cristal" aria-label="Parámetros físicos de la muestra">
+      <div class="parametros">
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="masa" id="etiqueta-masa">Masa m</button><output id="salida-masa" for="masa">0,50 kg</output></div><input id="masa" type="range" min="0.1" max="1" step="0.05" value="0.5" aria-labelledby="etiqueta-masa"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="potencia" id="etiqueta-potencia">Potencia |P|</button><output id="salida-potencia" for="potencia">1500 W</output></div><input id="potencia" type="range" min="250" max="3000" step="50" value="1500" aria-labelledby="etiqueta-potencia"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="inicial" id="etiqueta-inicial">T inicial</button><output id="salida-inicial" for="inicial">20 °C</output></div><input id="inicial" type="range" min="20" max="1538" step="1" value="20" aria-labelledby="etiqueta-inicial"></div>
+        <div class="parametro"><div class="parametro-cabecera"><button type="button" data-parametro="energia" id="etiqueta-energia">Calor Q</button><output id="salida-energia" for="energia">+0,0 kJ</output></div><input id="energia" type="range" min="0" max="667.485" step="any" value="0" aria-labelledby="etiqueta-energia"></div>
+      </div>
+      <div class="dock-pie"><span id="concepto">L<sub>f</sub> · energía por kg para cambiar de sólido a líquido.</span><div class="herramientas"><button class="enlace" id="vista-inicial" type="button">Restablecer vista</button><button class="enlace" id="ayuda" type="button" aria-expanded="false" aria-controls="detalle">Modelo</button><span id="modo-render" title="Motor de dibujo">Cargando 3D…</span></div></div>
+    </section>
+    <aside class="detalle cristal" id="detalle" hidden aria-labelledby="titulo-modelo">
+      <button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar información del modelo">×</button>
+      <h2 id="titulo-modelo">Material, fase y energía</h2>
+      <p>Un lingote de hierro puro, aluminio o una muestra de hielo cambia de fase dentro de un recipiente. El corte frontal permite ver el sólido y el líquido. La placa representa una fuente o un sumidero de calor; P es la potencia neta que recibe o entrega la muestra. Para el hierro, el crisol y la fuente representan un montaje de horno de alta temperatura.</p>
+      <p>Modelo de sustancia pura a presión atmosférica, temperatura uniforme, sin pérdidas ni calor absorbido por el recipiente. Se omiten gradientes internos, oxidación, aleaciones y sobreenfriamiento. En fusión y solidificación no se modela evaporación. La transición ocurre a T<sub>f</sub> constante. Fuera de ella se aproxima c constante y se usa Q = mcΔT.</p>
+      <p>Q<sub>f</sub> = ±m<sub>f</sub>L<sub>f</sub> describe la masa ya transformada en la dirección elegida: fundida al calentar o solidificada al enfriar. Para transformar toda la muestra, |Q<sub>f</sub>| = mL<sub>f</sub>. El calor neto Q de los controles incluye los tramos sensibles y el latente; no es solo Q<sub>f</sub>.</p>
+      <p>La energía latente modifica la organización y la energía de interacción del material. La temperatura permanece constante mientras coexisten las fases; una mayor potencia completa la meseta antes, sin cambiar mL<sub>f</sub>.</p>
+      <p><strong>Vaporizar · agua a 1 atm.</strong> Se parte de agua líquida, que se calienta hasta T<sub>b</sub> = 100 °C. Durante la ebullición entra Q<sub>v</sub> = m<sub>v</sub>L<sub>v</sub>, con L<sub>v</sub> = 2256 kJ/kg, y la temperatura permanece en 100 °C. m<sub>v</sub> es la masa acumulada que ya pasó a vapor; m líquido + m vapor producido = m inicial. El calor total de los controles también incluye el calentamiento inicial, Q = mc<sub>agua</sub>(100 − Tᵢ) + Q<sub>v</sub>. Se usa c<sub>agua</sub> = 4,186 kJ/(kg·K).</p>
+      <p>La muestra hierve en un recipiente abierto. El vapor sale; las flechas sobre el recipiente son un esquema de esa transferencia. El vapor de agua puro es invisible: una nube blanca real contiene gotas condensadas y no se representa como gas. Las burbujas ilustran la ebullición, sin modelar nucleación o tamaño real. Se omite evaporación antes de hervir y se detiene el recorrido cuando toda el agua se ha vaporizado, a 100 °C: no se atribuye a la sonda del recipiente una temperatura de vapor sobrecalentado que ya salió. El volumen del gas no está a escala.</p>
+      <table><caption>Constantes aproximadas del modelo</caption><thead><tr><th>Material</th><th>T<sub>f</sub></th><th>L<sub>f</sub></th><th>c sólido / líquido</th></tr></thead><tbody><tr><td>Hierro puro</td><td>1538 °C</td><td>247 kJ/kg</td><td>0,695* / 0,824 kJ/(kg·K)</td></tr><tr><td>Aluminio</td><td>660 °C</td><td>397 kJ/kg</td><td>0,900 / 1,180 kJ/(kg·K)</td></tr><tr><td>Hielo / agua</td><td>0 °C</td><td>334 kJ/kg</td><td>2,090 / 4,186 kJ/(kg·K)</td></tr></tbody></table>
+      <p>Hierro: T<sub>f</sub> = 1538 °C según la Royal Society of Chemistry. NIST-JANAF tabula la fusión a 1809 K, con un salto 72,452 − 58,645 = 13,807 kJ/mol; dividido por 0,055845 kg/mol da aproximadamente 247 kJ/kg. Su c líquido es 46,024 / 0,055845 ≈ 824 J/(kg·K). *Para el sólido se usa c efectivo ≈ 695 J/(kg·K), promedio de la energía tabulada desde 298,15 K hasta la fusión. Es una simplificación de la curva completa: no se dibujan las transiciones entre estructuras sólidas del hierro ni la variación de c con T. El c local cerca de la fusión es distinto; el recorrido de enfriamiento también es aproximado.</p>
+      <p>En NIST-JANAF, el salto de entalpía del aluminio a 933,45 K es 28,693 − 17,982 = 10,711 kJ/mol. Dividido por 0,0269815 kg/mol da aproximadamente 397 kJ/kg. La temperatura se redondea a 660 °C. El c sólido de 900 J/(kg·K) es una aproximación de enseñanza; su variación real con T se omite.</p>
+      <p>Las formas y alturas del prototipo son esquemáticas. En fusión, el volumen de dibujo total es proporcional a la masa y se conserva al transformarse; se simplifican diferencias de densidad, expansión, flotación y forma de la interfaz. El bloque se reduce mientras su material llena el recipiente. El hierro líquido forma un baño incandescente con pequeñas ondulaciones ilustrativas de su superficie; no son burbujas de ebullición. El aluminio conserva su aspecto metálico en el rango elegido y el hielo se convierte en agua azul translúcida. En vaporización, el nivel es proporcional a la masa líquida restante; el gas producido se cuenta por masa, sin imponerle el volumen del líquido.</p>
+      <p>El hierro se vuelve rojizo, naranja y amarillo al subir su temperatura: es incandescencia. El color y el brillo se calculan solo de T, independientemente de la fracción fundida. Ya brilla antes de fundirse, y durante la meseta conserva el mismo tono y emisión mientras cambia de fase. El color es una aproximación visual, no una escala de termometría; su apariencia real depende de emisividad, superficie e iluminación. El metal fundido no es lava: la lava es roca fundida. La interfaz conserva la paleta pastel del proyecto.</p>
+      <p>La barra conserva m sólido + m líquido = m en fusión, y m líquido + m vapor producido = m inicial en vaporización. La gráfica muestra T frente a |Q| en kJ, con la meseta mL<sub>f</sub> o mL<sub>v</sub> del proceso elegido. Su cursor se calcula del mismo estado que la muestra, no del número de fotogramas.</p>
+      <p>Para P constante, t = |Q|/|P|, con Q convertido a joules. La reproducción avanza 30 segundos del modelo por segundo real; Paso añade 5 segundos. Meseta salta a la mitad de la transformación en pausa. En fusión, el recorrido termina 40 °C después de la transición para los metales y 20 °C para el hielo. En vaporización termina al finalizar la meseta. Pausar congela también la superficie, las burbujas y las flechas del vapor.</p>
+      <p>Modificar masa, potencia o temperatura inicial reinicia el experimento en pausa. El control Calor permite explorar un estado y pausa la reproducción. Cambiar material o proceso establece una nueva temperatura inicial válida y reinicia en pausa. Vaporizar usa agua; Fundir y Solidificar recuperan el material elegido anteriormente para la fusión. Reiniciar restaura los parámetros del proceso actual. Arrastra o usa flechas para girar; rueda, gestos o +/− para acercar. Restablecer vista solo modifica la cámara.</p>
+      <p id="estado-carga">El modelo y la vista 2D funcionan mientras se carga Three.js. La vista 3D necesita conexión a internet y WebGL 2.</p>
+      <p>Fuentes: <a href="https://periodic-table.rsc.org/element/26/iron" target="_blank" rel="noopener noreferrer">Royal Society of Chemistry · hierro</a>, <a href="https://janaf.nist.gov/tables/Fe-003.html" target="_blank" rel="noopener noreferrer">NIST-JANAF · hierro</a>, <a href="https://openstax.org/books/university-physics-volume-3/pages/6-1-blackbody-radiation" target="_blank" rel="noopener noreferrer">OpenStax · incandescencia</a>, <a href="https://janaf.nist.gov/tables/Al-004.html" target="_blank" rel="noopener noreferrer">NIST-JANAF · aluminio</a>, <a href="https://webbook.nist.gov/cgi/cbook.cgi?ID=C7429905&Mask=E" target="_blank" rel="noopener noreferrer">NIST WebBook · aluminio</a>, <a href="https://openstax.org/books/university-physics-volume-2/pages/1-4-heat-transfer-specific-heat-and-calorimetry" target="_blank" rel="noopener noreferrer">OpenStax · calor específico</a> y <a href="https://openstax.org/books/university-physics-volume-2/pages/1-5-phase-changes" target="_blank" rel="noopener noreferrer">OpenStax · cambios de fase</a>.</p>
+      <p><a href="https://www.weather.gov/source/zhu/ZHU_Training_Page/clouds/cloud_development/clouds.htm" target="_blank" rel="noopener noreferrer">National Weather Service · vapor invisible y gotas de las nubes</a>.</p>
+    </aside>
+    <p class="sr-only" id="descripcion-escena"></p><p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script type="module">
+    (()=>{
+      'use strict';
+      const $=id=>document.getElementById(id),reducido=matchMedia('(prefers-reduced-motion: reduce)');
+      // Constantes en °C y kJ. Las unidades de potencia y tiempo se convierten en datos().
+      const materiales={
+        hierro:{nombre:'Hierro puro',simbolo:'Fe',metal:true,incandescente:true,tf:1538,latente:247,cs:.695,cl:.824,posterior:40,solido:'metal',liquido:'metal-claro',rangoCalor:[20,1538,20],rangoFrio:[1538,1800,1578]},
+        aluminio:{nombre:'Aluminio',simbolo:'Al',metal:true,tf:660,latente:397,cs:.9,cl:1.18,posterior:40,solido:'metal',liquido:'metal-claro',rangoCalor:[20,660,20],rangoFrio:[660,700,700]},
+        hielo:{nombre:'Hielo / agua',simbolo:'H₂O',metal:false,tf:0,latente:334,cs:2.09,cl:4.186,posterior:20,solido:'hielo',liquido:'agua',rangoCalor:[-40,0,-20],rangoFrio:[0,60,20]}
+      };
+      const controles=Object.fromEntries(['masa','potencia','inicial','energia'].map(n=>[n,$(n)]));
+      const estado={material:'hierro',materialFusion:'hierro',proceso:'fusion',direccion:1,energia:0,pausado:reducido.matches,parametro:'latente',graficas:false};
+      const aguaVapor={...materiales.hielo,nombre:'Agua',tf:100,latente:2256,cs:4.186,cl:2.02,posterior:0,solido:'agua',liquido:'agua',rangoCalor:[20,100,20]};
+      const materialActual=()=>estado.proceso==='vaporizacion'?aguaVapor:materiales[estado.material];
+      const estilos=getComputedStyle(document.documentElement),paleta=Object.fromEntries(['fondo','tarjeta','primario','secundario','acento','texto','texto-secundario','borde','onda','punto','onda-texto','punto-texto','calor','calor-texto','metal','metal-claro','hielo','agua'].map(n=>[n,estilos.getPropertyValue('--color-'+n).trim()]));
+      const tono=n=>paleta[n],numero=(v,d=1)=>v.toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+      const firmado=v=>(v<0?'−':'+')+numero(Math.abs(v),1);
+      const limitar=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+      const rgb=hex=>hex.match(/[a-f\d]{2}/gi).map(c=>parseInt(c,16));
+      function mezclarColor(a,b,f){const x=rgb(a),y=rgb(b);return '#'+x.map((v,i)=>Math.round(v+(y[i]-v)*f).toString(16).padStart(2,'0')).join('');}
+      // Escala ilustrativa de incandescencia del hierro. Solo depende de T:
+      // el calor latente y la fracción líquida nunca alteran el tono o la emisión.
+      const escalaTermica=[[500,'#76180b'],[700,'#c5270c'],[900,'#ed410b'],[1100,'#ff6514'],[1300,'#ff8224'],[1538,'#ff9e3c'],[1800,'#ffbc62']];
+      function aspectoTermico(d){
+        if(!d.mat.incandescente)return {solido:tono(d.mat.solido),liquido:tono(d.mat.liquido),emision:'#000000',intensidad:0};
+        const t=limitar(d.temperatura,500,1800),i=escalaTermica.findIndex(p=>p[0]>=t),a=escalaTermica[Math.max(0,i-1)],b=escalaTermica[i];
+        const emision=mezclarColor(a[1],b[1],a[0]===b[0]?0:(t-a[0])/(b[0]-a[0]));
+        const intensidad=Math.pow(limitar((d.temperatura-480)/620),.8);
+        const color=mezclarColor('#858e99',emision,intensidad);
+        return {solido:color,liquido:color,emision,intensidad};
+      }
+      function ondulacion(x,z,tiempo){const r=Math.hypot(x,z),a=Math.atan2(z,x);return (.025*Math.cos(2*a-tiempo*.08)+.012*Math.sin(3*a+tiempo*.11))*Math.sin(Math.PI*r/2.15)**2;}
+      function puntoVapor(c,p,t){return [c+.1*Math.sin(p*6+t*.025),.83+p*1.55,.12*Math.cos(p*5+t*.025)];}
+      function datosBurbuja(d,g,i){const fase=(d.tiempo*.07+i*.137)%1,r=Math.min(.085,g.altura*.22);return {x:1.35*Math.cos(i*2.4),z:1.12*Math.sin(i*2.4),y:g.piso+r+(g.altura-2*r)*fase,radio:r*(.6+.4*fase)};}
+      let vista3D=null,ancho=1,alto=1,fotograma=null,anterior=null,ajustando=false,anuncio=null,etapaAnterior='';
+      function datos() {
+        const mat=materialActual(),vaporizar=estado.proceso==='vaporizacion',masa=Number(controles.masa.value),potencia=Number(controles.potencia.value),inicial=Number(controles.inicial.value);
+        const cAntes=estado.direccion===1?mat.cs:mat.cl,cDespues=estado.direccion===1?mat.cl:mat.cs;
+        const antes=masa*cAntes*Math.abs(mat.tf-inicial),fase=masa*mat.latente,despues=masa*cDespues*mat.posterior,maximo=antes+fase+despues;
+        const energia=Math.max(0,Math.min(estado.energia,maximo)),transformada=Math.max(0,Math.min(1,(energia-antes)/fase));
+        const liquido=vaporizar?1-transformada:estado.direccion===1?transformada:1-transformada;
+        const meseta=energia>=antes-1e-8&&energia<=antes+fase+1e-8;
+        const temperatura=energia<antes?inicial+estado.direccion*energia/(masa*cAntes):energia<=antes+fase?mat.tf:mat.tf+estado.direccion*(energia-antes-fase)/(masa*cDespues);
+        return {mat,vaporizar,masa,potencia,inicial,cAntes,cDespues,antes,fase,despues,maximo,energia,transformada,liquido,meseta,temperatura,tiempo:energia*1000/potencia,calorFase:estado.direccion*transformada*fase,masaSolida:vaporizar?0:masa*(1-liquido),masaLiquida:masa*liquido,masaVapor:vaporizar?masa*transformada:0};
+      }
+      // El bloque mengua en sus tres dimensiones. El nivel incluye el volumen
+      // desplazado por su parte sumergida, para no perder material de dibujo.
+      function geometriaMuestra(d) {
+        const volumen=(d.vaporizar?22:7.02)*d.masa,fraccionSolida=d.vaporizar?0:1-d.liquido,escala=Math.cbrt(volumen*fraccionSolida/3.51);
+        const sx=1.8*escala,sy=1.5*escala,sz=1.3*escala,area=Math.PI*2.15**2,base=sx*sz,vl=volumen*d.liquido;
+        const altura=vl<=(area-base)*sy?vl/(area-base):(vl+volumen*fraccionSolida)/area;
+        return {volumen,escala,sx,sy,sz,altura,piso:-1.1,radio:2.15};
+      }
+      const espacioSVG='http://www.w3.org/2000/svg';
+      function crearSVG(tipo,atributos={},contenido){const n=document.createElementNS(espacioSVG,tipo);for(const [k,v] of Object.entries(atributos))n.setAttribute(k,v);if(contenido!==undefined)n.textContent=contenido;return n;}
+      function linea(svg,p,color,grosor=1.2,guiones=''){svg.appendChild(crearSVG('polyline',{points:p.map(x=>x.join(',')).join(' '),fill:'none',stroke:color,'stroke-width':grosor,'stroke-linecap':'round','stroke-linejoin':'round','stroke-dasharray':guiones}));}
+      function texto(svg,x,y,t,color=tono('texto-secundario'),ancla='middle',tamano=12){
+        const nodo=crearSVG('text',{x,y,fill:color,'text-anchor':ancla,style:`font-size:${tamano}px`});
+        for(const parte of t.split(/(_[fivb])/))nodo.appendChild(parte.startsWith('_')?crearSVG('tspan',{'baseline-shift':'sub','font-size':`${tamano*.7}px`},parte.slice(1)):document.createTextNode(parte));
+        svg.appendChild(nodo);
+      }
+      function flecha(svg,a,b,color){linea(svg,[a,b],color,1.6);const ang=Math.atan2(b[1]-a[1],b[0]-a[0]);linea(svg,[[b[0]-7*Math.cos(ang-.5),b[1]-7*Math.sin(ang-.5)],b,[b[0]-7*Math.cos(ang+.5),b[1]-7*Math.sin(ang+.5)]],color,1.6);}
+      function marca(svg,a,b,t,color=tono('texto-secundario')){linea(svg,[a,b],color);for(const p of [a,b])linea(svg,[[p[0],p[1]-4],[p[0],p[1]+4]],color);texto(svg,(a[0]+b[0])/2,(a[1]+b[1])/2-10,t,color);}
+      function proyectar(x,y,z=0){if(vista3D)return vista3D.proyectar(x,y,z);const vapor=estado.proceso==='vaporizacion',s=Math.min(ancho/9.6,alto/(vapor?6.4:5.1));return [ancho/2+(x+.22*z)*s,alto/2-(y-(vapor?.35:0)+.2*z)*s];}
+      function configurarInicial(){const m=materialActual(),r=estado.direccion===1?m.rangoCalor:m.rangoFrio;controles.inicial.min=r[0];controles.inicial.max=r[1];controles.inicial.value=r[2];}
+      function actualizarInterfaz(){
+        const d=datos();
+        $('material').value=estado.material;
+        for(const opcion of $('material').options){opcion.disabled=d.vaporizar&&opcion.value!=='hielo';if(opcion.value==='hielo')opcion.textContent=d.vaporizar?'Agua':'Hielo';}
+        $('vaporizar').setAttribute('aria-pressed',String(d.vaporizar));
+        document.querySelectorAll('[data-direccion]').forEach(b=>b.setAttribute('aria-pressed',String(!d.vaporizar&&Number(b.dataset.direccion)===estado.direccion)));
+        const indice=d.vaporizar?'v':'f';document.querySelectorAll('[data-indice="fase"]').forEach(n=>n.textContent=indice);document.querySelector('[data-indice="temperatura"]').textContent=d.vaporizar?'b':'f';
+        $('titulo').textContent=d.vaporizar?'Calor de vaporización':'Calor de fusión';
+        $('rotulo-fase-inicial').textContent=d.vaporizar?'Líquido':'Sólido';$('rotulo-fase-final').textContent=d.vaporizar?'Vapor':'Líquido';
+        document.querySelectorAll('[data-parametro]').forEach(b=>{b.classList.toggle('activo',b.dataset.parametro===estado.parametro);b.setAttribute('aria-pressed',String(b.dataset.parametro===estado.parametro));});
+        $('pausa').textContent=estado.pausado?(d.energia>=d.maximo-1e-8?'Repetir':'Reproducir'):'Pausa';$('pausa').setAttribute('aria-pressed',String(estado.pausado));
+        $('graficas').setAttribute('aria-pressed',String(estado.graficas));$('panel-graficas').hidden=!estado.graficas;$('laboratorio').classList.toggle('con-graficas',estado.graficas);
+        $('signo').textContent=estado.direccion===1?'+':'−';
+        $('valor-latente').textContent=`${numero(d.mat.latente,0)} kJ/kg`;$('valor-tf').textContent=`${numero(d.mat.tf,0)} °C`;$('valor-total').textContent=`${numero(d.fase,1)} kJ`;
+        $('titulo-grafica').textContent=estado.direccion===1?'Temperatura frente a energía recibida':'Temperatura frente a energía extraída';
+        $('nota-grafica').innerHTML=`La meseta requiere mL<sub>${indice}</sub>. El eje horizontal es energía; la potencia cambia cuánto tarda.`;
+        $('grafica').setAttribute('aria-label',`Temperatura en grados Celsius frente a energía ${estado.direccion===1?'recibida':'extraída'} en kilojoules; meseta a ${d.mat.tf} grados.`);
+        $('concepto').innerHTML=({masa:d.vaporizar?'m · líquido restante + vapor producido = masa inicial.':'m · el sólido y el líquido suman siempre la masa de la muestra.',potencia:`|P| · más potencia, menos tiempo; mL<sub>${indice}</sub> se conserva.`,inicial:`Tᵢ · antes de cambiar de fase hay que alcanzar ${d.vaporizar?'100 °C':'T<sub>f</sub>'}.`,energia:'Q · incluye calentamiento o enfriamiento y la transición de fase.',latente:`L<sub>${indice}</sub> · energía por kg transformado; T constante durante la meseta.`})[estado.parametro];
+        $('area-escena').setAttribute('aria-label',d.vaporizar?'Agua en un recipiente abierto a una atmósfera; al hervir disminuye el líquido y aumenta el vapor producido, con flechas esquemáticas del gas invisible':`${d.mat.nombre} en un ${d.mat.metal?'crisol':'recipiente'} con corte frontal; una fuente transfiere calor y una sonda mide temperatura`);
+        clearTimeout(anuncio);anuncio=setTimeout(()=>{$('resumen-accesible').textContent=$('descripcion-escena').textContent;},200);
+        encuadrar();
+      }
+      function actualizarValores(d){
+        controles.energia.max=d.maximo;controles.energia.value=d.energia;
+        for(const [n,e] of Object.entries(controles))e.style.setProperty('--progreso',`${(Number(e.value)-Number(e.min))/(Number(e.max)-Number(e.min))*100}%`);
+        $('salida-masa').value=`${numero(d.masa,2)} kg`;$('salida-potencia').value=`${numero(d.potencia,0)} W`;$('salida-inicial').value=`${numero(d.inicial,0)} °C`;$('salida-energia').value=`${firmado(estado.direccion*d.energia)} kJ`;
+        $('valor-fase').textContent=`${firmado(d.calorFase)} kJ`;$('valor-transformada').textContent=`${numero(d.masa*d.transformada,3)} kg`;
+        $('masa-solido').textContent=`${numero(d.vaporizar?d.masaLiquida:d.masaSolida,3)} kg`;$('masa-liquido').textContent=`${numero(d.vaporizar?d.masaVapor:d.masaLiquida,3)} kg`;
+        $('barra-solido').style.width=`${100*(d.vaporizar?d.liquido:1-d.liquido)}%`;$('barra-liquido').style.width=`${100*(d.vaporizar?d.transformada:d.liquido)}%`;
+        const etapa=d.energia>=d.maximo-1e-8?'Recorrido completo':d.vaporizar?(d.meseta?'Ebullición · líquido + vapor':'Calentamiento del agua'):d.meseta?(estado.direccion===1?'Fusión · sólido + líquido':'Solidificación · líquido + sólido'):d.transformada===0?(estado.direccion===1?'Calentamiento del sólido':'Enfriamiento del líquido'):(estado.direccion===1?'Calentamiento del líquido':'Enfriamiento del sólido');
+        $('etapa').textContent=etapa;$('tipo-calor').textContent=d.meseta?' · T constante':' · Q = mcΔT';$('estado-escena').classList.toggle('meseta',d.meseta);
+        $('tiempo').value=`t = ${numero(d.tiempo,1)} s`;
+        $('fase-nota').textContent=d.meseta?`${numero(d.transformada*100,0)} % ${d.vaporizar?'vaporizado · entra':estado.direccion===1?'fundido · entra':'solidificado · sale'} calor, T constante`:d.mat.incandescente?(d.transformada===0&&estado.direccion===1?'El brillo cambia con T · sigue siendo sólido.':'El brillo cambia con T · la fase se conserva.'):'La temperatura cambia; la muestra conserva su fase.';$('fase-nota').classList.toggle('meseta',d.meseta);
+        $('descripcion-escena').textContent=`${d.mat.nombre}, masa inicial ${numero(d.masa,2)} kg. Temperatura ${numero(d.temperatura,1)} grados Celsius. ${d.vaporizar?`${numero(d.masaLiquida,3)} kg líquidos y ${numero(d.masaVapor,3)} kg de vapor producido`:`${numero(d.masaSolida,3)} kg sólidos y ${numero(d.masaLiquida,3)} kg líquidos`}. Calor de fase ${firmado(d.calorFase)} kilojoules. ${etapa}.`;
+        if(etapa!==etapaAnterior){etapaAnterior=etapa;$('resumen-accesible').textContent=$('descripcion-escena').textContent;}
+      }
+      function encuadrar(){
+        if(ajustando)return;ajustando=true;
+        const movil=innerWidth<=680,margen=movil?13:innerWidth<=950?18:28;
+        const cabecera=$('laboratorio').querySelector('.cabecera').getBoundingClientRect();$('laboratorio').querySelector('.ecuacion').style.top=`${cabecera.bottom+12}px`;
+        const eq=$('laboratorio').querySelector('.ecuacion').getBoundingClientRect(),dock=$('laboratorio').querySelector('.dock').getBoundingClientRect();
+        $('estado-escena').style.top=`${eq.bottom+14}px`;
+        const arriba=eq.bottom+47,abajo=dock.top-68,area=$('area-escena');area.style.top=`${arriba}px`;area.style.bottom=`${Math.max(0,innerHeight-abajo)}px`;area.style.left=`${margen}px`;area.style.right=`${estado.graficas&&!movil?(innerWidth<=950?326:395):margen}px`;
+        const rect=area.getBoundingClientRect();ancho=Math.max(1,rect.width);alto=Math.max(1,rect.height);
+        for(const id of ['alternativa','anotaciones'])$(id).setAttribute('viewBox',`0 0 ${ancho} ${alto}`);
+        $('fase-panel').style.left=`${rect.left+rect.width/2}px`;$('fase-panel').style.top=`${abajo+9}px`;
+        const panel=$('panel-graficas');panel.style.top=`${arriba}px`;panel.style.bottom='auto';panel.style.maxHeight=`${Math.max(50,dock.top-arriba-12)}px`;panel.style.overflow='auto';
+        $('detalle').style.bottom=`${innerHeight-dock.top+12}px`;$('detalle').style.maxHeight=`${Math.max(90,dock.top-36)}px`;
+        if(vista3D)vista3D.redimensionar();ajustando=false;pedirFotograma();
+      }
+      function dibujar2D(d,g){
+        const svg=$('alternativa'),termico=aspectoTermico(d);svg.replaceChildren();
+        const defs=crearSVG('defs'),filtro=crearSVG('filter',{id:'resplandor-fusion',x:'-30%',y:'-30%',width:'160%',height:'160%'});
+        filtro.appendChild(crearSVG('feGaussianBlur',{stdDeviation:2*termico.intensidad,result:'halo'}));const mezcla=crearSVG('feMerge');mezcla.appendChild(crearSVG('feMergeNode',{in:'halo'}));mezcla.appendChild(crearSVG('feMergeNode',{in:'SourceGraphic'}));filtro.appendChild(mezcla);defs.appendChild(filtro);svg.appendChild(defs);
+        const resplandor=termico.intensidad>0?{filter:'url(#resplandor-fusion)'}:{};
+        const elipse=(y,rx,ry,color,opacidad=1,attrs={})=>{const p=proyectar(0,y),e=proyectar(rx,y),h=proyectar(0,y+ry);svg.appendChild(crearSVG('ellipse',{cx:p[0],cy:p[1],rx:Math.abs(e[0]-p[0]),ry:Math.abs(h[1]-p[1]),fill:color,'fill-opacity':opacidad,stroke:tono('borde'),...attrs}));};
+        const piso=proyectar(-2.32,-1.18),abajo=proyectar(2.32,-1.68);
+        svg.appendChild(crearSVG('rect',{x:piso[0],y:piso[1],width:abajo[0]-piso[0],height:abajo[1]-piso[1],rx:8,fill:tono('texto-secundario'),'fill-opacity':.7}));
+        elipse(g.piso,2.22,.4,tono('tarjeta'));
+        // Pared posterior y frente en corte: ambos materiales siguen visibles.
+        const a=proyectar(-2.22,.7),b=proyectar(2.22,g.piso);
+        svg.appendChild(crearSVG('path',{d:`M ${a[0]} ${a[1]} A ${b[0]-a[0]} 30 0 0 1 ${b[0]} ${a[1]} L ${b[0]} ${b[1]} A ${b[0]-a[0]} 30 0 0 0 ${a[0]} ${b[1]} Z`,fill:tono('tarjeta'),'fill-opacity':.75,stroke:tono('borde')}));
+        if(d.liquido>1e-8){
+          const p=proyectar(-g.radio,g.piso+g.altura),q=proyectar(g.radio,g.piso);
+          svg.appendChild(crearSVG('rect',{x:p[0],y:p[1],width:q[0]-p[0],height:Math.max(1,q[1]-p[1]),fill:termico.liquido,'fill-opacity':d.mat.metal?1:.65,...resplandor}));
+          elipse(g.piso+g.altura,g.radio,.38,termico.liquido,d.mat.metal?1:.6,{'data-liquido':'true',...resplandor});
+          for(const z of [-.65,.5]){const puntos=[];for(let i=0;i<=32;i++){const x=-1.55+i*3.1/32;puntos.push(proyectar(x,g.piso+g.altura+ondulacion(x,z,d.tiempo)*4,z*.2));}linea(svg,puntos,d.mat.incandescente?'#fff2cf':tono('tarjeta'),.7);}
+        }
+        if(g.escala>1e-8){
+          const coords=[[-g.sx/2,g.piso,-g.sz/2],[g.sx/2,g.piso,-g.sz/2],[g.sx/2,g.piso+g.sy,-g.sz/2],[-g.sx/2,g.piso+g.sy,-g.sz/2],[-g.sx/2,g.piso,g.sz/2],[g.sx/2,g.piso,g.sz/2],[g.sx/2,g.piso+g.sy,g.sz/2],[-g.sx/2,g.piso+g.sy,g.sz/2]].map(p=>proyectar(...p));
+          for(const [indices,color] of [[[0,1,2,3],termico.solido],[[1,5,6,2],mezclarColor(termico.solido,'#273043',.12)],[[3,2,6,7],d.mat.incandescente?termico.solido:tono(estado.material==='hielo'?'hielo':'metal-claro')]])svg.appendChild(crearSVG('polygon',{points:indices.map(i=>coords[i].join(',')).join(' '),fill:color,'fill-opacity':d.mat.metal?1:.78,stroke:d.mat.incandescente&&termico.intensidad>.2?termico.emision:tono('onda'),'stroke-opacity':.3,'data-solido':'true',...resplandor}));
+        }
+        const sonda=proyectar(2.45,.9),punta=proyectar(1.5,g.piso+.08);linea(svg,[[sonda[0],sonda[1]],[sonda[0],punta[1]],[punta[0],punta[1]]],tono('texto-secundario'),3);
+        const fuente=estado.direccion===1?'calor':'primario';elipse(-1.51,1.7,.16,tono(fuente),.7);
+        if(d.vaporizar&&d.meseta&&d.liquido>1e-8){for(let i=0;i<7;i++){const b=datosBurbuja(d,g,i),p=proyectar(b.x,b.y,b.z),escala=Math.abs(proyectar(b.x+b.radio,b.y,b.z)[0]-p[0]);svg.appendChild(crearSVG('circle',{cx:p[0],cy:p[1],r:escala,fill:tono('tarjeta'),'fill-opacity':.24,stroke:tono('agua'),'stroke-opacity':.7,'data-burbuja':'true'}));}}
+        if(d.vaporizar&&d.transformada>0){const vapor=crearSVG('g',{'data-vapor':'true'});for(const c of [-.75,0,.75]){const puntos=[];for(let i=0;i<=28;i++)puntos.push(proyectar(...puntoVapor(c,i/28,d.tiempo)));linea(vapor,puntos,tono('punto'),1.6);flecha(vapor,puntos.at(-3),puntos.at(-1),tono('punto'));}svg.appendChild(vapor);}
+      }
+      function dibujarMarcas(d,g){
+        const svg=$('anotaciones');svg.replaceChildren();const compacto=alto<190;
+        const nombre=proyectar(d.vaporizar?-2.1:-1.05,d.vaporizar?1.55:Math.max(.95,g.piso+g.sy+.3));texto(svg,compacto?8:nombre[0],compacto?15:Math.max(15,nombre[1]),`${d.mat.nombre} · ${d.mat.simbolo}${d.vaporizar?' · 1 atm':''}`,tono('texto'),compacto?'start':ancho<370?'middle':'end',compacto?11:12);
+        const t=proyectar(2.6,1.15);texto(svg,compacto?ancho-8:Math.min(ancho-65,t[0]),compacto?15:Math.max(18,t[1]),`T = ${numero(d.temperatura,1)} °C`,tono(d.meseta?'punto-texto':'texto'),compacto?'end':'middle',compacto?11:14);
+        if(!compacto){const p=proyectar(-2.3,-.8);texto(svg,p[0]-8,p[1],d.mat.metal?'Crisol':'Recipiente',tono('texto-secundario'),'end');}
+        const color=tono(estado.direccion===1?'calor-texto':'onda-texto');
+        if(!compacto||estado.parametro==='potencia'){
+          for(const x of [-.7,0,.7]){const a=proyectar(x,-2.03),b=proyectar(x,-1.63);flecha(svg,estado.direccion===1?a:b,estado.direccion===1?b:a,color);}
+          const p=proyectar(0,-2.27);texto(svg,p[0],Math.min(alto-4,p[1]),`${estado.direccion===1?'Entra':'Sale'} calor · ${numero(d.potencia,0)} W`,color);
+        }
+        if(d.vaporizar&&!compacto&&d.transformada>0){const p=proyectar(0,2.65);texto(svg,p[0],Math.max(15,p[1]),'Vapor invisible · esquema',tono('punto-texto'));}
+        if(estado.parametro==='masa'&&!compacto){const p=proyectar(d.vaporizar?-2.1:0,.9);texto(svg,p[0],p[1],`m = ${numero(d.masa,2)} kg`,tono('texto'));
+        }else if(estado.parametro==='latente'&&d.meseta&&!compacto&&!d.vaporizar){const p=proyectar(0,1.78);texto(svg,p[0],Math.max(16,p[1]),'Cambia la fase · T constante',tono('punto-texto'));
+        }else if(estado.parametro==='inicial'&&!compacto){const p=proyectar(2.5,.63);texto(svg,Math.min(ancho-60,p[0]),p[1],`Tᵢ = ${numero(d.inicial,0)} °C`,tono('texto-secundario'));
+        }else if(estado.parametro==='energia'&&!compacto){const p=proyectar(d.vaporizar?-2.6:0,d.vaporizar?1:1.75);texto(svg,p[0],Math.max(16,p[1]),`Q neto = ${firmado(estado.direccion*d.energia)} kJ`,tono('punto-texto'));}
+      }
+      function dibujarGrafica(d){
+        const svg=$('grafica');svg.replaceChildren();const izq=42,der=316,arriba=63,abajo=155;
+        const final=d.mat.tf+estado.direccion*d.mat.posterior,min=Math.min(d.inicial,final,d.mat.tf),max=Math.max(d.inicial,final,d.mat.tf);
+        const rango=Math.max(20,max-min),sx=q=>izq+q/d.maximo*(der-izq),sy=t=>abajo-(t-min)/rango*(abajo-arriba);
+        const puntos=[[0,d.inicial],[d.antes,d.mat.tf],[d.antes+d.fase,d.mat.tf],[d.maximo,final]];
+        linea(svg,[[izq,arriba-10],[izq,abajo+1],[der,abajo+1]],tono('borde'));
+        linea(svg,puntos.map(([q,t])=>[sx(q),sy(t)]),tono('borde'),2.2);
+        const recorridos=puntos.filter(([q])=>q<d.energia).map(([q,t])=>[sx(q),sy(t)]);recorridos.push([sx(d.energia),sy(d.temperatura)]);linea(svg,recorridos,tono('onda'),2.5);
+        linea(svg,[[sx(d.antes),sy(d.mat.tf)],[sx(d.antes+d.fase),sy(d.mat.tf)]],tono('punto'),3);
+        linea(svg,[[sx(d.energia),arriba-2],[sx(d.energia),abajo+1]],tono('acento'),1,'3 4');svg.appendChild(crearSVG('circle',{cx:sx(d.energia),cy:sy(d.temperatura),r:4.5,fill:tono('punto'),'data-cursor':'true'}));
+        const marcas=[d.mat.tf];for(const t of [min,max])if(marcas.every(v=>Math.abs(sy(v)-sy(t))>17))marcas.push(t);
+        for(const t of marcas)texto(svg,izq-8,sy(t)+4,numero(t,0),tono('texto-secundario'),'end',11);
+        for(const q of [0,d.maximo/2,d.maximo])texto(svg,sx(q),177,numero(q,0),tono('texto-secundario'),'middle',11);
+        texto(svg,izq,17,'T (°C)',tono('texto-secundario'),'start');texto(svg,der,17,'|Q| (kJ)',tono('texto-secundario'),'end',11);
+        marca(svg,[sx(d.antes),47],[sx(d.antes+d.fase),47],`mL_${d.vaporizar?'v':'f'} = ${numero(d.fase,1)} kJ`,tono('punto-texto'));
+        texto(svg,170,199,'Energía transferida, no tiempo',tono('texto-secundario'),'middle',11);
+      }
+      function renderizar(){const d=datos(),g=geometriaMuestra(d);actualizarValores(d);if(getComputedStyle($('area-escena')).visibility!=='hidden'){if(vista3D)vista3D.dibujar(d,g);else dibujar2D(d,g);dibujarMarcas(d,g);}if(estado.graficas)dibujarGrafica(d);}
+      function pedirFotograma(){if(fotograma===null&&!document.hidden)fotograma=requestAnimationFrame(animar);}
+      function animar(marcaTiempo){
+        fotograma=null;if(!estado.pausado&&anterior!==null){const d=datos();estado.energia=Math.min(d.maximo,estado.energia+(marcaTiempo-anterior)/1000*30*d.potencia/1000);if(estado.energia>=d.maximo-1e-8){estado.pausado=true;actualizarInterfaz();}}
+        anterior=estado.pausado?null:marcaTiempo;renderizar();if(!estado.pausado)pedirFotograma();
+      }
+      function reiniciarTiempo(){estado.energia=0;estado.pausado=true;anterior=null;actualizarInterfaz();pedirFotograma();}
+      for(const n of ['masa','potencia','inicial'])controles[n].addEventListener('input',()=>{estado.parametro=n;reiniciarTiempo();});
+      controles.energia.addEventListener('input',()=>{estado.energia=Number(controles.energia.value);estado.parametro='energia';estado.pausado=true;anterior=null;actualizarInterfaz();pedirFotograma();});
+      document.querySelectorAll('[data-parametro]').forEach(b=>b.addEventListener('click',()=>{estado.parametro=b.dataset.parametro;actualizarInterfaz();pedirFotograma();}));
+      $('material').addEventListener('change',()=>{estado.material=estado.proceso==='vaporizacion'?'hielo':$('material').value;if(estado.proceso==='fusion')estado.materialFusion=estado.material;configurarInicial();if(vista3D)vista3D.reiniciar();reiniciarTiempo();});
+      function cambiarProceso(vaporizar,direccion=1){estado.proceso=vaporizar?'vaporizacion':'fusion';estado.material=vaporizar?'hielo':estado.materialFusion;estado.direccion=direccion;configurarInicial();if(vista3D)vista3D.reiniciar();reiniciarTiempo();}
+      document.querySelectorAll('[data-direccion]').forEach(b=>b.addEventListener('click',()=>cambiarProceso(false,Number(b.dataset.direccion))));
+      $('vaporizar').addEventListener('click',()=>cambiarProceso(true));
+      $('pausa').addEventListener('click',()=>{if(estado.pausado&&estado.energia>=datos().maximo-1e-8)estado.energia=0;estado.pausado=!estado.pausado;anterior=null;actualizarInterfaz();pedirFotograma();});
+      $('paso').addEventListener('click',()=>{const d=datos();estado.energia=Math.min(d.maximo,estado.energia+5*d.potencia/1000);estado.pausado=true;anterior=null;actualizarInterfaz();pedirFotograma();});
+      $('meseta').addEventListener('click',()=>{const d=datos();estado.energia=d.antes+.5*d.fase;estado.pausado=true;estado.parametro='latente';anterior=null;actualizarInterfaz();pedirFotograma();});
+      $('graficas').addEventListener('click',()=>{estado.graficas=!estado.graficas;actualizarInterfaz();pedirFotograma();});
+      $('reiniciar').addEventListener('click',()=>{controles.masa.value=.5;controles.potencia.value=1500;configurarInicial();Object.assign(estado,{energia:0,parametro:'latente',graficas:false,pausado:reducido.matches});anterior=null;if(vista3D)vista3D.reiniciar();actualizarInterfaz();pedirFotograma();});
+      $('vista-inicial').addEventListener('click',()=>{if(vista3D)vista3D.reiniciar();pedirFotograma();});
+      function mostrarModelo(mostrar){$('detalle').hidden=!mostrar;$('ayuda').setAttribute('aria-expanded',String(mostrar));if(mostrar)$('cerrar-detalle').focus();else if(document.activeElement===$('cerrar-detalle'))$('ayuda').focus();}
+      $('ayuda').addEventListener('click',()=>mostrarModelo($('detalle').hidden));$('cerrar-detalle').addEventListener('click',()=>mostrarModelo(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')mostrarModelo(false);});
+      $('pantalla-completa').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('laboratorio').requestFullscreen();}catch{$('pantalla-completa').textContent='Vista completa';}});
+      document.addEventListener('fullscreenchange',()=>{$('pantalla-completa').textContent=document.fullscreenElement?'Salir de pantalla completa':'Pantalla completa';encuadrar();});
+      document.addEventListener('visibilitychange',()=>{if(fotograma!==null)cancelAnimationFrame(fotograma);fotograma=null;anterior=null;if(!document.hidden)pedirFotograma();});
+      reducido.addEventListener('change',()=>{if(reducido.matches)estado.pausado=true;anterior=null;actualizarInterfaz();pedirFotograma();});
+      window.addEventListener('resize',encuadrar);new ResizeObserver(encuadrar).observe($('laboratorio').querySelector('.dock'));
+      async function iniciar3D(){
+        let renderizador=null,orbita=null;
+        try{
+          const [THREE,{OrbitControls},{RoomEnvironment}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js'),import('three/addons/environments/RoomEnvironment.js')]);
+          const escena=new THREE.Scene(),camara=new THREE.OrthographicCamera(-6,6,3,-3,.1,100);
+          renderizador=new THREE.WebGLRenderer({antialias:true,alpha:true});renderizador.setPixelRatio(Math.min(devicePixelRatio||1,2));renderizador.outputColorSpace=THREE.SRGBColorSpace;renderizador.toneMapping=THREE.ACESFilmicToneMapping;renderizador.toneMappingExposure=1;
+          const lienzo=renderizador.domElement;lienzo.id='lienzo';lienzo.setAttribute('aria-hidden','true');$('area-escena').prepend(lienzo);
+          orbita=new OrbitControls(camara,$('area-escena'));orbita.enablePan=false;orbita.enableDamping=false;orbita.minZoom=.75;orbita.maxZoom=1.5;orbita.minPolarAngle=.7;orbita.maxPolarAngle=1.45;orbita.minAzimuthAngle=-.6;orbita.maxAzimuthAngle=.6;orbita.addEventListener('change',pedirFotograma);
+          escena.add(new THREE.HemisphereLight(tono('tarjeta'),tono('primario'),1.5));const luz=new THREE.DirectionalLight(tono('tarjeta'),2);luz.position.set(-4,8,5);escena.add(luz);
+          const reflejo=new THREE.PointLight('#fff2d4',16,20,2);reflejo.position.set(-3.3,3.5,-8.2);escena.add(reflejo);
+          // Reflejos del entorno y luz cálida emitida por la muestra incandescente.
+          const resplandor=new THREE.PointLight('#ffb653',0,6,2);resplandor.position.set(0,.1,0);escena.add(resplandor);
+          const entorno=new RoomEnvironment();
+          const generador=new THREE.PMREMGenerator(renderizador);const ambiente=generador.fromScene(entorno,.04);escena.environment=ambiente.texture;generador.dispose();entorno.dispose();
+          const mate=(nombre,opacidad=1)=>new THREE.MeshStandardMaterial({color:tono(nombre),roughness:.5,transparent:opacidad<1,opacity:opacidad,depthWrite:opacidad===1,side:THREE.DoubleSide});
+          const poner=(geometria,material,x,y,z)=>{const m=new THREE.Mesh(geometria,material);m.position.set(x,y,z);escena.add(m);return m;};
+          poner(new THREE.CylinderGeometry(2.29,2.29,.2,64),mate('tarjeta'),0,-1.24,0);
+          const paredPosterior=poner(new THREE.CylinderGeometry(2.28,2.28,1.85,64,1,true,Math.PI/2,Math.PI),mate('tarjeta'),0,-.22,0);
+          poner(new THREE.TorusGeometry(2.28,.06,8,64,Math.PI),mate('metal-claro'),0,.7,0).rotation.set(Math.PI/2,0,Math.PI);
+          const frente=poner(new THREE.CylinderGeometry(2.28,2.28,1.85,64,1,true,-Math.PI/2,Math.PI),mate('tarjeta',.12),0,-.22,0);
+          frente.renderOrder=3;
+          poner(new THREE.BoxGeometry(4.95,.3,4.65),mate('texto-secundario'),0,-1.52,0);
+          const placa=poner(new THREE.CylinderGeometry(1.93,1.93,.055,64),mate('calor'),0,-1.34,0);
+          const forma=new THREE.Shape();forma.moveTo(-.83,-.68);forma.lineTo(.83,-.68);forma.lineTo(.83,.68);forma.lineTo(-.83,.68);forma.closePath();
+          const geometriaSolida=new THREE.ExtrudeGeometry(forma,{depth:1.16,steps:1,bevelEnabled:true,bevelSegments:3,bevelSize:.07,bevelThickness:.07,curveSegments:8});geometriaSolida.translate(0,0,-.58);
+          // La caja queda orientada con el eje vertical y. Dimensiones nominales: 1,8 × 1,5 × 1,3.
+          const materialSolido=new THREE.MeshStandardMaterial({color:tono('metal'),metalness:.8,roughness:.25});
+          const bloque=poner(geometriaSolida,materialSolido,0,0,0);
+          const bordeHielo=new THREE.LineSegments(new THREE.EdgesGeometry(geometriaSolida,30),new THREE.LineBasicMaterial({color:tono('onda'),transparent:true,opacity:.35}));escena.add(bordeHielo);
+          const materialLiquido=new THREE.MeshPhysicalMaterial({color:tono('metal-claro'),metalness:.9,roughness:.18,clearcoat:.25,clearcoatRoughness:.2});
+          const liquido=poner(new THREE.CylinderGeometry(2.15,2.15,1,64,1,true),materialLiquido,0,0,0);
+          const fondoLiquido=poner(new THREE.CircleGeometry(2.15,64),materialLiquido,0,-1.1,0);fondoLiquido.rotation.x=-Math.PI/2;
+          const geometriaSuperficie=new THREE.RingGeometry(0,2.15,64,12);geometriaSuperficie.rotateX(-Math.PI/2);
+          const superficie=poner(geometriaSuperficie,materialLiquido,0,0,0),posiciones=geometriaSuperficie.attributes.position;
+          posiciones.setUsage(THREE.DynamicDrawUsage);
+          // Un borde circular marca la superficie sin ruido ni partículas decorativas.
+          const bordeLiquido=poner(new THREE.TorusGeometry(2.13,.014,5,64),mate('metal-claro'),0,0,0);bordeLiquido.rotation.x=Math.PI/2;
+          // Las burbujas solo aparecen en la ebullición del agua. Los trazos
+          // superiores indican salida de gas invisible, sin dibujar una nube.
+          const geometriaBurbuja=new THREE.SphereGeometry(1,12,8),materialBurbuja=new THREE.MeshPhysicalMaterial({color:'#e8f4fa',metalness:0,roughness:.08,clearcoat:1,transparent:true,opacity:.42,depthWrite:false});
+          const burbujas=Array.from({length:7},()=>{const b=poner(geometriaBurbuja,materialBurbuja,0,0,0);b.visible=false;b.renderOrder=2;return b;});
+          const grupoVapor=new THREE.Group();escena.add(grupoVapor);
+          const materialTrazo=new THREE.LineBasicMaterial({color:tono('punto'),transparent:true,opacity:.68,depthWrite:false});
+          const materialPunta=new THREE.MeshBasicMaterial({color:tono('punto'),transparent:true,opacity:.68,depthWrite:false});
+          const trazosVapor=[-.75,0,.75].map(c=>{const geometria=new THREE.BufferGeometry(),posicion=new THREE.BufferAttribute(new Float32Array(29*3),3).setUsage(THREE.DynamicDrawUsage);geometria.setAttribute('position',posicion);const trazo=new THREE.Line(geometria,materialTrazo),punta=new THREE.Mesh(new THREE.ConeGeometry(.055,.15,10),materialPunta);grupoVapor.add(trazo,punta);return {c,posicion,geometria,punta};});
+          poner(new THREE.CylinderGeometry(.025,.025,2.1,12),mate('metal'),2.38,-.06,0);
+          const brazo=poner(new THREE.CylinderGeometry(.025,.025,.85,12),mate('metal'),1.96,-1.05,0);brazo.rotation.z=Math.PI/2;
+          poner(new THREE.BoxGeometry(.38,.47,.18),mate('primario'),2.38,1.04,0);
+          const p=new THREE.Vector3();
+          function camaraInicial(){camara.zoom=1;orbita.target.set(0,estado.proceso==='vaporizacion'?.35:-.3,0);camara.position.set(5.3,5.5,13);orbita.update();}
+          vista3D={
+            redimensionar(){renderizador.setSize(ancho,alto,false);const h=Math.max(estado.proceso==='vaporizacion'?6.4:5.2,9.6/(ancho/alto)),w=h*ancho/alto;camara.left=-w/2;camara.right=w/2;camara.top=h/2;camara.bottom=-h/2;camara.updateProjectionMatrix();},
+            proyectar(x,y,z=0){p.set(x,y,z).project(camara);return[(p.x+1)*ancho/2,(1-p.y)*alto/2];},
+            reiniciar:camaraInicial,
+            dibujar(d,g){
+              const esMetal=d.mat.metal,termico=aspectoTermico(d);materialSolido.color.set(termico.solido).multiplyScalar(1-termico.intensidad*.45);materialSolido.emissive.set(termico.emision);materialSolido.emissiveIntensity=termico.intensidad*.5;materialSolido.envMapIntensity=1-termico.intensidad*.8;materialSolido.metalness=esMetal?.8-termico.intensidad*.4:0;materialSolido.roughness=esMetal?.25:.17;materialSolido.transparent=!esMetal;materialSolido.opacity=esMetal?1:.76;materialSolido.depthWrite=esMetal;
+              // Compensar la desaturación de las luces blancas y ACES al dibujar
+              // un emisor cálido en el fondo claro; la escala de T no se modifica.
+              materialSolido.color.g*=1-termico.intensidad*.3;materialSolido.color.b*=1-termico.intensidad*.5;materialSolido.emissive.g*=1-termico.intensidad*.3;materialSolido.emissive.b*=1-termico.intensidad*.5;
+              bloque.visible=g.escala>1e-8;bloque.scale.set(g.escala,g.escala,g.escala);bloque.position.y=g.piso+g.sy/2;
+              bordeHielo.visible=!esMetal&&bloque.visible;bordeHielo.scale.copy(bloque.scale);bordeHielo.position.copy(bloque.position);
+              materialLiquido.color.set(termico.liquido).multiplyScalar(1-termico.intensidad*.45);materialLiquido.emissive.set(termico.emision);materialLiquido.emissiveIntensity=termico.intensidad*.5;materialLiquido.envMapIntensity=1-termico.intensidad*.8;materialLiquido.metalness=esMetal?.9-termico.intensidad*.5:0;materialLiquido.roughness=esMetal?.18:.12;materialLiquido.transparent=!esMetal;materialLiquido.opacity=esMetal?1:.55;materialLiquido.depthWrite=esMetal;
+              materialLiquido.color.copy(materialSolido.color);if(!d.mat.incandescente)materialLiquido.color.set(termico.liquido);materialLiquido.emissive.copy(materialSolido.emissive);
+              liquido.visible=d.liquido>1e-8;liquido.scale.y=Math.max(.001,g.altura);liquido.position.y=g.piso+g.altura/2;
+              superficie.visible=fondoLiquido.visible=liquido.visible;superficie.position.y=g.piso+g.altura+.002;
+              if(liquido.visible){for(let i=0;i<posiciones.count;i++)posiciones.setY(i,ondulacion(posiciones.getX(i),posiciones.getZ(i),d.tiempo));posiciones.needsUpdate=true;geometriaSuperficie.computeVertexNormals();}
+              bordeLiquido.visible=liquido.visible;bordeLiquido.position.y=g.piso+g.altura+.006;bordeLiquido.material.color.set(termico.liquido).multiplyScalar(1-termico.intensidad*.45);bordeLiquido.material.emissive.set(termico.emision);bordeLiquido.material.emissiveIntensity=termico.intensidad*.5;
+              resplandor.color.set(termico.emision);resplandor.intensity=termico.intensidad*1.4;
+              paredPosterior.material.transparent=d.vaporizar;paredPosterior.material.opacity=d.vaporizar?.28:1;paredPosterior.material.depthWrite=!d.vaporizar;
+              for(let i=0;i<burbujas.length;i++){const burbuja=burbujas[i];burbuja.visible=d.vaporizar&&d.meseta&&d.liquido>1e-8;if(burbuja.visible){const b=datosBurbuja(d,g,i);burbuja.position.set(b.x,b.y,b.z);burbuja.scale.setScalar(b.radio);}}
+              grupoVapor.visible=d.vaporizar&&d.transformada>0;
+              if(grupoVapor.visible){for(const trazo of trazosVapor){for(let i=0;i<29;i++)trazo.posicion.setXYZ(i,...puntoVapor(trazo.c,i/28,d.tiempo));trazo.posicion.needsUpdate=true;trazo.geometria.computeBoundingSphere();trazo.punta.position.set(...puntoVapor(trazo.c,1,d.tiempo));}}
+              placa.material.color.set(tono(estado.direccion===1?'calor':'primario'));
+              renderizador.render(escena,camara);
+            }
+          };
+          camaraInicial();encuadrar();vista3D.dibujar(datos(),geometriaMuestra(datos()));$('alternativa').style.display='none';$('modo-render').textContent='3D';
+          $('estado-carga').textContent='Three.js 0.180.0 y OrbitControls desde jsDelivr. Sin internet, WebGL 2 o contexto gráfico, el mismo modelo continúa en 2D.';
+          $('area-escena').addEventListener('keydown',e=>{if(!vista3D||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-'].includes(e.key))return;e.preventDefault();const s=new THREE.Spherical().setFromVector3(camara.position.clone().sub(orbita.target));if(e.key==='ArrowLeft')s.theta=Math.max(-.6,s.theta-.1);if(e.key==='ArrowRight')s.theta=Math.min(.6,s.theta+.1);if(e.key==='ArrowUp')s.phi=Math.max(.7,s.phi-.1);if(e.key==='ArrowDown')s.phi=Math.min(1.45,s.phi+.1);if(e.key==='+'||e.key==='=')camara.zoom=Math.min(1.5,camara.zoom*1.1);if(e.key==='-')camara.zoom=Math.max(.75,camara.zoom/1.1);camara.position.setFromSpherical(s).add(orbita.target);camara.updateProjectionMatrix();orbita.update();pedirFotograma();});
+          lienzo.addEventListener('webglcontextlost',e=>{e.preventDefault();vista3D=null;orbita.dispose();lienzo.style.display='none';$('alternativa').style.display='block';$('modo-render').textContent='2D';$('estado-carga').textContent='Se perdió el contexto gráfico. El modelo y los controles continúan en 2D.';encuadrar();});
+        }catch(error){vista3D=null;if(orbita)orbita.dispose();if(renderizador){renderizador.domElement.remove();renderizador.dispose();}$('alternativa').style.display='block';$('modo-render').textContent='2D';$('estado-carga').textContent='Vista 2D activa. Para la escena 3D se necesita conexión y WebGL 2.';encuadrar();}
+      }
+      configurarInicial();actualizarInterfaz();renderizar();iniciar3D();
+    })();
+  </script>
+</body>
+</html>

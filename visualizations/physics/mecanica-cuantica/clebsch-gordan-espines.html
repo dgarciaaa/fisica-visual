@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Laboratorio de espines: estados base y acoplamiento de hasta seis objetos con una tabla interactiva de Clebsch–Gordan y rutas de ramificación.">
+  <title>Espines · Estados base y Clebsch–Gordan</title>
+  <style>
+    :root {
+      color-scheme: only light;
+      --color-fondo:#F7F8FC; --color-tarjeta:#FFFFFF;
+      --color-primario:#A8C7FA; --color-secundario:#B8E0D2; --color-acento:#CDB4DB;
+      --color-texto:#273043; --color-texto-secundario:#667085; --color-borde:#E4E7EC;
+      --color-onda:#668EC6; --color-longitudinal:#67998A; --color-punto:#9471AE;
+      --sombra:0 10px 32px rgba(39,48,67,.07);
+    }
+    * { box-sizing:border-box; }
+    html,body { margin:0; width:100%; height:100%; overflow:hidden; }
+    body { font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--color-texto); background:var(--color-fondo); }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible { outline:3px solid var(--color-onda); outline-offset:3px; }
+    button:disabled { cursor:default; opacity:.45; }
+    [hidden] { display:none !important; }
+    .laboratorio { position:relative; width:100%; height:100vh; height:100dvh; overflow:hidden; padding:22px 28px; display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:14px; background:radial-gradient(ellipse at 25% 28%,rgba(168,199,250,.16),transparent 65%),radial-gradient(ellipse at 90% 70%,rgba(205,180,219,.12),transparent 60%),var(--color-fondo); }
+    .cristal { background:rgba(255,255,255,.94); border:1px solid var(--color-borde); box-shadow:var(--sombra); backdrop-filter:blur(14px); border-radius:18px; }
+    .cabecera { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    .identidad h1 { margin:0 0 9px; font-size:clamp(1.1rem,2vw,1.5rem); font-weight:750; letter-spacing:-.035em; }
+    .selector { display:inline-flex; padding:4px; border-radius:12px; background:rgba(228,231,236,.65); gap:3px; }
+    .selector button { border:0; background:transparent; color:var(--color-texto-secundario); border-radius:9px; padding:8px 13px; min-height:36px; font-size:.83rem; font-weight:650; }
+    .selector button[aria-selected="true"],.selector button[aria-pressed="true"] { color:var(--color-texto); background:var(--color-tarjeta); box-shadow:0 2px 6px rgba(39,48,67,.06); }
+    .acciones { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+    .boton { border:1px solid var(--color-borde); background:var(--color-tarjeta); color:var(--color-texto); padding:9px 12px; border-radius:11px; min-height:40px; font-size:.81rem; font-weight:650; }
+    .boton:hover { background:var(--color-fondo); }
+    .principal { color:var(--color-tarjeta); background:var(--color-texto); border-color:var(--color-texto); }
+    .principal:hover { background:var(--color-texto-secundario); }
+    select,input[type="number"] { border:1px solid var(--color-borde); background:var(--color-tarjeta); color:var(--color-texto); border-radius:9px; min-height:38px; padding:7px 9px; font-size:.82rem; min-width:0; max-width:100%; }
+    .acciones select { max-width:230px; }
+    .ecuacion { padding:13px 19px; justify-self:start; min-width:0; max-width:100%; }
+    .formula { font-family:Georgia,"Times New Roman",serif; font-size:clamp(1.1rem,2vw,1.5rem); overflow-x:auto; white-space:nowrap; scrollbar-width:thin; }
+    .formula button { font:inherit; color:inherit; background:transparent; border:0; border-radius:6px; padding:1px 4px; }
+    .formula button:hover { background:rgba(168,199,250,.25); }
+    .formula button.activo { background:rgba(168,199,250,.24); }
+    .relaciones { display:flex; flex-wrap:wrap; gap:5px 18px; margin-top:6px; color:var(--color-texto-secundario); font-size:.78rem; font-variant-numeric:tabular-nums; }
+    .relaciones strong { color:var(--color-texto); }
+    .pagina { min-height:0; min-width:0; }
+    #pagina-base { display:grid; grid-template-rows:minmax(145px,1fr) minmax(130px,.68fr); gap:14px; }
+    .objetos { overflow:auto; min-height:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:12px; align-content:center; padding:3px; }
+    .objeto { position:relative; min-width:0; max-width:420px; width:100%; justify-self:center; padding:13px 14px; display:grid; grid-template-rows:auto auto auto auto; align-content:start; gap:9px; }
+    .objeto.activo { border-color:var(--color-onda); box-shadow:0 0 0 2px rgba(168,199,250,.3),var(--sombra); }
+    .objeto-cabecera { display:flex; align-items:center; gap:11px; }
+    .objeto-elegir { border:0; background:transparent; padding:0; color:inherit; display:flex; align-items:center; gap:10px; min-width:0; text-align:left; width:100%; }
+    .orbita { display:grid; place-items:center; width:48px; height:48px; border-radius:50%; flex-shrink:0; background:radial-gradient(circle at 32% 25%,var(--color-tarjeta),var(--color-primario)); color:var(--color-texto); font-family:Georgia,serif; font-size:1.18rem; box-shadow:inset -3px -4px 10px rgba(102,142,198,.16); }
+    .objeto.boson .orbita { background:radial-gradient(circle at 32% 25%,var(--color-tarjeta),var(--color-secundario)); }
+    .objeto-nombre { font-size:.84rem; font-weight:650; overflow-wrap:anywhere; }
+    .objeto-clase { display:block; color:var(--color-texto-secundario); font-size:.72rem; margin-top:3px; }
+    .objeto-medidas { display:flex; justify-content:space-between; flex-wrap:wrap; gap:5px; color:var(--color-texto-secundario); font-size:.77rem; }
+    .objeto-medidas strong { color:var(--color-texto); }
+    .niveles { display:grid; grid-template-columns:repeat(auto-fit,minmax(58px,1fr)); gap:5px; }
+    .estado-base { border:1px solid var(--color-borde); background:var(--color-fondo); padding:7px 4px; border-radius:9px; min-height:36px; color:var(--color-texto); font-family:Georgia,serif; font-size:.98rem; white-space:nowrap; }
+    .estado-base[aria-pressed="true"] { background:rgba(168,199,250,.32); border-color:var(--color-onda); }
+    .estado-base small { display:block; font-family:Inter,system-ui,sans-serif; font-size:.7rem; color:var(--color-texto-secundario); margin-top:3px; }
+    .objeto b { font-weight:650; }
+    .objeto .leyenda-local { margin:0; color:var(--color-texto-secundario); font-size:.7rem; }
+    .base-producto { padding:12px 16px; min-height:0; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:8px; }
+    .panel-cabecera { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    h2 { font-size:.87rem; margin:0; font-weight:650; }
+    .pequeno { font-size:.74rem; color:var(--color-texto-secundario); }
+    .base-grid { min-height:0; overflow:auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:7px; align-content:start; }
+    .producto { border:1px solid var(--color-borde); background:var(--color-fondo); padding:8px 10px; border-radius:10px; min-height:46px; font-family:Georgia,serif; font-size:1.08rem; color:var(--color-texto); }
+    .producto[aria-pressed="true"] { background:rgba(205,180,219,.24); border-color:var(--color-punto); }
+    .producto small { display:block; font-family:Inter,system-ui,sans-serif; font-size:.7rem; color:var(--color-texto-secundario); margin-top:3px; }
+    .paginacion { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:5px 10px; font-size:.73rem; color:var(--color-texto-secundario); }
+    .paginacion-controles { display:flex; align-items:center; gap:5px; }
+    .paginacion .boton { min-height:29px; padding:4px 9px; font-size:.74rem; }
+    .paginacion input { width:60px; min-height:29px; padding:4px; text-align:center; font-size:.75rem; }
+    #pagina-acoplamiento { display:grid; grid-template-rows:auto minmax(115px,.3fr) minmax(200px,1fr); gap:12px; }
+    .multipletes { min-width:0; display:grid; gap:6px; }
+    .familias { display:flex; gap:7px; overflow-x:auto; padding:2px 2px 5px; }
+    .familia { border:1px solid var(--color-borde); background:var(--color-tarjeta); color:var(--color-texto); border-radius:11px; min-width:115px; flex-shrink:0; padding:8px 12px; text-align:left; }
+    .familia[aria-pressed="true"] { border-color:var(--color-onda); background:rgba(168,199,250,.21); }
+    .familia strong { display:block; font-size:.81rem; white-space:nowrap; }
+    .familia span { display:block; margin-top:3px; font-size:.72rem; color:var(--color-texto-secundario); white-space:nowrap; }
+    .proyecciones { display:flex; align-items:center; gap:6px; overflow:auto; padding:1px 2px 3px; scrollbar-width:thin; }
+    .proyecciones span { color:var(--color-texto-secundario); font-size:.73rem; flex-shrink:0; }
+    .estado-m { border:1px solid var(--color-borde); background:var(--color-tarjeta); color:var(--color-texto); font-family:Georgia,serif; font-size:.93rem; border-radius:8px; padding:5px 10px; min-height:30px; flex-shrink:0; }
+    .estado-m[aria-pressed="true"] { background:rgba(168,199,250,.32); border-color:var(--color-onda); }
+    .arbol-scroll { min-height:0; overflow:auto; position:relative; border-radius:12px; }
+    .arbol { position:relative; margin:0 auto; }
+    .arbol svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    .arbol-titulo { position:absolute; transform:translateX(-50%); color:var(--color-texto-secundario); font-size:.75rem; text-align:center; white-space:nowrap; }
+    .nodo { position:absolute; transform:translate(-50%,-50%); border:1px solid var(--color-borde); background:var(--color-tarjeta); color:var(--color-texto); min-height:29px; border-radius:9px; padding:5px 8px; font-size:.75rem; white-space:nowrap; transition:background-color .2s,border-color .2s; }
+    .nodo.activo { background:rgba(168,199,250,.33); border-color:var(--color-onda); }
+    .nodo .copias { color:var(--color-texto-secundario); font-size:.7rem; margin-left:5px; }
+    .zona-tabla { min-height:0; display:grid; grid-template-columns:minmax(0,1fr) 350px; gap:14px; }
+    .tabla-panel { padding:12px 14px; min-height:0; overflow:auto; display:grid; grid-template-rows:auto minmax(140px,1fr) auto; gap:8px; }
+    .tabla-controles { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .tabla-controles label { display:flex; align-items:center; gap:6px; font-size:.76rem; color:var(--color-texto-secundario); }
+    .tabla-controles select { min-height:30px; padding:4px 7px; font-size:.76rem; }
+    .tabla-scroll { overflow:auto; min-height:0; border-radius:8px; }
+    table { border-collapse:separate; border-spacing:0; width:100%; font-size:.78rem; font-variant-numeric:tabular-nums; }
+    th { position:sticky; top:0; z-index:1; background:var(--color-tarjeta); font-weight:500; padding:7px 8px; border-bottom:1px solid var(--color-borde); }
+    td { padding:3px; text-align:center; border-bottom:1px solid var(--color-borde); }
+    th:first-child { text-align:left; min-width:120px; }
+    .columna { background:transparent; border:0; padding:3px 4px; color:var(--color-texto); min-height:30px; font-family:Georgia,serif; white-space:nowrap; }
+    .columna.activo { color:var(--color-onda); }
+    .columna small { display:block; font-family:Inter,system-ui,sans-serif; font-size:.68rem; color:var(--color-texto-secundario); }
+    .fila { border:0; background:transparent; padding:5px; font-family:Georgia,serif; font-size:.9rem; color:var(--color-texto); white-space:nowrap; }
+    tr.elegida .fila { color:var(--color-punto); }
+    .coef { width:100%; min-width:60px; min-height:34px; border:1px solid transparent; border-radius:7px; background:transparent; font-family:Georgia,serif; font-size:.99rem; color:var(--color-texto); white-space:nowrap; }
+    .coef.positivo { background:rgba(168,199,250,var(--intensidad)); }
+    .coef.negativo { background:rgba(205,180,219,var(--intensidad)); }
+    .coef.cero { color:var(--color-texto-secundario); }
+    .coef.elegido { border-color:var(--color-punto); }
+    .tabla-pie { display:grid; gap:7px; }
+    .tabla-leyenda { display:flex; gap:12px; flex-wrap:wrap; font-size:.7rem; color:var(--color-texto-secundario); }
+    .tabla-leyenda span { display:flex; align-items:center; gap:5px; }
+    .tabla-leyenda i { width:11px; height:11px; border-radius:3px; background:var(--color-primario); }
+    .tabla-leyenda .negativo { background:var(--color-acento); }
+    .estado-panel { min-height:0; overflow:auto; padding:12px 16px; display:grid; grid-template-rows:auto auto auto minmax(100px,1fr) auto; gap:8px; }
+    .estado-titulo { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+    .estado-ket { font-family:Georgia,serif; font-size:1.15rem; }
+    .ruta-control { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:8px; font-size:.75rem; color:var(--color-texto-secundario); }
+    .ruta-control select { width:100%; min-height:32px; font-size:.75rem; padding:4px 6px; }
+    .ruta-valor { overflow-wrap:anywhere; font-size:.71rem; color:var(--color-texto-secundario); }
+    .expansion { overflow:auto; min-height:0; }
+    .termino { display:grid; grid-template-columns:78px minmax(0,1fr) auto; gap:7px; align-items:center; padding:7px 0; border-bottom:1px solid var(--color-borde); font-family:Georgia,serif; font-size:.96rem; }
+    .termino .prob { font-family:Inter,system-ui,sans-serif; font-size:.7rem; color:var(--color-texto-secundario); }
+    .termino .prob::after { content:""; display:block; width:50px; height:3px; margin-top:4px; border-radius:2px; background:linear-gradient(to right,var(--color-onda) var(--probabilidad),var(--color-borde) var(--probabilidad)); }
+    .termino.negativo .amplitud { color:var(--color-punto); }
+    .termino.positivo .amplitud { color:var(--color-onda); }
+    .lectura { font-size:.75rem; color:var(--color-texto-secundario); overflow-wrap:anywhere; }
+    .lectura strong { color:var(--color-texto); }
+    .vista-movil { display:none; }
+    .dock { justify-self:center; width:min(1250px,100%); padding:13px 18px 9px; }
+    .parametros { display:flex; align-items:flex-end; flex-wrap:wrap; gap:10px 18px; }
+    .parametro { display:grid; gap:5px; min-width:0; }
+    .parametro label { font-size:.75rem; font-weight:650; color:var(--color-texto-secundario); }
+    #elegir-objeto { width:105px; }
+    #elegir-spin { width:115px; }
+    #elegir-particula { width:210px; }
+    .cantidad { display:flex; gap:6px; align-items:center; }
+    .cantidad span { font-size:.77rem; min-width:32px; text-align:center; color:var(--color-texto-secundario); }
+    .dock-salto { margin-left:auto; }
+    .configuracion-resumen { display:none; }
+    .dock-pie { display:flex; justify-content:space-between; gap:10px; margin-top:9px; padding-top:7px; border-top:1px solid var(--color-borde); color:var(--color-texto-secundario); font-size:.73rem; }
+    .herramientas { display:flex; gap:13px; flex-shrink:0; }
+    .enlace { background:transparent; border:0; padding:2px 0; font:inherit; color:inherit; text-decoration:underline; text-underline-offset:3px; min-height:24px; }
+    .detalle { position:absolute; z-index:8; left:28px; bottom:150px; width:min(520px,calc(100% - 56px)); max-height:calc(100dvh - 190px); overflow:auto; padding:18px 20px; font-size:.83rem; line-height:1.6; }
+    .detalle h2 { margin:0 30px 8px 0; font-size:1rem; }
+    .detalle h3 { margin:14px 0 4px; font-size:.84rem; }
+    .detalle p { margin:7px 0; }
+    .detalle a { color:var(--color-onda); }
+    .cerrar { position:absolute; top:7px; right:9px; background:transparent; border:0; color:var(--color-texto-secundario); min-height:32px; min-width:32px; font-size:1.3rem; }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+    @media (max-width:1050px) {
+      .laboratorio { padding:16px 18px; gap:11px; }
+      .zona-tabla { grid-template-columns:minmax(0,1fr) 300px; gap:11px; }
+      .objeto { padding:10px; }
+      .objetos { grid-template-columns:repeat(auto-fit,minmax(165px,1fr)); align-content:start; }
+      .acciones { max-width:260px; }
+      .dock { padding:11px 14px 8px; }
+      .parametros { gap:8px 13px; }
+      #elegir-particula { width:180px; }
+    }
+    @media (max-width:720px) {
+      .laboratorio { padding:11px 12px; gap:9px; }
+      .cabecera { flex-wrap:wrap; gap:8px; }
+      .identidad h1 { font-size:1.08rem; margin-bottom:7px; }
+      .selector button { min-height:34px; padding:6px 9px; font-size:.75rem; }
+      .acciones { max-width:none; width:100%; justify-content:flex-start; gap:6px; }
+      .acciones select { flex:1; min-width:140px; max-width:none; }
+      .acciones .boton { min-height:34px; padding:6px 10px; font-size:.75rem; }
+      .ecuacion { padding:10px 12px; width:100%; border-radius:15px; }
+      .formula { font-size:1.04rem; }
+      .relaciones { font-size:.7rem; gap:4px 10px; }
+      #pagina-base { grid-template-rows:minmax(120px,1fr) minmax(100px,.65fr); gap:9px; }
+      .objetos { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+      .objeto { padding:9px; gap:7px; border-radius:13px; }
+      .orbita { width:34px; height:34px; font-size:1rem; }
+      .objeto-elegir { gap:6px; }
+      .objeto-nombre { font-size:.73rem; }
+      .objeto-clase,.objeto-medidas { font-size:.69rem; }
+      .niveles { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .estado-base { font-size:.9rem; min-height:34px; padding:5px 3px; }
+      .estado-base small { font-size:.68rem; }
+      .objeto .leyenda-local { display:none; }
+      .base-producto { padding:10px 11px; gap:6px; }
+      .base-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; }
+      .producto { font-size:.95rem; padding:7px 4px; overflow-wrap:anywhere; }
+      .producto small { font-size:.68rem; }
+      .panel-cabecera h2 { font-size:.8rem; }
+      .pequeno { font-size:.69rem; }
+      .paginacion { font-size:.68rem; gap:4px; }
+      .paginacion .boton { padding:3px 7px; }
+      #pagina-acoplamiento { grid-template-rows:auto auto minmax(0,1fr); gap:7px; }
+      .familia { min-width:105px; padding:6px 10px; }
+      .familia strong { font-size:.74rem; }
+      .familia span { font-size:.68rem; }
+      .multipletes { gap:3px; }
+      .proyecciones { gap:5px; }
+      .proyecciones span { font-size:.68rem; }
+      .estado-m { padding:4px 7px; font-size:.85rem; min-height:29px; }
+      .vista-movil { display:inline-flex; justify-self:start; }
+      .arbol-scroll { display:none; }
+      #pagina-acoplamiento[data-vista="ramas"] .arbol-scroll { display:block; }
+      #pagina-acoplamiento[data-vista="ramas"] .zona-tabla { display:none; }
+      .zona-tabla { grid-template-columns:minmax(0,1fr); gap:0; }
+      .estado-panel { display:none; }
+      #pagina-acoplamiento[data-vista="estado"] .tabla-panel { display:none; }
+      #pagina-acoplamiento[data-vista="estado"] .estado-panel { display:grid; }
+      .tabla-panel,.estado-panel { padding:10px 11px; border-radius:14px; }
+      .tabla-controles { gap:6px; }
+      .tabla-controles h2 { width:100%; font-size:.8rem; }
+      .tabla-controles label { font-size:.7rem; }
+      .tabla-controles select { font-size:.72rem; }
+      .coef { min-width:56px; font-size:.93rem; }
+      .tabla-leyenda { font-size:.68rem; }
+      th:first-child { min-width:90px; }
+      .fila { font-size:.85rem; }
+      .dock { padding:10px 12px 7px; border-radius:15px; }
+      .parametros { display:grid; grid-template-columns:1fr 1fr; gap:7px 12px; }
+      .parametro label { font-size:.7rem; }
+      #elegir-objeto,#elegir-spin,#elegir-particula { width:100%; }
+      #parametro-particula { grid-column:1 / -1; }
+      .cantidad { justify-content:flex-start; gap:4px; }
+      .cantidad .boton { min-height:33px; padding:5px 8px; font-size:.75rem; }
+      .cantidad span { font-size:.7rem; min-width:26px; }
+      .dock-salto { margin-left:0; justify-self:end; font-size:.74rem; padding:6px 9px; min-height:33px; }
+      .dock-pie { flex-wrap:wrap; font-size:.68rem; gap:2px; margin-top:7px; }
+      .laboratorio[data-pagina-activa="acoplamiento"] .parametros { display:flex; justify-content:space-between; align-items:center; }
+      .laboratorio[data-pagina-activa="acoplamiento"] .parametro,.laboratorio[data-pagina-activa="acoplamiento"] .cantidad { display:none; }
+      .laboratorio[data-pagina-activa="acoplamiento"] .configuracion-resumen { display:block; font-size:.75rem; color:var(--color-texto-secundario); }
+      .laboratorio[data-pagina-activa="acoplamiento"] .dock-salto { margin-left:auto; }
+      .herramientas { margin-left:auto; }
+      .detalle { left:12px; bottom:235px; width:calc(100% - 24px); max-height:calc(100dvh - 270px); padding:14px; }
+      .laboratorio[data-pagina-activa="acoplamiento"] .detalle { bottom:115px; max-height:calc(100dvh - 150px); }
+      select { min-height:32px; padding:5px 7px; font-size:.76rem; }
+    }
+    @media (max-height:730px) and (min-width:721px) {
+      .laboratorio { padding-top:12px; padding-bottom:12px; gap:9px; }
+      .identidad h1 { margin-bottom:5px; }
+      .ecuacion { padding:9px 15px; }
+      .identidad { display:flex; align-items:center; gap:14px; }
+      .identidad h1 { margin:0; }
+      #pagina-acoplamiento { grid-template-rows:auto auto minmax(0,1fr); gap:7px; }
+      .vista-movil { display:inline-flex; justify-self:start; }
+      .arbol-scroll { display:none; }
+      #pagina-acoplamiento[data-vista="ramas"] .arbol-scroll { display:block; }
+      #pagina-acoplamiento[data-vista="ramas"] .zona-tabla { display:none; }
+      #pagina-acoplamiento[data-vista="estado"] .tabla-panel { display:none; }
+      #pagina-acoplamiento[data-vista="estado"] .zona-tabla { grid-template-columns:1fr; }
+      .familia { padding:5px 9px; }
+      .objeto { gap:6px; }
+      .orbita { width:38px; height:38px; }
+      .dock { padding-top:9px; }
+    }
+    @media (max-width:720px) and (max-height:740px) {
+      .laboratorio { gap:7px; }
+      .parametros { grid-template-columns:80px 85px minmax(0,1fr); gap:6px; }
+      #parametro-particula { grid-column:auto; }
+      .parametro label { font-size:.68rem; }
+      .cantidad { grid-column:1 / 3; }
+      .dock-salto { grid-column:3; }
+      .dock-pie #concepto { display:none; }
+      .detalle { bottom:160px; max-height:calc(100dvh - 195px); }
+      .objeto-medidas { gap:3px; }
+      .estado-base small { display:none; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition:none !important; animation:none !important; } }
+    @media (pointer:coarse) { .boton,.selector button,.estado-base,.enlace { min-height:40px; } }
+    :fullscreen::backdrop { background: var(--color-fondo); }
+  </style>
+</head>
+<body>
+  <main class="laboratorio" id="laboratorio">
+    <header class="cabecera">
+      <div class="identidad"><h1>Acoplamiento de espines</h1><nav class="selector" role="tablist" aria-label="Páginas del laboratorio"><button id="tab-base" type="button" role="tab" aria-controls="pagina-base" aria-selected="true" data-pagina="base">1 · Estados base</button><button id="tab-acoplamiento" type="button" role="tab" aria-controls="pagina-acoplamiento" aria-selected="false" data-pagina="acoplamiento">2 · Acoplamientos</button></nav></div>
+      <div class="acciones"><label class="sr-only" for="ejemplos">Ejemplo de acoplamiento</label><select id="ejemplos"><option value="personalizado">Elegir ejemplo…</option value="dos">2 espines ½ · triplete y singlete</option><option value="tres">3 espines ½ · cuarteto y dobletes</option><option value="seis">6 espines ½ · 64 estados</option><option value="bosones">2 espines 1 · quinteto, triplete, singlete</option><option value="mixto">Espín 1 ⊗ ½ · cuarteto y doblete</option></select><button class="boton" id="reiniciar" type="button">Reiniciar</button></div>
+    </header>
+    <section class="ecuacion cristal" aria-label="Relación de estados y dimensiones"><div class="formula" id="formula"></div><div class="relaciones" id="relaciones"></div></section>
+    <section class="pagina" id="pagina-base" role="tabpanel" aria-labelledby="tab-base">
+      <div class="objetos" id="objetos" aria-label="Objetos y sus estados base individuales"></div>
+      <section class="base-producto cristal"><div class="panel-cabecera"><h2>Base producto · estados sin acoplar</h2><span class="pequeno" id="producto-seleccionado"></span></div><div class="base-grid" id="base-grid"></div><div class="paginacion"><span id="base-rango"></span><div class="paginacion-controles"><button class="boton" id="base-anterior" type="button" aria-label="Página anterior de estados base">←</button><label class="sr-only" for="base-pagina">Página de estados base</label><input id="base-pagina" type="number" min="1" value="1"><span id="base-paginas"></span><button class="boton" id="base-siguiente" type="button" aria-label="Página siguiente de estados base">→</button></div></div></section>
+    </section>
+    <section class="pagina" id="pagina-acoplamiento" role="tabpanel" aria-labelledby="tab-acoplamiento" hidden data-vista="tabla">
+      <div class="multipletes"><div class="familias" id="familias" aria-label="Multipletes de espín total"></div><div class="proyecciones" id="proyecciones" aria-label="Estados del multiplete seleccionado"></div></div>
+      <div class="selector vista-movil" aria-label="Vista del acoplamiento"><button type="button" data-vista="tabla" aria-pressed="true">Tabla</button><button type="button" data-vista="ramas" aria-pressed="false">Ramas</button><button type="button" data-vista="estado" aria-pressed="false">Estado</button></div>
+      <div class="arbol-scroll" id="arbol-scroll" aria-label="Ramificación sucesiva de los espines"><div class="arbol" id="arbol"></div></div>
+      <div class="zona-tabla">
+        <section class="tabla-panel cristal"><div class="tabla-controles"><h2>Tabla de Clebsch–Gordan</h2><label for="bloque-m">Bloque M <select id="bloque-m"></select></label><label for="formato">Valores <select id="formato"><option value="radical">Radicales</option><option value="decimal">Decimales</option></select></label></div><div class="tabla-scroll"><table id="tabla" aria-label="Transformación entre la base producto y la base acoplada"></table></div><div class="tabla-pie"><div class="tabla-leyenda"><span><i aria-hidden="true"></i>Amplitud positiva</span><span><i class="negativo" aria-hidden="true"></i>Amplitud negativa</span><span>Probabilidad = |C|²</span></div><div class="paginacion"><span id="tabla-rango"></span><div class="paginacion-controles"><button class="boton" id="filas-anterior" type="button" aria-label="Filas anteriores">↑</button><button class="boton" id="filas-siguiente" type="button" aria-label="Filas siguientes">↓</button><button class="boton" id="columnas-anterior" type="button" aria-label="Columnas anteriores">←</button><button class="boton" id="columnas-siguiente" type="button" aria-label="Columnas siguientes">→</button><button class="boton" id="tabla-ir" type="button">Ir a selección</button></div></div></div></section>
+        <section class="estado-panel cristal"><div class="estado-titulo"><h2>Estado acoplado</h2><span class="estado-ket" id="estado-ket"></span></div><label class="ruta-control" for="ruta">Ruta α <select id="ruta"></select></label><div class="ruta-valor" id="ruta-valor"></div><div class="expansion" id="expansion"></div><div><div class="paginacion"><span id="expansion-rango"></span><div class="paginacion-controles"><button class="boton" id="terminos-anterior" type="button" aria-label="Términos anteriores de la expansión">←</button><button class="boton" id="terminos-siguiente" type="button" aria-label="Términos siguientes de la expansión">→</button></div></div><div class="lectura" id="lectura"></div></div></section>
+      </div>
+    </section>
+    <section class="dock cristal" aria-label="Configuración de objetos y espines"><div class="parametros"><span class="configuracion-resumen" id="configuracion-resumen"></span><div class="parametro"><label for="elegir-objeto">Objeto</label><select id="elegir-objeto"></select></div><div class="parametro"><label for="elegir-spin">Espín j</label><select id="elegir-spin"></select></div><div class="parametro" id="parametro-particula"><label for="elegir-particula">Partícula</label><select id="elegir-particula"></select></div><div class="cantidad"><button class="boton" id="quitar" type="button" aria-label="Quitar el objeto seleccionado">−</button><span id="cantidad"></span><button class="boton" id="agregar" type="button" aria-label="Agregar un objeto">+</button></div><button class="boton principal dock-salto" id="continuar" type="button">Acoplar →</button></div><div class="dock-pie"><span id="concepto">Escoge los espines y sus proyecciones m sobre el eje z.</span><div class="herramientas"><button class="enlace" id="pantalla-completa" type="button">Pantalla completa</button><button class="enlace" id="ayuda" type="button" aria-expanded="false" aria-controls="detalle">Modelo</button></div></div></section>
+    <aside class="detalle cristal" id="detalle" hidden><button class="cerrar" id="cerrar-detalle" type="button" aria-label="Cerrar el modelo">×</button><h2>Espines, bases y acoplamientos</h2>
+      <p>Cada objeto tiene un espín j y 2j + 1 estados |j,m⟩, con m = −j,…,+j en pasos de uno. S² = ℏ²j(j+1) y S_z = ℏm. Las flechas ↑ y ↓ representan proyecciones para j = ½; no un giro material ni una trayectoria.</p>
+      <p>Los nombres son ejemplos de partículas con ese espín. Se usan partículas masivas y resonancias: un fotón real tiene helicidades ±1 y no se representa aquí como tres proyecciones de un objeto masivo de espín 1. El catálogo cubre j = 0, ½, 1, 3/2, 2, 5/2 y 3. Enteros: bosones; semienteros: fermiones. Los espines intrínsecos de los ejemplos no se modifican: al cambiar j se cambia el ejemplo de partícula.</p>
+      <h3>De la primera página a la segunda</h3><p>La base producto enumera todas las combinaciones |m_A,m_B,…⟩. Tiene D = ∏(2j_i+1) estados. Acoplar reorganiza ese mismo espacio en estados propios de J² y J_z; no crea partículas ni elimina estados. No se prescribe una interacción ni se asignan energías: se muestra la adición de momentos angulares.</p>
+      <p>Para dos objetos: |j₁−j₂| ≤ J ≤ j₁+j₂, en pasos de uno, y M = m₁+m₂. Cada multiplete tiene 2J+1 estados. ½⊗½ = 1⊕0: un triplete y un singlete. Tres espines ½ dan un cuarteto y dos dobletes. Se conserva siempre ∑ μ_J(2J+1) = D; μ_J cuenta las copias independientes.</p>
+      <h3>Rutas y coeficientes</h3><p>El orden de acoplamiento es secuencial: ((A⊗B)⊗C)⊗… . La ruta α conserva J_AB, J_ABC, etc., para distinguir copias del mismo J. El diagrama agrupa las rutas que llegan al mismo J y muestra su cantidad ×μ; elegir un nodo selecciona una ruta que pasa por él.</p>
+      <p>En cada paso se calcula ⟨j₁m₁,j₂m₂|JM⟩ con la fórmula factorial de Clebsch–Gordan y la convención de fase Condon–Shortley/Wigner. Para más objetos, los elementos de transformación son productos sucesivos de esos coeficientes. Las columnas son estados acoplados; las filas, estados producto. |C|² es la probabilidad de esa fila al medir las proyecciones individuales en la columna seleccionada.</p>
+      <p>La tabla se divide en bloques de M conservado y se pagina, sin eliminar filas, columnas o rutas. Todos los valores se calculan localmente. Las fracciones dentro de radicales se reconstruyen a partir de C² cuando coinciden con el valor numérico dentro de la tolerancia; «Decimales» permite inspeccionar los valores calculados. Un valor muy pequeño puede aparecer redondeado a cero en pantalla.</p>
+      <h3>Objetos idénticos</h3><p>A…F identifican subsistemas o modos espaciales. Aquí se trabaja con el sector de espín completo. Para partículas idénticas hay que combinarlo con el estado espacial y aplicar la simetría total bosónica o fermiónica; el programa no impone restricciones de ocupación orbital. Un singlete de dos electrones sigue siendo un estado de sus espines, no una nueva partícula elemental.</p>
+      <h3>Interacción</h3><p>Elige un estado base, cambia a «Acoplamientos», selecciona una familia J y recorre sus botones |J,M⟩ y las rutas α. Al pulsar una celda se resaltan su fila y columna, se muestra el coeficiente con signo y se actualiza la expansión. Los botones de paginación permiten explorar espacios grandes, hasta seis objetos. Las fórmulas y los grupos largos se desplazan dentro de su propia zona. El formato funciona sin conexión y no contiene animación temporal ficticia.</p>
+      <h3>Fuentes</h3><p><a href="https://pdg.lbl.gov/2024/reviews/rpp2024-rev-clebsch-gordan-coefs.pdf" target="_blank" rel="noopener">PDG · Coeficientes de Clebsch–Gordan y convención de fase</a><br><a href="https://ocw.mit.edu/courses/8-05-quantum-physics-ii-fall-2013/f27e44d7b761cec0ef1d01734f0a23b8_MIT8_05F13_Chap_10.pdf" target="_blank" rel="noopener">MIT OCW · Adición de momento angular</a><br><a href="https://pdg.lbl.gov/2024/download/db2024.pdf" target="_blank" rel="noopener">PDG · Propiedades de partículas</a><br><a href="https://pdg.lbl.gov/2026/listings/particle_properties.html" target="_blank" rel="noopener">PDG · Bariones y resonancias</a><br><a href="https://pdg.lbl.gov/2024/listings/rpp2024-list-f2-1270.pdf" target="_blank" rel="noopener">f₂(1270), espín 2</a> · <a href="https://pdg.lbl.gov/2024/listings/rpp2024-list-rho3-1690.pdf" target="_blank" rel="noopener">ρ₃(1690), espín 3</a></p>
+    </aside>
+    <p class="sr-only" id="resumen-accesible" aria-live="polite"></p>
+  </main>
+  <script>
+    "use strict";
+    const $=id=>document.getElementById(id), letras="ABCDEF";
+    const catalogo=[
+      {id:"higgs",q:0,nombre:"Bosón de Higgs",simbolo:"H⁰"},
+      {id:"electron",q:1,nombre:"Electrón",simbolo:"e⁻"},{id:"muon",q:1,nombre:"Muón",simbolo:"μ⁻"},{id:"proton",q:1,nombre:"Protón",simbolo:"p"},{id:"neutron",q:1,nombre:"Neutrón",simbolo:"n"},
+      {id:"z",q:2,nombre:"Bosón Z",simbolo:"Z⁰"},{id:"w",q:2,nombre:"Bosón W",simbolo:"W⁺"},
+      {id:"delta",q:3,nombre:"Δ(1232)",simbolo:"Δ"},{id:"f2",q:4,nombre:"f₂(1270)",simbolo:"f₂"},{id:"n1680",q:5,nombre:"N(1680)",simbolo:"N*"},{id:"rho3",q:6,nombre:"ρ₃(1690)",simbolo:"ρ₃"}
+    ];
+    const inicial=()=>[{q:1,m:1,id:"electron"},{q:1,m:-1,id:"electron"}];
+    const estado={objetos:inicial(),activo:0,pagina:"base",basePagina:0,M:0,J:2,ruta:null,formato:"radical",filaInicio:0,columnaInicio:0,terminoInicio:0,vista:"tabla",celda:null};
+    let modelo=null,vectorActual=null,anuncio=null;
+    const filasPorPagina=8,terminosPorPagina=8,basesPorPagina=8;
+    const numero=(x,d=5)=>new Intl.NumberFormat("es-CL",{maximumFractionDigits:d}).format(Math.abs(x)<1e-12?0:x);
+    const mitad=q=>q%2===0?String(q/2):String(q)+"/2";
+    const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    const nombreMultiplete=q=>({0:"Singlete",1:"Doblete",2:"Triplete",3:"Cuarteto",4:"Quinteto",5:"Sexteto",6:"Septeto",7:"Octeto",8:"Noneto",9:"Decuplete"}[q]||"Multiplete de "+(q+1));
+    const rangoM=q=>Array.from({length:q+1},(_,i)=>q-2*i);
+    const permitido=(a,b)=>{const r=[];for(let q=a+b;q>=Math.abs(a-b);q-=2)r.push(q);return r;};
+    const espines=()=>estado.objetos.map(o=>o.q);
+    const tupla=()=>estado.objetos.map(o=>o.m);
+    const suma=a=>a.reduce((x,y)=>x+y,0);
+    const claveRuta=r=>r.join(",");
+    function ketProducto(ms,qs=espines()) {return "|"+(qs.every(q=>q===1)?ms.map(m=>m===1?"↑":"↓").join(""):ms.map(m=>mitad(m)).join(", "))+"⟩";}
+    function ketAcoplado(r,M=estado.M) {const q=r[r.length-1],alpha=modelo.rutas.filter(p=>p[p.length-1]===q).findIndex(p=>claveRuta(p)===claveRuta(r))+1;return "|"+mitad(q)+", "+mitad(M)+(r.length>2?"; α="+alpha:"")+"⟩";}
+    function etiquetaRuta(r) {return r.length<2?"J_A = "+mitad(r[0]):r.slice(1).map((q,i)=>"J_"+letras.slice(0,i+2)+"="+mitad(q)).join(" → ");}
+
+    // 2j y 2m son enteros: se evitan errores en paridades y selección triangular.
+    const factoriales=[1];for(let i=1;i<=80;i++)factoriales.push(factoriales[i-1]*i);
+    const memoCG=new Map();
+    function coefCG(a,ma,b,mb,c,mc) {
+      if(ma+mb!==mc||Math.abs(ma)>a||Math.abs(mb)>b||Math.abs(mc)>c||(a-ma)%2||(b-mb)%2||(c-mc)%2||c>a+b||c<Math.abs(a-b)||(a+b-c)%2)return 0;
+      const clave=[a,ma,b,mb,c,mc].join(",");if(memoCG.has(clave))return memoCG.get(clave);
+      const j1=a/2,m1=ma/2,j2=b/2,m2=mb/2,J=c/2,M=mc/2,F=n=>factoriales[Math.round(n)];
+      const prefactor=Math.sqrt((c+1)*F(J+j1-j2)*F(J-j1+j2)*F(j1+j2-J)/F(j1+j2+J+1))*Math.sqrt(F(J+M)*F(J-M)*F(j1-m1)*F(j1+m1)*F(j2-m2)*F(j2+m2));
+      const minimo=Math.max(0,j2-J-m1,j1-J+m2),maximo=Math.min(j1+j2-J,j1-m1,j2+m2);
+      let serie=0;for(let k=Math.ceil(minimo);k<=Math.floor(maximo);k++)serie+=(k%2?-1:1)/(F(k)*F(j1+j2-J-k)*F(j1-m1-k)*F(j2+m2-k)*F(J-j2+m1+k)*F(J-j1-m2+k));
+      const valor=prefactor*serie,resultado=Math.abs(valor)<1e-14?0:valor;memoCG.set(clave,resultado);return resultado;
+    }
+    function rutasAcoplamiento(qs) {
+      let rutas=[[qs[0]]];const capas=[new Map([[qs[0],1]])];
+      for(let k=1;k<qs.length;k++) {const nuevas=[],capa=new Map();for(const ruta of rutas)for(const q of permitido(ruta[ruta.length-1],qs[k])){nuevas.push([...ruta,q]);capa.set(q,(capa.get(q)||0)+1);}rutas=nuevas;capas.push(capa);}
+      rutas.sort((a,b)=>{for(let k=a.length-1;k>=0;k--)if(a[k]!==b[k])return b[k]-a[k];return 0;});
+      return {rutas,capas,dimension:qs.reduce((d,q)=>d*(q+1),1)};
+    }
+    function productoDesdeIndice(indice,qs) {const ms=new Array(qs.length);for(let k=qs.length-1;k>=0;k--){const base=qs[k]+1,valor=indice%base;indice=Math.floor(indice/base);ms[k]=qs[k]-2*valor;}return ms;}
+    function indiceProducto(ms,qs) {let indice=0;for(let k=0;k<qs.length;k++)indice=indice*(qs[k]+1)+(qs[k]-ms[k])/2;return indice;}
+    function baseConM(qs,M) {
+      const resultado=[],restantes=new Array(qs.length+1).fill(0);for(let k=qs.length-1;k>=0;k--)restantes[k]=restantes[k+1]+qs[k];
+      function recorrer(k,total,ms) {if(k===qs.length){if(total===M)resultado.push(ms.slice());return;}for(const m of rangoM(qs[k]))if(Math.abs(M-total-m)<=restantes[k+1]){ms.push(m);recorrer(k+1,total+m,ms);ms.pop();}}
+      recorrer(0,0,[]);return resultado;
+    }
+    function coefRuta(qs,ms,r) {let C=1,M=ms[0];for(let k=1;k<qs.length;k++){C*=coefCG(r[k-1],M,qs[k],ms[k],r[k],M+ms[k]);M+=ms[k];if(C===0)break;}return C;}
+    function fraccionAproximada(x,maximo=100000000) {
+      let a=x,p0=0,p1=1,q0=1,q1=0;
+      for(let i=0;i<32;i++){const entero=Math.floor(a),p=entero*p1+p0,q=entero*q1+q0;if(q>maximo||!Number.isSafeInteger(p))break;if(Math.abs(p/q-x)<Math.max(1e-14,Math.abs(x)*1e-12))return [p,q];p0=p1;p1=p;q0=q1;q1=q;const resto=a-entero;if(resto<1e-15)break;a=1/resto;}
+      return null;
+    }
+    function coefTexto(C,formato=estado.formato) {
+      const decimal=()=>Math.abs(C)<1e-6?new Intl.NumberFormat("es-CL",{notation:"scientific",maximumFractionDigits:5}).format(C):numero(C,7);
+      if(Math.abs(C)<1e-12)return "0";const signo=C<0?"−":"";if(Math.abs(Math.abs(C)-1)<1e-12)return signo+"1";if(formato==="decimal")return decimal();
+      const fraccion=fraccionAproximada(C*C);if(!fraccion||fraccion[0]===0)return decimal();
+      const [p,q]=fraccion,raizP=Math.round(Math.sqrt(p)),raizQ=Math.round(Math.sqrt(q));if(raizP*raizP===p&&raizQ*raizQ===q)return signo+raizP+"/"+raizQ;
+      if(p===1)return signo+"1/√"+q;
+      return signo+"√("+p+"/"+q+")";
+    }
+    function actualizarModelo(conservar=true) {
+      modelo=rutasAcoplamiento(espines());const ultimo=modelo.capas[modelo.capas.length-1];
+      if(!ultimo.has(estado.J))estado.J=Math.max(...ultimo.keys());
+      if(Math.abs(estado.M)>estado.J||(estado.J-estado.M)%2)estado.M=estado.J%2;
+      const vieja=estado.ruta&&claveRuta(estado.ruta);estado.ruta=(conservar?modelo.rutas.find(r=>r[r.length-1]===estado.J&&claveRuta(r)===vieja):null)||modelo.rutas.find(r=>r[r.length-1]===estado.J);
+      estado.basePagina=Math.min(estado.basePagina,Math.ceil(modelo.dimension/basesPorPagina)-1);estado.activo=Math.min(estado.activo,estado.objetos.length-1);
+      prepararBloque();
+    }
+    function prepararBloque() {
+      estado.celda=null;
+      modelo.filas=baseConM(espines(),estado.M);modelo.columnas=modelo.rutas.filter(r=>r[r.length-1]>=Math.abs(estado.M));
+      if(!estado.ruta||estado.ruta[estado.ruta.length-1]<Math.abs(estado.M)){estado.ruta=modelo.columnas[0];estado.J=estado.ruta[estado.ruta.length-1];}
+      estado.filaInicio=Math.min(estado.filaInicio,Math.max(0,Math.floor((modelo.filas.length-1)/filasPorPagina)*filasPorPagina));
+      estado.columnaInicio=Math.min(estado.columnaInicio,Math.max(0,modelo.columnas.length-1));estado.terminoInicio=0;vectorActual=null;
+    }
+    function vectorSeleccionado() {
+      if(!vectorActual){const qs=espines();vectorActual=modelo.filas.map((ms,i)=>({ms,indice:i,C:coefRuta(qs,ms,estado.ruta)}));}
+      return vectorActual;
+    }
+    function irSeleccion() {const columnas=numeroColumnas();const i=modelo.columnas.findIndex(r=>claveRuta(r)===claveRuta(estado.ruta));estado.columnaInicio=Math.max(0,Math.floor(i/columnas)*columnas);const fila=modelo.filas.findIndex(ms=>ms.join(",")===tupla().join(","));if(fila>=0)estado.filaInicio=Math.floor(fila/filasPorPagina)*filasPorPagina;}
+    function numeroColumnas() {return innerWidth<=720?2:innerWidth<=1100?4:6;}
+    function elegirRuta(r,ir=true) {estado.ruta=r;estado.J=r[r.length-1];if(Math.abs(estado.M)>estado.J)estado.M=estado.J%2;prepararBloque();if(ir)irSeleccion();renderizar();}
+    function elegirJ(q) {const r=modelo.rutas.find(r=>r[r.length-1]===q);elegirRuta(r);}
+
+    // Escena y elementos del laboratorio: todos se derivan del mismo estado.
+    function dibujarObjetos() {
+      const contenedor=$("objetos");contenedor.replaceChildren();
+      estado.objetos.forEach((objeto,i)=>{const especie=catalogo.find(p=>p.id===objeto.id),tarjeta=document.createElement("article");tarjeta.className="objeto cristal "+(objeto.q%2?"fermion":"boson")+(i===estado.activo?" activo":"");
+        tarjeta.innerHTML=`<div class="objeto-cabecera"><button class="objeto-elegir" type="button" aria-label="Configurar objeto ${letras[i]}, ${especie.nombre}"><span class="orbita" aria-hidden="true">${especie.simbolo}</span><span><span class="objeto-nombre">${letras[i]} · ${especie.nombre}</span><span class="objeto-clase">${objeto.q%2?"Fermión":"Bosón"} · j = ${mitad(objeto.q)}</span></span></button></div><div class="objeto-medidas"><span><strong>${objeto.q+1}</strong> estados base</span><span>S_z = <strong>${mitad(objeto.m)}ℏ</strong></span></div><div class="niveles"></div><p class="leyenda-local">Proyecciones sobre z · m = −j,…,+j</p>`;
+        tarjeta.querySelector(".objeto-elegir").addEventListener("click",()=>{estado.activo=i;renderizar();});
+        for(const m of rangoM(objeto.q)){const boton=document.createElement("button");boton.className="estado-base";boton.type="button";boton.setAttribute("aria-pressed",String(objeto.m===m));boton.setAttribute("aria-label",`${letras[i]}: estado j ${mitad(objeto.q)}, m ${mitad(m)}`);boton.innerHTML=(objeto.q===1?(m===1?"|↑⟩":"|↓⟩"):"|"+mitad(objeto.q)+", "+mitad(m)+"⟩")+`<small>m = ${mitad(m)}</small>`;boton.addEventListener("click",()=>{estado.activo=i;objeto.m=m;estado.celda=null;renderizar();});tarjeta.querySelector(".niveles").appendChild(boton);}
+        contenedor.appendChild(tarjeta);
+      });
+    }
+    function dibujarBase() {
+      const qs=espines(),inicio=estado.basePagina*basesPorPagina,fin=Math.min(modelo.dimension,inicio+basesPorPagina),elegida=indiceProducto(tupla(),qs),contenedor=$("base-grid");contenedor.replaceChildren();
+      for(let i=inicio;i<fin;i++){const ms=productoDesdeIndice(i,qs),boton=document.createElement("button");boton.type="button";boton.className="producto";boton.setAttribute("aria-pressed",String(i===elegida));boton.innerHTML=escapeHTML(ketProducto(ms))+`<small>M = ${mitad(suma(ms))}</small>`;boton.addEventListener("click",()=>{ms.forEach((m,i)=>estado.objetos[i].m=m);estado.celda=null;renderizar();});contenedor.appendChild(boton);}
+      $("producto-seleccionado").textContent=ketProducto(tupla())+" · M = "+mitad(suma(tupla()));$("base-rango").textContent=`${inicio+1}–${fin} de ${numero(modelo.dimension,0)} estados`;
+      $("base-pagina").value=estado.basePagina+1;$("base-pagina").max=Math.ceil(modelo.dimension/basesPorPagina);$("base-paginas").textContent="/ "+Math.ceil(modelo.dimension/basesPorPagina);$("base-anterior").disabled=inicio===0;$("base-siguiente").disabled=fin===modelo.dimension;
+    }
+    function dibujarFamilias() {
+      const finales=[...modelo.capas[modelo.capas.length-1].entries()].sort((a,b)=>b[0]-a[0]);$("familias").replaceChildren();
+      for(const [q,copias] of finales){const boton=document.createElement("button");boton.type="button";boton.className="familia";boton.dataset.j=q;boton.setAttribute("aria-pressed",String(estado.J===q));boton.innerHTML=`<strong>${nombreMultiplete(q)}${copias>1?" ×"+copias:""}</strong><span>J = ${mitad(q)} · ${q+1} estados${copias>1?" por copia":""}</span>`;boton.addEventListener("click",()=>elegirJ(q));$("familias").appendChild(boton);}
+      const estados=$("proyecciones"),titulo=document.createElement("span");titulo.textContent="Estados:";estados.replaceChildren(titulo);
+      for(const M of rangoM(estado.J)){const b=document.createElement("button");b.type="button";b.className="estado-m";b.dataset.m=M;b.textContent="|"+mitad(estado.J)+", "+mitad(M)+"⟩";b.setAttribute("aria-pressed",String(M===estado.M));b.setAttribute("aria-label",`Seleccionar estado J ${mitad(estado.J)}, M ${mitad(M)}`);b.addEventListener("click",()=>cambiarM(M));estados.appendChild(b);}
+      for(const contenedor of [$("familias"),estados]){const elegido=contenedor.querySelector('[aria-pressed="true"]');if(elegido)contenedor.scrollLeft=elegido.offsetLeft-contenedor.offsetLeft-(contenedor.clientWidth-elegido.offsetWidth)/2;}
+    }
+    function dibujarArbol() {
+      if(estado.pagina!=="acoplamiento")return;
+      const contenedor=$("arbol"),scroll=$("arbol-scroll"),n=estado.objetos.length,ancho=Math.max(scroll.clientWidth,n*125),maximo=Math.max(...modelo.capas.map(c=>c.size)),alto=Math.max(115,maximo*36+45),paso=ancho/n,svgNS="http://www.w3.org/2000/svg";
+      contenedor.replaceChildren();contenedor.style.width=ancho+"px";contenedor.style.height=alto+"px";
+      const svg=document.createElementNS(svgNS,"svg");svg.setAttribute("viewBox",`0 0 ${ancho} ${alto}`);svg.setAttribute("aria-hidden","true");contenedor.appendChild(svg);
+      const posiciones=modelo.capas.map((capa,k)=>{const resultado=new Map(),valores=[...capa.keys()].sort((a,b)=>b-a),espacio=(alto-42)/valores.length;valores.forEach((q,i)=>resultado.set(q,{x:paso*(k+.5),y:36+espacio*(i+.5)}));return resultado;});
+      for(let k=1;k<n;k++)for(const [a,p1] of posiciones[k-1])for(const b of permitido(a,estado.objetos[k].q)){const p2=posiciones[k].get(b);if(!p2)continue;const elegido=estado.ruta[k-1]===a&&estado.ruta[k]===b,linea=document.createElementNS(svgNS,"path");linea.setAttribute("d",`M${p1.x+29},${p1.y} C${(p1.x+p2.x)/2},${p1.y} ${(p1.x+p2.x)/2},${p2.y} ${p2.x-29},${p2.y}`);linea.setAttribute("fill","none");linea.setAttribute("stroke",elegido?"var(--color-onda)":"var(--color-borde)");linea.setAttribute("stroke-width",elegido?"2":"1");svg.appendChild(linea);}
+      posiciones.forEach((capa,k)=>{const titulo=document.createElement("span");titulo.className="arbol-titulo";titulo.style.left=paso*(k+.5)+"px";titulo.style.top="4px";titulo.textContent=k?letras.slice(0,k+1)+" · +j"+letras[k]+"="+mitad(estado.objetos[k].q):"A · j="+mitad(estado.objetos[0].q);contenedor.appendChild(titulo);
+        for(const [q,p] of capa){const boton=document.createElement("button");boton.type="button";boton.className="nodo"+(estado.ruta[k]===q?" activo":"");boton.style.left=p.x+"px";boton.style.top=p.y+"px";boton.innerHTML="J="+mitad(q)+(modelo.capas[k].get(q)>1?`<span class="copias">×${modelo.capas[k].get(q)}</span>`:"");boton.setAttribute("aria-label",`Etapa ${letras.slice(0,k+1)}: J ${mitad(q)}, ${modelo.capas[k].get(q)} rutas`);boton.addEventListener("click",()=>{const r=modelo.rutas.find(r=>r[k]===q&&r[r.length-1]===estado.J)||modelo.rutas.find(r=>r[k]===q);elegirRuta(r);});contenedor.appendChild(boton);}
+      });
+    }
+    function dibujarTabla() {
+      const columnas=numeroColumnas(),inif=estado.filaInicio,inic=estado.columnaInicio,finf=Math.min(modelo.filas.length,inif+filasPorPagina),finc=Math.min(modelo.columnas.length,inic+columnas),tabla=$("tabla"),qs=espines();tabla.replaceChildren();
+      const cabecera=document.createElement("thead"),filaCabecera=document.createElement("tr"),primera=document.createElement("th");primera.scope="col";primera.textContent="Base producto ↓";filaCabecera.appendChild(primera);
+      for(let j=inic;j<finc;j++){const r=modelo.columnas[j],th=document.createElement("th"),boton=document.createElement("button");th.scope="col";boton.type="button";boton.className="columna"+(claveRuta(r)===claveRuta(estado.ruta)?" activo":"");boton.innerHTML=escapeHTML(ketAcoplado(r));boton.setAttribute("aria-label",ketAcoplado(r)+". "+etiquetaRuta(r));boton.addEventListener("click",()=>elegirRuta(r,false));th.appendChild(boton);filaCabecera.appendChild(th);}cabecera.appendChild(filaCabecera);tabla.appendChild(cabecera);
+      const cuerpo=document.createElement("tbody"),claveTupla=tupla().join(",");
+      for(let i=inif;i<finf;i++){const ms=modelo.filas[i],tr=document.createElement("tr");if(ms.join(",")===claveTupla)tr.className="elegida";const th=document.createElement("th");th.scope="row";th.style.position="static";const fila=document.createElement("button");fila.type="button";fila.className="fila";fila.textContent=ketProducto(ms);fila.addEventListener("click",()=>{ms.forEach((m,i)=>estado.objetos[i].m=m);estado.celda=null;renderizar();});th.appendChild(fila);tr.appendChild(th);
+        for(let j=inic;j<finc;j++){const r=modelo.columnas[j],C=coefRuta(qs,ms,r),td=document.createElement("td"),boton=document.createElement("button");boton.type="button";boton.className="coef "+(Math.abs(C)<1e-12?"cero":C>0?"positivo":"negativo")+(estado.celda&&estado.celda.i===i&&estado.celda.r===claveRuta(r)?" elegido":"");boton.style.setProperty("--intensidad",.10+.55*Math.abs(C));boton.textContent=coefTexto(C);boton.setAttribute("aria-label",`${ketProducto(ms)} en ${ketAcoplado(r)}: coeficiente ${numero(C,9)}, probabilidad ${numero(100*C*C,4)} por ciento`);boton.addEventListener("click",()=>{estado.ruta=r;estado.J=r[r.length-1];estado.celda={i,r:claveRuta(r)};ms.forEach((m,k)=>estado.objetos[k].m=m);estado.terminoInicio=0;vectorActual=null;renderizar();});td.appendChild(boton);tr.appendChild(td);}cuerpo.appendChild(tr);
+      }tabla.appendChild(cuerpo);
+      $("tabla-rango").textContent=`Filas ${inif+1}–${finf}/${modelo.filas.length} · columnas ${inic+1}–${finc}/${modelo.columnas.length}`;$("filas-anterior").disabled=inif===0;$("filas-siguiente").disabled=finf===modelo.filas.length;$("columnas-anterior").disabled=inic===0;$("columnas-siguiente").disabled=finc===modelo.columnas.length;
+    }
+    function dibujarEstado() {
+      const opciones=modelo.rutas.filter(r=>r[r.length-1]===estado.J),seleccion=claveRuta(estado.ruta);$("ruta").replaceChildren();opciones.forEach((r,i)=>{const o=document.createElement("option");o.value=claveRuta(r);o.textContent="α="+(i+1)+" · "+etiquetaRuta(r);o.selected=o.value===seleccion;$("ruta").appendChild(o);});$("ruta").disabled=opciones.length===1;
+      $("estado-ket").textContent=ketAcoplado(estado.ruta);$("ruta-valor").textContent=etiquetaRuta(estado.ruta);
+      const vector=vectorSeleccionado(),terminos=vector.filter(t=>Math.abs(t.C)>1e-12),norma=vector.reduce((a,t)=>a+t.C*t.C,0),inicio=Math.min(estado.terminoInicio,Math.max(0,Math.floor((terminos.length-1)/terminosPorPagina)*terminosPorPagina)),fin=Math.min(terminos.length,inicio+terminosPorPagina);$("expansion").replaceChildren();
+      for(const termino of terminos.slice(inicio,fin)){const div=document.createElement("div");div.className="termino "+(termino.C>0?"positivo":"negativo");div.innerHTML=`<span class="amplitud">${termino.C>0?"+":""}${coefTexto(termino.C)}</span><span>${escapeHTML(ketProducto(termino.ms))}</span><span class="prob" style="--probabilidad:${100*termino.C*termino.C}%">${numero(100*termino.C*termino.C,2)} %</span>`;$("expansion").appendChild(div);}
+      $("expansion-rango").textContent=`${inicio+1}–${fin} de ${terminos.length} términos · ∑|C|²=${numero(norma,8)}`;$("terminos-anterior").disabled=inicio===0;$("terminos-siguiente").disabled=fin===terminos.length;
+      if(estado.celda&&estado.celda.r===seleccion){const t=vector[estado.celda.i];$("lectura").innerHTML=`${escapeHTML(ketProducto(t.ms))}: <strong>C = ${coefTexto(t.C)}</strong> · |C|² = <strong>${numero(100*t.C*t.C,4)} %</strong>`;}else $("lectura").textContent="Cada término indica amplitud con signo y probabilidad de detección.";
+    }
+    function dibujarControles() {
+      $("laboratorio").dataset.paginaActiva=estado.pagina;$("configuracion-resumen").textContent=estado.objetos.length+" objetos · J="+mitad(estado.J);
+      const o=estado.objetos[estado.activo];$("elegir-objeto").innerHTML=estado.objetos.map((_,i)=>`<option value="${i}" ${i===estado.activo?"selected":""}>Objeto ${letras[i]}</option>`).join("");$("elegir-spin").value=o.q;
+      $("elegir-particula").innerHTML=catalogo.filter(p=>p.q===o.q).map(p=>`<option value="${p.id}" ${p.id===o.id?"selected":""}>${p.nombre}</option>`).join("");
+      $("cantidad").textContent=estado.objetos.length+" / 6";$("agregar").disabled=estado.objetos.length>=6;$("quitar").disabled=estado.objetos.length<=1;$("continuar").textContent=estado.pagina==="base"?"Acoplar →":"← Estados base";
+      const maximo=suma(espines());$("bloque-m").innerHTML=rangoM(maximo).map(m=>`<option value="${m}" ${m===estado.M?"selected":""}>${mitad(m)}</option>`).join("");
+      document.querySelectorAll("[data-pagina]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.pagina===estado.pagina)));$("pagina-base").hidden=estado.pagina!=="base";$("pagina-acoplamiento").hidden=estado.pagina!=="acoplamiento";
+      $("pagina-acoplamiento").dataset.vista=estado.vista;document.querySelectorAll("button[data-vista]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.vista===estado.vista)));
+      const dimension=modelo.dimension,finales=[...modelo.capas[modelo.capas.length-1]].sort((a,b)=>b[0]-a[0]);
+      if(estado.pagina==="base"){$("formula").innerHTML="ℋ = "+espines().map((q,i)=>`<button type="button" class="${i===estado.activo?"activo":""}" data-formula-objeto="${i}" aria-label="Seleccionar objeto ${letras[i]}">ℋ<sub>${letras[i]}</sub>(${mitad(q)})</button>`).join(" ⊗ ");$("relaciones").innerHTML=`<span>D = ${espines().map(q=>q+1).join(" × ")} = <strong>${numero(dimension,0)} estados</strong></span><span>S² = ℏ²j(j+1) · S_z = ℏm</span>`;}
+      else{$("formula").innerHTML=espines().map(q=>mitad(q)).join(" ⊗ ")+" = "+finales.map(([q,c])=>`<button type="button" class="${q===estado.J?"activo":""}" data-formula-j="${q}" aria-label="Seleccionar ${nombreMultiplete(q)}, ${c} copias">${c>1?c+"·":""}${mitad(q)}</button>`).join(" ⊕ ");$("relaciones").innerHTML=`<span><strong>${numero(dimension,0)} estados</strong> = ${finales.length>6?"∑ μ_J(2J+1)":finales.map(([q,c])=>c>1?c+"×"+(q+1):q+1).join(" + ")}</span><span>J² = ℏ²J(J+1) · J_z = ℏM</span>`;}
+      $("formula").querySelectorAll("[data-formula-objeto]").forEach(b=>b.addEventListener("click",()=>{estado.activo=Number(b.dataset.formulaObjeto);renderizar();}));$("formula").querySelectorAll("[data-formula-j]").forEach(b=>b.addEventListener("click",()=>elegirJ(Number(b.dataset.formulaJ))));
+      $("concepto").textContent=estado.pagina==="base"?"Escoge los espines y sus proyecciones m sobre el eje z.":"M se conserva · la ruta α distingue copias del mismo multiplete.";
+    }
+    function renderizar(anunciar=true) {
+      dibujarControles();if(estado.pagina==="base"){dibujarObjetos();dibujarBase();}else{dibujarFamilias();dibujarArbol();dibujarTabla();dibujarEstado();}
+      if(anunciar){clearTimeout(anuncio);anuncio=setTimeout(()=>{$("resumen-accesible").textContent=`${estado.objetos.length} objetos, ${modelo.dimension} estados. ${estado.pagina==="base"?"Base producto seleccionada "+ketProducto(tupla()):nombreMultiplete(estado.J)+", J "+mitad(estado.J)+", M "+mitad(estado.M)+"."}`;},180);}
+    }
+    function cambiarPagina(pagina) {estado.pagina=pagina;if(pagina==="acoplamiento"){estado.M=suma(tupla());prepararBloque();irSeleccion();}renderizar();}
+    function cambiarSistema() {estado.filaInicio=0;estado.columnaInicio=0;estado.terminoInicio=0;estado.basePagina=0;estado.celda=null;$("ejemplos").value="personalizado";estado.M=suma(tupla());actualizarModelo(false);renderizar();}
+    $("elegir-spin").innerHTML=Array.from({length:7},(_,q)=>`<option value="${q}">${mitad(q)} · ${q%2?"fermión":"bosón"}</option>`).join("");
+    $("elegir-objeto").addEventListener("change",()=>{estado.activo=Number($("elegir-objeto").value);renderizar();});
+    $("elegir-spin").addEventListener("change",()=>{const q=Number($("elegir-spin").value),o=estado.objetos[estado.activo];o.q=q;o.id=catalogo.find(p=>p.q===q).id;o.m=q;cambiarSistema();});
+    $("elegir-particula").addEventListener("change",()=>{estado.objetos[estado.activo].id=$("elegir-particula").value;renderizar();});
+    $("agregar").addEventListener("click",()=>{if(estado.objetos.length<6){estado.objetos.push({q:1,m:estado.objetos.length%2?-1:1,id:"electron"});estado.activo=estado.objetos.length-1;cambiarSistema();}});
+    $("quitar").addEventListener("click",()=>{if(estado.objetos.length>1){estado.objetos.splice(estado.activo,1);estado.activo=Math.min(estado.activo,estado.objetos.length-1);cambiarSistema();}});
+    document.querySelectorAll("[data-pagina]").forEach(b=>b.addEventListener("click",()=>cambiarPagina(b.dataset.pagina)));
+    document.querySelector('[role="tablist"]').addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const pagina=estado.pagina==="base"?"acoplamiento":"base";cambiarPagina(pagina);$("tab-"+pagina).focus();}});
+    $("continuar").addEventListener("click",()=>cambiarPagina(estado.pagina==="base"?"acoplamiento":"base"));
+    function cambiarM(M) {estado.M=M;estado.filaInicio=0;estado.columnaInicio=0;prepararBloque();irSeleccion();renderizar();}
+    $("bloque-m").addEventListener("change",()=>cambiarM(Number($("bloque-m").value)));
+    $("ruta").addEventListener("change",()=>elegirRuta(modelo.rutas.find(r=>claveRuta(r)===$("ruta").value)));
+    $("formato").addEventListener("change",()=>{estado.formato=$("formato").value;renderizar();});
+    document.querySelectorAll("button[data-vista]").forEach(b=>b.addEventListener("click",()=>{estado.vista=b.dataset.vista;renderizar();}));
+    $("base-anterior").addEventListener("click",()=>{estado.basePagina=Math.max(0,estado.basePagina-1);renderizar();});$("base-siguiente").addEventListener("click",()=>{estado.basePagina=Math.min(Math.ceil(modelo.dimension/basesPorPagina)-1,estado.basePagina+1);renderizar();});
+    $("base-pagina").addEventListener("change",()=>{estado.basePagina=Math.max(0,Math.min(Math.ceil(modelo.dimension/basesPorPagina)-1,Math.floor(Number($("base-pagina").value)||1)-1));renderizar();});
+    for(const [id,campo,cambio] of [["filas-anterior","filaInicio",-filasPorPagina],["filas-siguiente","filaInicio",filasPorPagina],["columnas-anterior","columnaInicio",-1],["columnas-siguiente","columnaInicio",1],["terminos-anterior","terminoInicio",-terminosPorPagina],["terminos-siguiente","terminoInicio",terminosPorPagina]])$(id).addEventListener("click",()=>{estado[campo]=Math.max(0,estado[campo]+cambio*(campo==="columnaInicio"?numeroColumnas():1));renderizar();});
+    $("tabla-ir").addEventListener("click",()=>{irSeleccion();renderizar();});
+    function cargarEjemplo(nombre) {const qs={dos:[1,1],tres:[1,1,1],seis:[1,1,1,1,1,1],bosones:[2,2],mixto:[2,1]}[nombre];if(!qs)return;estado.objetos=qs.map((q,i)=>({q,m:i%2?-q:q,id:catalogo.find(p=>p.q===q).id}));Object.assign(estado,{activo:0,basePagina:0,filaInicio:0,columnaInicio:0,terminoInicio:0,celda:null,M:suma(tupla()),J:suma(qs),ruta:null});actualizarModelo(false);irSeleccion();$("ejemplos").value=nombre;renderizar();}
+    $("ejemplos").addEventListener("change",()=>cargarEjemplo($("ejemplos").value));
+    $("reiniciar").addEventListener("click",()=>{Object.assign(estado,{objetos:inicial(),activo:0,pagina:"base",basePagina:0,M:0,J:2,ruta:null,formato:"radical",filaInicio:0,columnaInicio:0,terminoInicio:0,vista:"tabla",celda:null});$("ejemplos").value="personalizado";$("formato").value="radical";actualizarModelo(false);ayuda(false);renderizar();});
+    function ayuda(mostrar) {$("detalle").hidden=!mostrar;$("ayuda").setAttribute("aria-expanded",String(mostrar));if(mostrar)$("cerrar-detalle").focus();}
+    $("ayuda").addEventListener("click",()=>ayuda($("detalle").hidden));$("cerrar-detalle").addEventListener("click",()=>{ayuda(false);$("ayuda").focus();});document.addEventListener("keydown",e=>{if(e.key==="Escape")ayuda(false);});
+    $("pantalla-completa").addEventListener("click",async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($("laboratorio").requestFullscreen)await $("laboratorio").requestFullscreen();else $("pantalla-completa").textContent="Vista de ventana";}catch{$("pantalla-completa").textContent="Vista de ventana";}});
+    document.addEventListener("fullscreenchange",()=>{$("pantalla-completa").textContent=document.fullscreenElement?"Salir de pantalla completa":"Pantalla completa";renderizar(false);});
+    let redimension=null;window.addEventListener("resize",()=>{clearTimeout(redimension);redimension=setTimeout(()=>renderizar(false),80);});
+    actualizarModelo(false);renderizar(false);
+  </script>
+</body>
+</html>
